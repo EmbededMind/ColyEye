@@ -11,3 +11,7 @@
 /HW_H265Decoder.dll
 /NetSdk.dll
 /sqlite3.dll
+/Debug
+/lib
+/Release
+/res
