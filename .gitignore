@@ -1,5 +1,4 @@
-/coly_eye.uml
-/ColyEye.aps
+/coly_eye.uml/ColyEye.aps
 /cold_eye.db
 /coly_eye.~ml
 /ColyEye.vcxproj.filters
@@ -10,8 +9,12 @@
 /hi_h264dec_v.dll
 /HW_H265Decoder.dll
 /NetSdk.dll
-/sqlite3.dll
-/Debug
-/lib
-/Release
-/res
+/sqlite3.dll/
+Debug
+/*
+lib
+/*
+Release
+/*
+res
+/*
