@@ -150,15 +150,22 @@ BOOL CVideoCtrDlg::PreTranslateMessage(MSG * pMsg)
 void CVideoCtrDlg::OnBnClickedPauseButton()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if (m_pause)
+	if (m_isPlay)
 	{
-		H264_PLAY_Pause(m_port, 0);
-		m_pause = 0;
+		if (m_pause)
+		{
+			H264_PLAY_Pause(m_port, 0);
+			m_pause = 0;
+		}
+		if (m_playctrl)
+		{
+			H264_PLAY_Play(m_port, this->mVideoDlg.m_hWnd);
+			m_playctrl = 0;
+		}
 	}
-	if (m_playctrl)
+	else
 	{
-		H264_PLAY_Play(m_port, this->mVideoDlg.m_hWnd);
-		m_playctrl = 0;
+		StartPlay();
 	}
 }
 

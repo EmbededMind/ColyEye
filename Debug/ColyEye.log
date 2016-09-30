@@ -1,0 +1,40 @@
+﻿  stdafx.cpp
+  WallDlg.cpp
+  VideoDlg.cpp
+  VideoCtrDlg.cpp
+c:\users\administrator\desktop\新的\colyeye\videoctrdlg.cpp(193): warning C4244: “参数”: 从“double”转换到“FLOAT”，可能丢失数据
+c:\users\administrator\desktop\新的\colyeye\videoctrdlg.cpp(200): warning C4244: “参数”: 从“double”转换到“FLOAT”，可能丢失数据
+  TestDlg.cpp
+  TagTreeCtrl.cpp
+c:\users\administrator\desktop\新的\colyeye\tagtreectrl.cpp(157): warning C4101: “hnextItem”: 未引用的局部变量
+  TagButton.cpp
+  SystemConfigDlg.cpp
+  SurfaceHolderDlg.cpp
+  SurfaceDlg.cpp
+  Subject.cpp
+  RecordMenuDlg.cpp
+  RecordFileManager.cpp
+  RecordFileInfoManager.cpp
+  RecordFileInfo.cpp
+  PlayCtrlSlider.cpp
+c:\users\administrator\desktop\新的\colyeye\playctrlslider.cpp(45): warning C4244: “参数”: 从“double”转换到“FLOAT”，可能丢失数据
+  Observer.cpp
+  MenuDlg.cpp
+  SQLiteWrapper.cpp
+c:\users\administrator\desktop\新的\colyeye\lib\sqlite3\sqlitewrapper.cpp(98): warning C4101: “e”: 未引用的局部变量
+  HomeWatchDlg.cpp
+  DBShadow.cpp
+  正在生成代码...
+  正在编译...
+  DBOperator.cpp
+  DayRecordInfo.cpp
+  ColyEyeDlg.cpp
+  ColyEye.cpp
+  CameraManager.cpp
+  Camera.cpp
+  AutoWatchDlg.cpp
+  AlarmMenuDlg.cpp
+  正在生成代码...
+  sqlite3.c
+  ColyEye.vcxproj -> C:\Users\Administrator\Desktop\新的\ColyEye\Debug\ColyEye.exe
+  ColyEye.vcxproj -> C:\Users\Administrator\Desktop\新的\ColyEye\Debug\ColyEye.pdb (Partial PDB)
