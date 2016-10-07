@@ -2,8 +2,13 @@
 #include "Camera.h"
 #include "SurfaceHolderDlg.h"
 #include "RecordFileInfo.h"
+#include <map>
 
 // CWallDlg ¶Ô»°¿ò
+
+typedef std::map<long, CCamera*> Device_Map;
+
+
 
 class CWallDlg : public CDialogEx
 {
@@ -33,11 +38,28 @@ private:
 	UINT8 mRows;
 	UINT8 mCols;
 
+	Device_Map mDevReconnectMap;
+
+	void interruptRecord(CCamera* pCamera);
+	void interruptAlarmRecord(CCamera* pCamera);
+
+
+
 public:
-	HANDLE investCamera(CCamera* pCamera);
+	CSurfaceHolderDlg* investCamera(CCamera* pCamera);
+	void   spitCamera(CCamera* pCamera);
 	BOOL   designLayout();
 	void   executeLayout();
 	void   updateLayout();
+
+	void   onCameraDisconnect(CCamera* pCamera);
+
+	void ReConnect(LONG lLoginID, char* pchDVRIP, LONG nDVRPort);
+	//void   startRecord(CSurfaceHolderDlg* pHolder, CFile* pFile);
+	//void   stopRecord(CCamera* pCamear);
+
+	//CSurfaceHolderDlg* findSurfaceHolder(CCamera* pCamera);
+
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 protected:
 	afx_msg LRESULT OnUserMsgBring(WPARAM wParam, LPARAM lParam);

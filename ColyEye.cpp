@@ -17,7 +17,7 @@
 #endif
 
 
-void __stdcall disConnnectCallback(LONG lLoginID, char* pchDVRIP, LONG nDVRPort, DWORD dwUser);
+
 unsigned int __stdcall loginThread(PVOID pM);
 
 // CColyEyeApp
@@ -94,7 +94,7 @@ BOOL CColyEyeApp::InitInstance()
 	//pRecordInfoMgr->instantiateAlarmRecordInfoFromDB(1);
 
 	/// Look here animals
-	H264_DVR_Init(disConnnectCallback, 0);
+
 	hLoginThread = (HANDLE)_beginthreadex(NULL, 0, loginThread, NULL, 0, &pidOfLoginThread);
 
 	CColyEyeDlg dlg;
@@ -134,13 +134,7 @@ BOOL CColyEyeApp::InitInstance()
 }
 
 
-/**@brief 摄像头掉线触发的回调
- *
- */
-void __stdcall disConnnectCallback(LONG lLoginID, char* pchDVRIP, LONG nDVRPort, DWORD dwUser)
-{
-	TRACE("%d disconnect\n", lLoginID);
-}
+
 
 
 /**@brief 登录线程，负责局域网内的设备扫描和设备登录
