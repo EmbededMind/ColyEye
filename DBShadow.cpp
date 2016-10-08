@@ -10,7 +10,6 @@ void DBShadow::Update(string state,DWORD_PTR pSubject)
 	char sqlStmt[128];
 
 	CRecordFileInfo*(*paRecordFileInfo) = (pInfo->mStatus & RECORD_TYPE_ALARM) ? m_paAlarmRecordFileInfo : m_paRecordFileInfo;
-
 	
 	/// É¾³ýÎÄ¼þ
 	if (state == "del") {

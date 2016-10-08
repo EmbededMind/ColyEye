@@ -74,8 +74,10 @@ LRESULT CVideoCtrDlg::OnUserMsgPlay(WPARAM wParam, LPARAM lParam)
 {
 	mMenuCursor = wParam;
 	TRACE("cursor = %d\n", mMenuCursor);
-	pRecordFileInfo = (CRecordFileInfo *)lParam;
-	TRACE("%ld\n", pRecordFileInfo->mBeginTime);
+	m_pRecordFileInfo = (CRecordFileInfo *)lParam;
+	m_pRecordFileInfo->mBeingUsed = true;
+	m_pRecordFileInfo->mStatus |= 0x02;
+	TRACE("%ld\n", m_pRecordFileInfo->mBeginTime);
 	m_pause = 0;
 	m_isPlay = 0;
 	m_playctrl = 0;
@@ -88,7 +90,7 @@ BOOL CVideoCtrDlg::StartPlay()
 	SetTimer(m_port , 100, NULL);
 	CString PlayPath("E:\\Record");
 	CString tmp;
-	if (pRecordFileInfo->mStatus & RECORD_TYPE_NORMAL)
+	if (m_pRecordFileInfo->mStatus & RECORD_TYPE_NORMAL)
 	{
 		PlayPath += _T("\\normal");
 	}
@@ -96,8 +98,8 @@ BOOL CVideoCtrDlg::StartPlay()
 	{
 		PlayPath += _T("\\alarm");
 	}
-	tmp.Format(_T("\\%d\\%d%02d%02d%02d%02d%02d.h264"), pRecordFileInfo->mOwner, pRecordFileInfo->mBeginTime.GetYear(), pRecordFileInfo->mBeginTime.GetMonth(),
-		pRecordFileInfo->mBeginTime.GetDay(), pRecordFileInfo->mBeginTime.GetHour(), pRecordFileInfo->mBeginTime.GetMinute(), pRecordFileInfo->mBeginTime.GetSecond());
+	tmp.Format(_T("\\%d\\%d%02d%02d%02d%02d%02d.h264"), m_pRecordFileInfo->mOwner, m_pRecordFileInfo->mBeginTime.GetYear(), m_pRecordFileInfo->mBeginTime.GetMonth(),
+		m_pRecordFileInfo->mBeginTime.GetDay(), m_pRecordFileInfo->mBeginTime.GetHour(), m_pRecordFileInfo->mBeginTime.GetMinute(), m_pRecordFileInfo->mBeginTime.GetSecond());
 	PlayPath += tmp;
 	TRACE("%S\n", PlayPath);
 	((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->mMenu.ShowWindow(SW_HIDE);
@@ -125,6 +127,8 @@ BOOL CVideoCtrDlg::StopPlay()
 	H264_PLAY_Stop(m_port);
 	H264_PLAY_CloseFile(m_port);
 	H264_PLAY_FreePort(m_port);
+	m_pRecordFileInfo->mBeingUsed = false;
+	m_pRecordFileInfo->mStatus &= ~(0x02);
 	m_isPlay = false;
 	return 0;
 }
@@ -140,7 +144,7 @@ BOOL CVideoCtrDlg::PreTranslateMessage(MSG * pMsg)
 		case VK_BACK:
 			StopPlay();
 			this->ShowWindow(SW_HIDE);
-			::SendMessage(((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->mMenu.m_hWnd, USER_MSG_PLAY, mMenuCursor, (LPARAM)pRecordFileInfo);
+			::SendMessage(((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->mMenu.m_hWnd, USER_MSG_PLAY, mMenuCursor, (LPARAM)m_pRecordFileInfo);
 			return true;
 		}
 	}
@@ -181,7 +185,8 @@ void CVideoCtrDlg::OnTimer(UINT_PTR nIDEvent)
 	if (!m_isOnHScroll)
 	{
 		m_currenttime = H264_PLAY_GetPlayedTime(m_port);
-		m_sliderctrl.SetPos((int)(m_currenttime * 100 / m_totaltime));
+		if (m_currenttime)
+		    m_sliderctrl.SetPos((int)(m_currenttime * 100 / m_totaltime));
 	}
 	CDialogEx::OnTimer(nIDEvent);
 }

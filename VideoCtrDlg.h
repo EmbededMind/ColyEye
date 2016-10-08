@@ -30,7 +30,7 @@ private:
 	CPlayCtrlSlider m_sliderctrl;
 public:
 	int mMenuCursor;
-	CRecordFileInfo *pRecordFileInfo;
+	CRecordFileInfo *m_pRecordFileInfo;
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
 
