@@ -76,6 +76,9 @@ LRESULT CVideoCtrDlg::OnUserMsgPlay(WPARAM wParam, LPARAM lParam)
 	TRACE("cursor = %d\n", mMenuCursor);
 	pRecordFileInfo = (CRecordFileInfo *)lParam;
 	TRACE("%ld\n", pRecordFileInfo->mBeginTime);
+	m_pause = 0;
+	m_isPlay = 0;
+	m_playctrl = 0;
 	StartPlay();
 	return 0;
 }
