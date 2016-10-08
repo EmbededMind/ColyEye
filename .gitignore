@@ -12,6 +12,7 @@
 /sqlite3.dll/
 Debug
 /*
+/Debug/ColyEye.tlog/*
 lib
 /*
 Release
