@@ -50,7 +50,7 @@ void CTagTreeCtrl::Refresh(CPtrList& dataSource, CTime&  refTime)
 		pInfo = (CRecordFileInfo*)dataSource.GetPrev(pos);
 	    //新加入节点与之前的节点属于不同的天，需要新增一天
 		if (pInfo->mBeginTime.GetDay() != curLabelTime.GetDay()) {
-			if (pInfo->mBeginTime.GetDay() != refTime.GetDay()) {
+			if (pInfo->mBeginTime.GetDay() == refTime.GetDay()) {
 				label = _T("今天");
 			}
 			else if (pInfo->mBeginTime.GetDay() == (refTime - CTimeSpan(1, 0, 0, 0)).GetDay()) {
