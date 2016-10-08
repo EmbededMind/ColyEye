@@ -385,7 +385,7 @@ void __stdcall disConnnectCallback(LONG lLoginID, char* pchDVRIP, LONG nDVRPort,
 	//if (pDev) {
 	//	((CWallDlg*)dwUser)->onCameraDisconnect(pDev);
 	//}
-	TRACE("-----DisConnect-----\n");
+	TRACE("-----DisConnect-----%s\n", pchDVRIP);
 	CWallDlg* pThis = (CWallDlg*)dwUser;
 	assert(pThis != nullptr);
 

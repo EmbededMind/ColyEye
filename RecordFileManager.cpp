@@ -199,7 +199,7 @@ void RecordFileManager::RecallRecordFile(int id, UINT8 record_type)
 	if (paRecordFiles[id - 1].m_hFile != CFile::hFileNull) {
 		CRecordFileInfo oldInfo;
 		oldInfo.mOwner = id;
-		oldInfo.mStatus |= record_type;
+		oldInfo.mStatus = record_type;
 		oldInfo.mEndTime = CTime::GetCurrentTime();
 
 		//检查文件属性
