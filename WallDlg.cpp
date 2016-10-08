@@ -46,7 +46,7 @@ typedef struct {
 }AlarmRecordStatus;
 
 static AlarmRecordStatus alarmRecordStatus = { 0, 0 };
-
+void __stdcall disConnnectCallback(LONG lLoginID, char* pchDVRIP, LONG nDVRPort, DWORD dwUser);
 bool __stdcall messageCallbackFunc(long lLoginID, char* pBuf, unsigned long dwBufLen, long dwUser);
 
 
@@ -71,7 +71,7 @@ CWallDlg::~CWallDlg()
 * @param [in] pCamera 视频墙要承载的摄像机。
 * @return 用于显示Camera视频的窗口的句柄。
 */
-HANDLE CWallDlg::investCamera(CCamera* pCamera)
+CSurfaceHolderDlg* CWallDlg::investCamera(CCamera* pCamera)
 {
 /// 这里如果出现断言错误，可能是曾经删该过类名或者资源。把对话框资源和类删掉重建即可。
 	CSurfaceHolderDlg* pHolder = new CSurfaceHolderDlg();	
@@ -81,7 +81,24 @@ HANDLE CWallDlg::investCamera(CCamera* pCamera)
 	mHolderes.AddTail(pHolder);
 	pHolder->pCamera = pCamera;
 	updateLayout();
-	return pHolder->mSurface.m_hWnd;
+	return pHolder;
+}
+
+
+
+void CWallDlg::spitCamera(CCamera* pCamera)
+{
+	POSITION pos = mHolderes.GetHeadPosition();
+	CCamera* pDev;
+	CSurfaceHolderDlg* pHolder;
+	while (pos) {
+		pHolder = (CSurfaceHolderDlg*)mHolderes.GetNext(pos);
+		if (pHolder->pCamera == pCamera) {
+			delete pHolder;
+			mHolderes.RemoveAt(pos);
+			return;
+		}
+	}
 }
 
 
@@ -177,8 +194,34 @@ void CWallDlg::updateLayout()
 
 
 
+//void CWallDlg::startRecord(CSurfaceHolderDlg* pHolder, CFile* pFile)
+//{
+//
+//}
 
 
+
+//void CWallDlg::stopRecord(CCamera* pCamera)
+//{
+//	CSurfaceHolderDlg* pHolder = findSurfaceHolder(pCamera);
+//
+//}
+//
+//
+//
+//CSurfaceHolderDlg* CWallDlg::findSurfaceHolder(CCamera* pCamera)
+//{
+//	POSITION pos = mHolderes.GetHeadPosition();
+//	CSurfaceHolderDlg* pHolder;
+//	while (pos) {
+//		pHolder = (CSurfaceHolderDlg*)mHolderes.GetNext(pos);
+//		if (pHolder->pCamera == pCamera) {
+//			return pHolder;
+//		}
+//	}
+//
+//	return nullptr;
+//}
 
 
 void CWallDlg::DoDataExchange(CDataExchange* pDX)
@@ -210,7 +253,7 @@ BOOL CWallDlg::OnInitDialog()
 	this->SetWindowPos(NULL, parentClientRect.left, parentClientRect.top,
 		                     parentClientRect.Width(), parentClientRect.Height(), 0);
 
-
+	H264_DVR_Init(disConnnectCallback, (long)this);
 	PostThreadMessage( ((CColyEyeApp*)AfxGetApp())->pidOfLoginThread, USER_MSG_SCAN_DEV, CAMERA_MAX_NUM, (LPARAM)CCameraManager::getInstance()->mSdkConfNetCommonV2 );
 
 	H264_DVR_SetDVRMessCallBack(messageCallbackFunc, (unsigned long)this);
@@ -239,10 +282,10 @@ afx_msg LRESULT CWallDlg::OnUserMsgLogin(WPARAM wParam, LPARAM lParam)
 
 		H264_DVR_SetupAlarmChan(pDev->mLoginId);
 
-		pDev->clientInfo.hWnd = this->investCamera(pDev);
+		pDev->clientInfo.hWnd = this->investCamera(pDev)->mSurface.m_hWnd;
 
 		pDev->subscribeAlarmMessage();
-		pDev->realPlay();
+		pDev->startRealPlay();
 
 		SetTimer(pDev->mId, 30*1000, NULL);
 
@@ -259,7 +302,95 @@ afx_msg LRESULT CWallDlg::OnUserMsgLogin(WPARAM wParam, LPARAM lParam)
 
 
 
+/**@brief 中断正常录像
+ *
+ * @param [in] 要中断录像的摄像机
+ */
+void CWallDlg::interruptRecord(CCamera* pCamera)
+{
+	assert(pCamera != nullptr);
 
+	if (pCamera->isRecording) {
+		pCamera->stopRecord();
+		RecordFileManager::GetInstance()->RecallRecordFile(pCamera->mId, RECORD_TYPE_NORMAL);
+		KillTimer(pCamera->mId);
+	}
+}
+
+
+/**@brief 中断报警录像
+ *
+ * @param [in] 要中断录像的摄像机
+ */
+void CWallDlg::interruptAlarmRecord(CCamera* pCamera)
+{
+	assert(pCamera != nullptr);
+
+	
+	if (pCamera->isAlarmRecording) {
+		int i = pCamera->mId - 1;
+		if (alarmRecordStatus.flag  &  (0x01 << i)) {
+			alarmRecordStatus.flagCnts[i] = 0;
+			alarmRecordStatus.flag &= (~(0x01 << i));
+			pCamera->stopAlarmRecord();
+			RecordFileManager::GetInstance()->RecallRecordFile(pCamera->mId, RECORD_TYPE_ALARM);
+
+			if (alarmRecordStatus.flag == 0) {
+				KillTimer(ALARM_TIMER_EVENT_ID);
+			}
+		}
+	}
+}
+
+
+void CWallDlg::onCameraDisconnect(CCamera* pCamera)
+{
+	interruptAlarmRecord(pCamera);
+	interruptRecord(pCamera);	
+	pCamera->stopRealPlay();
+	//spitCamera(pCamera);
+	//updateLayout();
+}
+
+
+/**@brief  断线重连(ClientDemo)
+ *
+ */
+void CWallDlg::ReConnect(LONG lLoginID, char* pchDVRIP, LONG nDVRPort)
+{
+	POSITION pos = mHolderes.GetHeadPosition();
+	CSurfaceHolderDlg* pHolder;
+	while (pos) {
+		pHolder = (CSurfaceHolderDlg*)mHolderes.GetNext(pos);
+		if (pHolder->pCamera->mLoginId == lLoginID) {
+			interruptAlarmRecord(pHolder->pCamera);
+			interruptRecord(pHolder->pCamera);
+			pHolder->pCamera->stopRealPlay();
+			pHolder->pCamera->logout();
+			mDevReconnectMap[pHolder->pCamera->mId] = pHolder->pCamera;
+			SetTimer(RECONNET_TIMER_EVENT_ID, 30*1000, NULL);
+			return;
+		}
+	}
+}
+
+
+/**@brief 摄像头掉线触发的回调
+*
+*/
+void __stdcall disConnnectCallback(LONG lLoginID, char* pchDVRIP, LONG nDVRPort, DWORD dwUser)
+{
+	//CCamera* pDev = CCameraManager::getInstance()->findCameraByLoginId(lLoginID);
+
+	//if (pDev) {
+	//	((CWallDlg*)dwUser)->onCameraDisconnect(pDev);
+	//}
+	TRACE("-----DisConnect-----\n");
+	CWallDlg* pThis = (CWallDlg*)dwUser;
+	assert(pThis != nullptr);
+
+	pThis->ReConnect(lLoginID, pchDVRIP, nDVRPort);
+}
 
 
 
@@ -338,6 +469,31 @@ void CWallDlg::OnTimer(UINT_PTR nIDEvent)
 					}
 				}
 			}
+		}
+	}
+	//断线重连开始
+	else if (nIDEvent == RECONNET_TIMER_EVENT_ID) {
+		TRACE("execute reconnect\n");
+		Device_Map::iterator p = mDevReconnectMap.begin();
+		while (p != mDevReconnectMap.end()) {
+			CCamera* pDev = p->second;
+
+			if (pDev->login()) {
+				TRACE("%s ReLogin\n", pDev->mIp);
+				mDevReconnectMap.erase(p++);
+
+				pDev->subscribeAlarmMessage();
+				pDev->startRealPlay();
+				SetTimer(pDev->mId, 30 * 1000, NULL);
+				pDev->startRecord(RecordFileManager::GetInstance()->DistributeRecordFile(pDev->mId, RECORD_TYPE_NORMAL));
+			}
+			else {
+				p++;
+			}
+		}
+
+		if (0 == mDevReconnectMap.size()) {
+			KillTimer(RECONNET_TIMER_EVENT_ID);
 		}
 	}
 	CDialogEx::OnTimer(nIDEvent);

@@ -29,9 +29,13 @@ public:
 	CRecordFileInfo* mNormalRecordFileInfo;
 	CRecordFileInfo* mAlarmRecordFileInfo;
 
-public:
-	void realPlay();
+	BOOL isRecording;
+	BOOL isAlarmRecording;
+	BOOL isTalking;
 
+public:
+	void startRealPlay();
+	void stopRealPlay();
 
 	void startRecord(CFile* pFile);
 	void stopRecord();
@@ -40,5 +44,8 @@ public:
 	void stopAlarmRecord();
 
 	void subscribeAlarmMessage();
+
+	BOOL login();
+	void logout();
 };
 

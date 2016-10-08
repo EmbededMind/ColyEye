@@ -48,8 +48,10 @@
 #define STORE_MAX_DAYS  7       // 视频最大存储天数
 
 #define ALARM_TIMER_EVENT_ID   (CAMERA_MAX_NUM+1)
+
 #define ALARM_LIVE_TIME   6
 
+#define RECONNET_TIMER_EVENT_ID     (CAMERA_MAX_NUM + 2)
 
 #define USER_MSG_LOGIN    (WM_USER + 100)
 #define USER_MSG_SCAN_DEV (WM_USER + 101)
@@ -64,6 +66,8 @@
 
 #define USER_MSG_ADD_FILE             (WM_USER + 140)
 #define USER_MSG_DEL_FILE             (WM_USER + 141)
+
+#define USER_MSG_CONNECT           (WM_USER + 150)
 
 
 #define NORMAL_RECORD_PATH            "e:\\Record\\normal\\"

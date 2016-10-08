@@ -46,7 +46,7 @@ CCamera::~CCamera()
 *
 *
 */
-void CCamera::realPlay()
+void CCamera::startRealPlay()
 {
 	if (mLoginId) {
 		TRACE("client info:%d\n", this->clientInfo.hWnd);
@@ -61,6 +61,14 @@ void CCamera::realPlay()
 }
 
 
+void CCamera::stopRealPlay()
+{
+	if (hRealPlay) {
+		H264_DVR_StopRealPlay(hRealPlay, &this->clientInfo.hWnd);
+		hRealPlay = 0;
+	}
+}
+
 
 void CCamera::startRecord(CFile* pFile)
 {
@@ -69,6 +77,9 @@ void CCamera::startRecord(CFile* pFile)
 	mNormalRecordFile = pFile;
 	if (!H264_DVR_SetRealDataCallBack_V2(this->hRealPlay, realDataCallBack_V2, (long)this)) {
 		TRACE("Set realdata cb failed:%d\n", H264_DVR_GetLastError());
+	}
+	else{
+		isRecording = true;
 	}
 }
 
@@ -81,36 +92,54 @@ void CCamera::startRecord(CFile* pFile)
 */
 void CCamera::stopRecord()
 {
-	if (mNormalRecordFile) {
+	if (isRecording) {
 		H264_DVR_DelRealDataCallBack_V2(hRealPlay, realDataCallBack_V2, (long)this);
 		mNormalRecordFile->Flush();
 		mNormalRecordFile = NULL;
+		isRecording = false;
 	}
 }
 
 
 
+
+
 void CCamera::startAlarmRecord(CFile* pFile)
 {
+	ASSERT(this->hRealPlay);
+
 	ASSERT(pFile && pFile->m_hFile != CFile::hFileNull);
 
 	mAlarmRecordFile = pFile;
-	//if (!H264_DVR_SetRealDataCallBack_V2(this->hRealPlay, realDataCallBack_V2, (long)this)) {
-	//	TRACE("Set realdata cb failed:%d\n", H264_DVR_GetLastError());
-	//}
+
+	// 如果已经在录像，只需给mAlarmRecordFile赋值即可。
+	if (isRecording) {
+		isAlarmRecording = true;
+	}
+	else {
+		if (H264_DVR_SetRealDataCallBack_V2(this->hRealPlay, realDataCallBack_V2,(long)this)) {
+			isAlarmRecording = true;
+		}
+		else {
+		   TRACE("Set reald data cb failed:%d\n", H264_DVR_GetLastError());
+		}
+	}
 }
 
 
 
 void CCamera::stopAlarmRecord()
 {
-	if (mAlarmRecordFile) {
+	ASSERT(mAlarmRecordFile != NULL);
+
+	if (isAlarmRecording) {
 		H264_DVR_DelRealDataCallBack_V2(hRealPlay, realDataCallBack_V2, (long)this);
 		mAlarmRecordFile->Flush();
 		mAlarmRecordFile = NULL;
-		if (mNormalRecordFile) {
-			H264_DVR_SetRealDataCallBack_V2(hRealPlay, realDataCallBack_V2, (long)this);
+		if (isRecording){
+			H264_DVR_SetRealDataCallBack_V2(hRealPlay, realDataCallBack_V2, (long)this);			
 		}
+		isAlarmRecording = false;
 	}
 }
 
@@ -127,6 +156,39 @@ void CCamera::subscribeAlarmMessage()
 }
 
 
+
+BOOL CCamera::login()
+{
+	int errCode;
+	long loginId = 0;
+	loginId = H264_DVR_Login(mIp, mPort, mUserName, mPwd, &deviceInfo, &errCode);
+		
+	if (loginId > 0) {
+		this->mLoginId = loginId;
+		return true;
+	}
+	else {
+		TRACE("%s login fail. error code:%d\n", this->mIp, errCode);
+		this->mLoginId = 0;
+		return false;
+	}
+}
+
+
+void CCamera::logout()
+{
+	if (mLoginId > 0) {
+		if (H264_DVR_Logout(mLoginId)) {
+			mLoginId = 0;
+		}
+		else {
+			TRACE("%d Logout failed:%d\n", mLoginId, H264_DVR_GetLastError());
+		}
+	}
+	else {
+		TRACE("Invalid loginId:%d logout\n", mLoginId);
+	}
+}
 
 
 /**@brief 实时视频回调

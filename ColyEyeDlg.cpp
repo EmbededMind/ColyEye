@@ -117,7 +117,7 @@ afx_msg LRESULT CColyEyeDlg::OnUserMsgScanDev(WPARAM wParam, LPARAM lParam)
 		CCamera* pCamera = new CCamera();
 		pCamera->mCommonNetConfig = &pCameraMgr->mSdkConfNetCommonV2[i];
 		int tmp = 0;
-		for (int j = 0; j < 4; j++) {
+		for (int j = 0; j < 4; j++) { 
 			tmp += sprintf_s(&(pCamera->mIp[tmp]), 4,"%d", pCamera->mCommonNetConfig->HostIP.c[j]);
 			if (j < 3) {
 				pCamera->mIp[tmp] = '.';
