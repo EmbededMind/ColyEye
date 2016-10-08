@@ -21,4 +21,7 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 	afx_msg LRESULT OnUserMsgNotifyFocus(WPARAM wParam, LPARAM lParam);
+
+private:
+	CButton mItems[CAMERA_MAX_NUM + 3];
 };
