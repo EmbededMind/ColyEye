@@ -31,10 +31,10 @@ void CVideoCtrDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CVideoCtrDlg, CDialogEx)
 	ON_MESSAGE(USER_MSG_PLAY, &CVideoCtrDlg::OnUserMsgPlay)
-	ON_BN_CLICKED(IDC_PLAY_BUTTON, &CVideoCtrDlg::OnBnClickedPauseButton)
+	ON_BN_CLICKED(IDC_PLAY_BUTTON, &CVideoCtrDlg::OnBnClickedPlayButton)
 	ON_WM_TIMER()
 	ON_WM_HSCROLL()
-	ON_BN_CLICKED(IDC_PAUS_BUTTON, &CVideoCtrDlg::OnBnClickedPausButton)
+	ON_BN_CLICKED(IDC_PAUSE_BUTTON, &CVideoCtrDlg::OnBnClickedPauseButton)
 	ON_BN_CLICKED(IDC_SLOW_BUTTON, &CVideoCtrDlg::OnBnClickedSlowButton)
 	ON_BN_CLICKED(IDC_FAST_BUTTON, &CVideoCtrDlg::OnBnClickedFastButton)
 	ON_BN_CLICKED(IDC_NEXT_BUTTON, &CVideoCtrDlg::OnBnClickedNextButton)
@@ -147,18 +147,25 @@ BOOL CVideoCtrDlg::PreTranslateMessage(MSG * pMsg)
 	return CDialogEx::PreTranslateMessage(pMsg);
 }
 
-void CVideoCtrDlg::OnBnClickedPauseButton()
+void CVideoCtrDlg::OnBnClickedPlayButton()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if (m_pause)
+	if (m_isPlay)
 	{
-		H264_PLAY_Pause(m_port, 0);
-		m_pause = 0;
+		if (m_pause)
+		{
+			H264_PLAY_Pause(m_port, 0);
+			m_pause = 0;
+		}
+		if (m_playctrl)
+		{
+			H264_PLAY_Play(m_port, this->mVideoDlg.m_hWnd);
+			m_playctrl = 0;
+		}
 	}
-	if (m_playctrl)
+	else
 	{
-		H264_PLAY_Play(m_port, this->mVideoDlg.m_hWnd);
-		m_playctrl = 0;
+		StartPlay();
 	}
 }
 
@@ -196,7 +203,7 @@ void CVideoCtrDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 }
 
 
-void CVideoCtrDlg::OnBnClickedPausButton()
+void CVideoCtrDlg::OnBnClickedPauseButton()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	if (!m_pause)

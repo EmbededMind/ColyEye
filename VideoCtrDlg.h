@@ -45,11 +45,11 @@ public:
 	BOOL StartPlay();
 	BOOL StopPlay();
 
-	afx_msg void OnBnClickedPauseButton();
+	afx_msg void OnBnClickedPlayButton();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	
-	afx_msg void OnBnClickedPausButton();
+	afx_msg void OnBnClickedPauseButton();
 	afx_msg void OnBnClickedSlowButton();
 	afx_msg void OnBnClickedFastButton();
 	afx_msg void OnBnClickedNextButton();
