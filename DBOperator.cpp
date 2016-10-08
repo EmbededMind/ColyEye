@@ -78,7 +78,7 @@ int CDBOperator::queryNewAlarmRecord(int owner)
 	sprintf_s(sqlStmt, "SELECT count(*) FROM alarm_record where owner == %d AND status == %d AND owner == %d;", owner,ALARM_RECORD_STATUS_NEW, owner);
 	SQLiteStatement* stmt = sqlite.Statement(sqlStmt);
 	while (stmt->NextRow()) {
-		TRACE("find %d  new alarm reocrd\n", stmt->ValueInt(0));
+		//TRACE("find %d  new alarm reocrd\n", stmt->ValueInt(0));
 		return stmt->ValueInt(0);
 	}
 	return 0;

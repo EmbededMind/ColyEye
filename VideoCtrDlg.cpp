@@ -109,7 +109,9 @@ BOOL CVideoCtrDlg::StartPlay()
 	m_sliderctrl.m_port = this->m_port;
 	USES_CONVERSION;
 	const char * ptr = T2CA(PlayPath);
-	H264_PLAY_OpenFile(m_port, ptr);
+	if (!H264_PLAY_OpenFile(m_port, ptr)) {
+		TRACE("Open video file failed!\n");
+	}
 	H264_PLAY_Play(m_port, this->mVideoDlg.m_hWnd);
 	H264_PLAY_SetFileEndCallBack(m_port, EOFCallBack, (LONG)this);
 	m_totaltime = H264_PLAY_GetFileTime(m_port);
