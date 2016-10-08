@@ -77,7 +77,7 @@ void CRecordFileInfoManager::instantiateNormalRecordInfoFromDB(int owner)
 			CFileFind  ff;
 			if (ff.FindFile(fileName)) {
 				CFile::Remove(fileName);
-				sprintf_s(sqlStmt, "DELETE FROM normal_record WHERE begin_sec == %I64d AND owner == %d;", begin_sec, owner);
+				sprintf_s(sqlStmt, "DELETE FROM normal_record WHERE begin_sec = %I64d AND owner = %d;", begin_sec, owner);
 				if (!sqlite.DirectStatement(sqlStmt)) {
 					TRACE("sql error stmt:%s\n", sqlStmt);
 				}
@@ -114,11 +114,12 @@ void CRecordFileInfoManager::instantiateAlarmRecordInfoFromDB(int owner)
 			pNewInfo->mEndTime = end_sec;
 			pNewInfo->mTotalSize = total_size;
 			pNewInfo->mStatus = stmt->ValueInt(DB_COL_STATUS);
+			pNewInfo->mOwner = owner;
 
 			mAlarmRecordInfoLists[owner - 1].AddTail(pNewInfo);
 			mAlarmRecordFileSize[owner - 1] += pNewInfo->mTotalSize;
-			pNewInfo->dump(sqlStmt, 128);
-			WriteLog(_T(LOG_PATH), CString(sqlStmt));
+			//pNewInfo->dump(sqlStmt, 128);
+			//WriteLog(_T(LOG_PATH), CString(sqlStmt));
 		}
 		/// Invalid record information
 		else {
