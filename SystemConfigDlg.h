@@ -1,4 +1,6 @@
 #pragma once
+#include "afxwin.h"
+#include "CameraConfDlg.h"
 
 
 // CSystemConfigDlg ¶Ô»°¿ò
@@ -23,5 +25,12 @@ protected:
 	afx_msg LRESULT OnUserMsgNotifyFocus(WPARAM wParam, LPARAM lParam);
 
 private:
-	CButton mItems[CAMERA_MAX_NUM + 3];
+	CButton* mItemPtrs[CAMERA_MAX_NUM + 3];
+	CCameraConfDlg mCameraConfDlg;
+
+	void InitButton();
+
+
+public:
+	virtual BOOL OnInitDialog();
 };

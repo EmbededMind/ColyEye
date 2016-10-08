@@ -54,10 +54,15 @@ void CRecordMenuDlg::initTreeCtrl()
 	RECT r;
 	GetClientRect(&r);
 
+	CRecordFileInfoManager* pMgr = CRecordFileInfoManager::getInstance();
+	CTime time = CTime::GetCurrentTime();
+
 	for (int i = 0; i < CAMERA_MAX_NUM; i++) {
 		mFileTrees[i].SubclassDlgItem(IDC_TREE1 + i, this);
+		
 		mFileTrees[i].ShowWindow(SW_HIDE);
 		mFileTrees[i].MoveWindow(r.left + 90, r.top + 5, r.right - r.left - 90, r.bottom - r.top - 10, TRUE);
+		mFileTrees[i].Refresh(pMgr->mNormalRecordInfoLists[i], time);
 	}
 }
 

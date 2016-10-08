@@ -47,7 +47,7 @@ void CRecordFileInfoManager::instantiateNormalRecordInfoFromDB(int owner)
 	char sqlStmt[128];
 
 	sprintf_s(sqlStmt, "SELECT * FROM normal_record WHERE owner == %d;", owner);
-	TRACE("sql stmt:%s",sqlStmt);
+
 
 	SQLiteStatement* stmt	= sqlite.Statement(sqlStmt);
 	while (stmt->NextRow()) {
@@ -61,11 +61,11 @@ void CRecordFileInfoManager::instantiateNormalRecordInfoFromDB(int owner)
 		    pNewInfo->mBeginTime = begin_sec;
 			pNewInfo->mEndTime = end_sec;
 			pNewInfo->mTotalSize = total_size;
+			pNewInfo->mOwner = owner;
 
 			mNormalRecordInfoLists[owner - 1].AddTail(pNewInfo);
 			mNormalRecordFileSize[owner - 1] += total_size;
-			pNewInfo->dump(sqlStmt, 128);
-			WriteLog(_T(LOG_PATH), CString(sqlStmt));
+			//pNewInfo->dump(sqlStmt, 128);
 		}
 		/// Invalid record information
 		else {

@@ -52,7 +52,7 @@ void CAlarmMenuDlg::initTreeCtrl()
 	CTime time = CTime::GetCurrentTime();
 	for (int i = 0; i < CAMERA_MAX_NUM; i++) {
 		//RefreshTreeCtrl(mFileTrees[i], pMgr->mNormalRecordInfoLists[i]);
-		mFileTrees[i].Refresh(pMgr->mNormalRecordInfoLists[i], time);
+		mFileTrees[i].Refresh(pMgr->mAlarmRecordInfoLists[i], time);
 		mFileTrees[i].ShowWindow(SW_HIDE);
 	}	
 }
@@ -176,9 +176,9 @@ afx_msg LRESULT CAlarmMenuDlg::OnUserMsgBring(WPARAM wParam, LPARAM lParam)
 		RECT r;
 		GetClientRect(&r);
 		mTotalNewRecord = 0;
-		CDBOperator * pDBOpt = CDBOperator::getInstance();
+		CDBOperator * pDBOptor = CDBOperator::getInstance();
 		for (int i = 0; i < CAMERA_MAX_NUM; i++) {
-			mNewAlarmRecordNumber[i] = pDBOpt->queryNewAlarmRecord(i+1);
+			mNewAlarmRecordNumber[i] = pDBOptor->queryNewAlarmRecord(i+1);
 			if (mNewAlarmRecordNumber[i]) {
 
 				mItems[i].MoveWindow(r.left, r.top+cnt*40, 100, 40, TRUE);

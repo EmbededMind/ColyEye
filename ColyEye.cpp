@@ -88,6 +88,7 @@ BOOL CColyEyeApp::InitInstance()
 
 	CCameraManager::getInstance()->loadDeviceHistoryFrmoDB();
 	RecordFileManager::GetInstance()->Attach(DBShadow::GetInstance());
+	CRecordFileInfoManager::getInstance()->instantiateRecordInfoFromDB();
 
 	//CRecordFileInfoManager* pRecordInfoMgr = CRecordFileInfoManager::getInstance();
 	//pRecordInfoMgr->instantiateNormalRecordInfoFromDB(1);
