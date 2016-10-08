@@ -55,4 +55,5 @@ public:
 	afx_msg void OnBnClickedNextButton();
 	afx_msg void OnBnClickedPrevfButton();
 
+	afx_msg void OnBnClickedPausButton();
 };
