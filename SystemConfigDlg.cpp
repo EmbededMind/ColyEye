@@ -37,7 +37,16 @@ END_MESSAGE_MAP()
 
 afx_msg LRESULT CSystemConfigDlg::OnUserMsgNotifyFocus(WPARAM wParam, LPARAM lParam)
 {
-	this->SetFocus();
+	if (wParam) {
+		int i = lParam - IDC_BUTTON1;
+		if (i >= IDC_BUTTON1  &&  i <= IDC_BUTTON9) {
+			mCurrCursor = i;
+
+		}
+	}
+	else {
+		mItems[mCurrCursor].SetFocus();
+	}
 	return 0;
 }
 
@@ -45,14 +54,56 @@ afx_msg LRESULT CSystemConfigDlg::OnUserMsgNotifyFocus(WPARAM wParam, LPARAM lPa
 
 void CSystemConfigDlg::InitButton()
 {
-	for (int i = 0; i < CAMERA_MAX_NUM + 3; i++) {
-		mItemPtrs[i] = (CButton*)GetDlgItem(IDC_BUTTON1+i);
-	}
+	//for (int i = 0; i < CAMERA_MAX_NUM + 3; i++) {
+	//	mItemPtrs[i] = (CButton*)GetDlgItem(IDC_BUTTON1+i);
+	//}
 
-	for (int i = 1; i < CAMERA_MAX_NUM + 1; i++) {
-		mItemPtrs[i]->ShowWindow(SW_HIDE);
+	//for (int i = 1; i < CAMERA_MAX_NUM + 1; i++) {
+	//	mItemPtrs[i]->ShowWindow(SW_HIDE);
+	//}
+	for (int i = 0; i < CAMERA_MAX_NUM + 3; i++) {
+		if (!mItems[i].SubclassDlgItem(IDC_BUTTON1 + i, this)) {
+			TRACE("Subclass failed!\n");
+		}
 	}
 }
+
+
+
+void CSystemConfigDlg::ShowSubView()
+{
+	if (mCurrCursor != mPrevCursor) {
+		//摄像头按钮得到焦点
+		if (mCurrCursor > 2 ) {
+			if (mPrevCursor <= 2) {
+				mSubViews[mPrevCursor]->ShowWindow(SW_HIDE);
+				mSubViews[3]->ShowWindow(SW_SHOW);
+			}
+
+			::SendMessage(mSubViews[3]->m_hWnd, USER_MSG_DEVICE_CONFIG, mCurrCursor-3, 0);
+		}
+		//其他按钮得到焦点
+		else {
+			if (mPrevCursor <= 2) {
+				mSubViews[mPrevCursor]->ShowWindow(SW_HIDE);
+			}
+			else {
+				mSubViews[3]->ShowWindow(SW_HIDE);
+			}
+			mSubViews[mCurrCursor]->ShowWindow(SW_SHOW);
+		}
+		mPrevCursor = mCurrCursor;
+	}
+	else {
+		if (mCurrCursor > 2) {
+			mSubViews[3]->ShowWindow(SW_SHOW);
+		}
+		else {
+			mSubViews[mCurrCursor]->ShowWindow(SW_SHOW);
+		}
+	}
+}
+
 
 
 BOOL CSystemConfigDlg::OnInitDialog()

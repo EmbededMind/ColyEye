@@ -17,6 +17,11 @@ void CCameraManager::destrucCameras()
 		pDev = (CCamera*)mCameras.GetNext(pos);
 		delete(pDev);
 	}
+
+
+	//for (int i = 0; i < CAMERA_MAX_NUM; i++) {
+	//	if()
+	//}
 }
 
 
@@ -58,9 +63,9 @@ void CCameraManager::deleteCamera(CCamera* pOldCamera)
 BOOL CCameraManager::distributeId(CCamera* pCamera)
 {
 	int id = 0;
-	if (pCamera->mCommonNetConfig->sMac) {
+	if (pCamera->mCommonNetConfig.sMac) {
 		// 如果历史记录中记录的有此设备的信息，将记录的id分配之
-		id = getIdFromDB(pCamera->mCommonNetConfig->sMac);
+		id = getIdFromDB(pCamera->mCommonNetConfig.sMac);
 		if (id) {
 			pCamera->mId = id;
 			return true;
@@ -72,7 +77,7 @@ BOOL CCameraManager::distributeId(CCamera* pCamera)
 					this->mConsumptionOfCameraId[i] = 1;
 					pCamera->mId = i + 1;
 					this->mHasAppearedInHistory[i] = TRUE;
-					putIdIntoDB(i + 1, pCamera->mCommonNetConfig->sMac);
+					putIdIntoDB(i + 1, pCamera->mCommonNetConfig.sMac);
 					return true;
 				}
 			}
@@ -84,7 +89,7 @@ BOOL CCameraManager::distributeId(CCamera* pCamera)
 					this->mConsumptionOfCameraId[i] = 1;
 					pCamera->mId = i + 1;
 					//
-					updateIdInDB(i + 1, pCamera->mCommonNetConfig->sMac);
+					updateIdInDB(i + 1, pCamera->mCommonNetConfig.sMac);
 					return true;
 				}
 			}
@@ -106,7 +111,15 @@ CCamera* CCameraManager::findCameraByLoginId(long loginId)
 		}
 	}
 
-	return NULL;
+
+
+	//for (int i = 0; i < CAMERA_MAX_NUM; i++) {
+	//	if (mCameras[i].mId == loginId) {
+	//		return &mCameras[i];
+	//	}
+	//}
+
+	return nullptr;
 }
 
 
@@ -122,7 +135,31 @@ CCamera* CCameraManager::findCameraById(int id)
 		}
 	}
 
-	return NULL;
+	//return NULL;
+	//for (int i = 0; i < CAMERA_MAX_NUM; i++) {
+	//	if (mCameras[i].mId == id) {
+	//		return &mCameras[i];
+	//	}
+	//}
+
+	return nullptr;
+}
+
+
+
+
+CCamera* CCameraManager::FindCameraByIP(char * ip)
+{
+	POSITION pos = this->mCameras.GetHeadPosition();
+	CCamera* pDev = NULL;
+	while (pos) {
+		pDev = (CCamera*)this->mCameras.GetNext(pos);
+		if (strcpy_s(pDev->mIp, ip) == 0) {
+			return pDev;
+		}
+	}
+
+	return nullptr;
 }
 
 

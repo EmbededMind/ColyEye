@@ -18,7 +18,7 @@ public:
 	char mPwd[20];
 
 	UINT16 mPort;
-	SDK_CONFIG_NET_COMMON_V2* mCommonNetConfig;
+	SDK_CONFIG_NET_COMMON_V2 mCommonNetConfig;
 
 	H264_DVR_CLIENTINFO clientInfo;
 	H264_DVR_DEVICEINFO deviceInfo;

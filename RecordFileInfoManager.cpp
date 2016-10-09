@@ -99,7 +99,6 @@ void CRecordFileInfoManager::instantiateAlarmRecordInfoFromDB(int owner)
 	char sqlStmt[128];
 
 	sprintf_s(sqlStmt, "SELECT * FROM alarm_record WHERE owner == %d;", owner);
-	TRACE("sql stmt:%s", sqlStmt);
 
 	SQLiteStatement* stmt = sqlite.Statement(sqlStmt);
 	while (stmt->NextRow()) {

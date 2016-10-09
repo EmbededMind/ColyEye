@@ -7,6 +7,7 @@
 #include "ColyEyeDlg.h"
 #include "afxdialogex.h"
 #include "CameraManager.h"
+#include "Util.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -109,25 +110,29 @@ afx_msg LRESULT CColyEyeDlg::OnUserMsgScanDev(WPARAM wParam, LPARAM lParam)
 {
 	int devNum = wParam;
 	CCameraManager* pCameraMgr = CCameraManager::getInstance();
-
-
+	char tmpIP[64];
+	CCamera* pCamera;
 	/// 得到扫描到的设备的IP地址
 	for (int i = 0; i < devNum; i++) {
 
-		CCamera* pCamera = new CCamera();
-		pCamera->mCommonNetConfig = &pCameraMgr->mSdkConfNetCommonV2[i];
-		int tmp = 0;
-		for (int j = 0; j < 4; j++) { 
-			tmp += sprintf_s(&(pCamera->mIp[tmp]), 4,"%d", pCamera->mCommonNetConfig->HostIP.c[j]);
-			if (j < 3) {
-				pCamera->mIp[tmp] = '.';
-				tmp++;
-			}
+		Util::IPTransform( pCameraMgr->mSdkConfNetCommonV2[i].HostIP.c, tmpIP);
+		TRACE("Transform IP:%s\n", tmpIP);
+		
+		pCamera = pCameraMgr->FindCameraByIP(tmpIP);
 
+		// 在已有的设备中找不到匹配ip的设备，说明为新加入网内的设备
+		if (pCamera == nullptr) {
+			CCamera* pNewCamera = new CCamera();
+			strcpy_s(pNewCamera->mIp, 20, tmpIP);
+			memcpy_s(&pNewCamera->mCommonNetConfig,sizeof(pNewCamera->mCommonNetConfig),
+				      &pCameraMgr->mSdkConfNetCommonV2[i], sizeof(pCameraMgr->mSdkConfNetCommonV2[i]));
+
+			pCameraMgr->addCamera(pNewCamera);
+			pCameraMgr->distributeId(pNewCamera);
 		}
+		//CCamera* pCamera = new CCamera();
 
-		pCameraMgr->addCamera(pCamera);
-		pCameraMgr->distributeId(pCamera);
+
 	}
 
 	POSITION pos = pCameraMgr->mCameras.GetHeadPosition();
