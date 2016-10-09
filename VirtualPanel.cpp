@@ -17,7 +17,7 @@ VirtualPanel::~VirtualPanel()
  * @param [in]  pWnd 要添加的窗口的指针
  * @see   VirtualPanel::RemoveWindow(CWnd& wnd)
  */
-__inline void VirtualPanel::AddWindow(CWnd* pWnd)
+ void VirtualPanel::AddWindow(CWnd* pWnd)
 {
 	mWndPtrList.push_back(pWnd);
 }
@@ -29,7 +29,7 @@ __inline void VirtualPanel::AddWindow(CWnd* pWnd)
  * @param [in] pWnd 要移除的窗口的指针
  * @see   VirtualPanel::RemoveWindow(CWnd& wnd);
  */
-__inline void VirtualPanel::RemoveWindow(CWnd* pWnd)
+void VirtualPanel::RemoveWindow(CWnd* pWnd)
 {
 	mWndPtrList.remove(pWnd);
 }

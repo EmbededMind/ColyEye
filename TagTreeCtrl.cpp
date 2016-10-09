@@ -154,7 +154,7 @@ BOOL CTagTreeCtrl::PreTranslateMessage(MSG * pMsg)
 {
 	if (pMsg->message == WM_KEYDOWN)
 	{
-		HTREEITEM hnextItem;
+
 		HTREEITEM hItem = this->GetSelectedItem();
 		switch (pMsg->wParam)
 		{		

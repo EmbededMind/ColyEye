@@ -142,6 +142,7 @@ BOOL CVideoCtrDlg::PreTranslateMessage(MSG * pMsg)
 		switch (pMsg->wParam)
 		{
 		case VK_BACK:
+			m_pos = 0;
 			StopPlay();
 			this->ShowWindow(SW_HIDE);
 			::SendMessage(((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->mMenu.m_hWnd, USER_MSG_PLAY, mMenuCursor, (LPARAM)m_pRecordFileInfo);

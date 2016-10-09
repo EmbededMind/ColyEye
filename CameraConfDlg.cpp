@@ -79,7 +79,24 @@ BOOL CCameraConfDlg::OnInitDialog()
 
 void CCameraConfDlg::InitPanel()
 {
-	
+	for (int i = 0; i < 18; i++) {
+		mNameConfPanel.AddWindow(GetDlgItem(i+1));
+	}
+
+	mOtherConfPanel.AddWindow(GetDlgItem(IDC_STATIC1));
+	mOtherConfPanel.AddWindow(GetDlgItem(IDC_STATIC2));
+	mOtherConfPanel.AddWindow(GetDlgItem(IDC_STATIC3));
+	mOtherConfPanel.AddWindow(GetDlgItem(IDC_STATIC4));
+	mOtherConfPanel.AddWindow(GetDlgItem(IDC_STATIC5));
+	mOtherConfPanel.AddWindow(GetDlgItem(IDC_STATIC6));
+	mOtherConfPanel.AddWindow(GetDlgItem(IDC_STATIC7));
+
+	mOtherConfPanel.AddWindow(GetDlgItem(IDC_BUTTON1));
+	mOtherConfPanel.AddWindow(GetDlgItem(IDC_BUTTON2));
+	mOtherConfPanel.AddWindow(GetDlgItem(IDC_BUTTON3));
+	mOtherConfPanel.AddWindow(GetDlgItem(IDC_BUTTON4));
+
+	mOtherConfPanel.AddWindow(GetDlgItem(IDC_SLIDER1));
 }
 
 

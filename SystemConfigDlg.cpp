@@ -139,7 +139,7 @@ void CSystemConfigDlg::UpdateItemLayout()
 {
 	CCameraManager * pMgr = CCameraManager::getInstance();
 	POSITION pos = pMgr->mCameras.GetHeadPosition();
-	CCamera* pDev;
+
 	CWnd* pItem;
 	int   cnt = 1;
 	CRect r;
