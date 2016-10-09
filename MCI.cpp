@@ -5,7 +5,6 @@
 CMCI::CMCI()
 {
 	m_Filepath = _T("E:\\Â¼Òô.wav");
-	m_lenth = 0;
 }
 
 
@@ -53,7 +52,7 @@ int CMCI::Play()
 	MCI_PLAY_PARMS mci_play;
 
 	mci_open.lpstrDeviceType = _T("waveaudio");
-	mci_open.lpstrElementName = _T("");
+	mci_open.lpstrElementName = m_Filepath;
 	DWORD dwReturn = mciSendCommand(NULL, MCI_OPEN, MCI_OPEN_ELEMENT | MCI_OPEN_TYPE, (DWORD)(LPVOID)&mci_open);
 	if (dwReturn)
 	{
@@ -61,7 +60,6 @@ int CMCI::Play()
 		return dwReturn;
 	}
 	m_PlayDeviceID = mci_open.wDeviceID;
-
 	mci_play.dwFrom = 0;
 	mciSendCommand(m_PlayDeviceID, MCI_PLAY, MCI_FROM, (DWORD)(LPVOID)&mci_play);
 	return 0;
@@ -72,4 +70,20 @@ int CMCI::StopPlay()
 	mciSendCommand(m_PlayDeviceID, MCI_STOP, NULL, NULL);
 	mciSendCommand(m_PlayDeviceID, MCI_CLOSE, NULL, NULL);
 	return 0;
+}
+
+int CMCI::GetRecordTime()
+{
+	MCI_STATUS_PARMS mci_status;
+	mci_status.dwItem = MCI_STATUS_LENGTH;
+	mciSendCommand(m_RecordDeviceID, MCI_STATUS, MCI_STATUS_ITEM, (DWORD)(LPVOID)&mci_status);
+	return mci_status.dwReturn/1000;
+}
+
+int CMCI::GetPlayTime()
+{
+	MCI_STATUS_PARMS mci_status;
+	mci_status.dwItem = MCI_STATUS_POSITION;
+	mciSendCommand(m_PlayDeviceID, MCI_STATUS, MCI_STATUS_ITEM, (DWORD)(LPVOID)&mci_status);
+	return mci_status.dwReturn/1000;
 }
