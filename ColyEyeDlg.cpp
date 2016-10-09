@@ -172,7 +172,6 @@ BOOL CColyEyeDlg::PreTranslateMessage(MSG* pMsg)
 			mWall.SetFocus();
 		}		
 	}
-	
 	return CDialogEx::PreTranslateMessage(pMsg);
 }
 
