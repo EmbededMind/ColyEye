@@ -54,9 +54,11 @@ BOOL CCameraConfDlg::PreTranslateMessage(MSG* pMsg)
 		case VK_SPACE:
 			if (GetFocus()->GetDlgCtrlID() == IDC_EDIT1) {
 				TRACE("camera name edit space\n");
-
+				mNameConfPanel.ShowPanel(SW_SHOW);
+				mOtherConfPanel.MovePanel(0, 100);
 			 }
 			return true;
+
 		}
 	}
 
@@ -69,7 +71,8 @@ BOOL CCameraConfDlg::OnInitDialog()
 	CDialogEx::OnInitDialog();
 
 	// TODO:  在此添加额外的初始化
-
+	InitNameItem();
+	InitPanel();
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 异常: OCX 属性页应返回 FALSE
@@ -105,14 +108,24 @@ void CCameraConfDlg::InitNameItem()
 {
 	CString name;
 	RECT rClient;
-	RECT r = {0, 0, 60, 30};
+	RECT r = {5, 45, 60, 30};
 	GetClientRect(&rClient);
+
+
+	//name.LoadStringW(IDS_STR_CAMERA_NAME_1);
+	//mNameItems[0].Create(name, WS_CHILD|WS_VISIBLE|BS_PUSHBUTTON, r, this, 1);
 
 
 	for (int i = 0; i < 18; i++) {
 		name.LoadStringW(IDS_STR_CAMERA_NAME_1+i);
-		r.left = rClient.left + (i % 4) * 65 + 5;
-		r.top = rClient.top + (i / 4) * 35 + 5;
-		mNameItmes[i].Create(name, WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, r, this, i+1);
+
+		r.left = rClient.left + (i % 4) * 85 + 40;
+		r.top = rClient.top + (i / 4) * 25 + 45;
+		r.right = r.left + 80;
+		r.bottom = r.top + 20;
+
+		TRACE("item pos:(%d,%d)\n", r.left, r.top);
+		mNameItems[i].Create(name, WS_CHILD  | BS_PUSHBUTTON, r, this, i+1);
+		mNameItems[i].SetFont(GetFont() , true);
 	}
 }

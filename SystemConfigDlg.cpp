@@ -60,13 +60,6 @@ afx_msg LRESULT CSystemConfigDlg::OnUserMsgNotifyFocus(WPARAM wParam, LPARAM lPa
 
 void CSystemConfigDlg::InitButton()
 {
-	//for (int i = 0; i < CAMERA_MAX_NUM + 3; i++) {
-	//	mItemPtrs[i] = (CButton*)GetDlgItem(IDC_BUTTON1+i);
-	//}
-
-	//for (int i = 1; i < CAMERA_MAX_NUM + 1; i++) {
-	//	mItemPtrs[i]->ShowWindow(SW_HIDE);
-	//}
 	CRect r;
 	GetClientRect(&r);
 
@@ -149,7 +142,12 @@ void CSystemConfigDlg::UpdateItemLayout()
 	for (int i = 0; i < CAMERA_MAX_NUM; i++) {
 		pItem = GetDlgItem(ID_BTN_CAMERA_BASE + i);
 
-		if (pMgr->mLoginDevice[i] != nullptr  &&  pMgr->mLoginDevice[i]->mLoginId) {
+		if (i < 2) {
+			pItem->MoveWindow(r.left + 2, r.top + cnt * 45, 80, 40, true);
+			pItem->ShowWindow(SW_SHOW);
+			cnt++;
+		}
+		else if (pMgr->mLoginDevice[i] != nullptr  &&  pMgr->mLoginDevice[i]->mLoginId) {
 			pItem->MoveWindow(r.left+2, r.top + cnt*45, 80, 40, true);
 			pItem->ShowWindow(SW_SHOW);
 			cnt++;

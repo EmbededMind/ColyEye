@@ -35,7 +35,7 @@ public:
 	virtual BOOL OnInitDialog();
 
 private:
-	CTagButton  mNameItmes[18];
+	CTagButton  mNameItems[18];
 
 	VirtualPanel mNameConfPanel;
 	VirtualPanel mOtherConfPanel;

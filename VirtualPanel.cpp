@@ -42,19 +42,32 @@ void VirtualPanel::RemoveWindow(CWnd* pWnd)
  */
 void VirtualPanel::MovePanel(int dx, int dy)
 {
-	CRect r;
+	
 	CWnd* pWnd;
+	CWnd* pParentWnd;
+
+	TRACE("panel size:%d\n", mWndPtrList.size());
 
 	std::list<CWnd*>::iterator iter;
 
+	CRect r;
+
+	CRect rParentClient;
+
+	pParentWnd = (*mWndPtrList.begin())->GetParent();
+
+	pParentWnd->GetWindowRect(&rParentClient);
 
 	for (iter = mWndPtrList.begin(); iter != mWndPtrList.end(); iter++) {
-		//CWnd& wnd = *iter;
-		//wnd.GetWindowRect(&r);
-		//wnd.MoveWindow(r.left + dx, r.top + dy, r.Width(), r.Height(), true);
 		pWnd = *iter;
+
+		pWnd->ShowWindow(SW_HIDE);
 		pWnd->GetWindowRect(&r);
-		pWnd->MoveWindow(r.left+dx, r.top+dy, r.Width(), r.Height(), true);
+	
+		pWnd->MoveWindow(r.left-rParentClient.left+dx, 
+			r.top-rParentClient.top+dy, 
+			r.Width(), r.Height(), true);
+		pWnd->ShowWindow(SW_SHOW);
 	}
 }
 
