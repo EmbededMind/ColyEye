@@ -36,6 +36,7 @@ private:
 	CCameraConfDlg mCameraConfDlg;
 
 	void InitButton();
+	void InitSubView();
 
 	void UpdateItemLayout();
 	void ShowSubView();

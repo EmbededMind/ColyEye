@@ -60,7 +60,7 @@ BOOL CVideoCtrDlg::OnInitDialog()
 	mVideoDlg.Create(IDD_VIDEO_DIALOG, this);
 	mVideoDlg.ShowWindow(SW_SHOW);
 	if (m_sliderctrl.SubclassDlgItem(IDC_PLAY_SLIDER, this)) {
-		TRACE("sub class ok\n");
+
 	}
 	else {
 		TRACE("sub class fail\n");

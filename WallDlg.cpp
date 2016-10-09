@@ -431,15 +431,15 @@ void CWallDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	if (nIDEvent <= CAMERA_MAX_NUM) {
-		CCamera* pCamera = CCameraManager::getInstance()->findCameraById(nIDEvent);
-		if (pCamera) {
-			/*CTime time = CTime::GetCurrentTime();
-			pCamera->stopRecord(time);*/
-			pCamera->stopRecord();
-			RecordFileManager* pMgr = RecordFileManager::GetInstance();
-			pMgr->RecallRecordFile(pCamera->mId, RECORD_TYPE_NORMAL);			
-			pCamera->startRecord(pMgr->DistributeRecordFile(pCamera->mId, RECORD_TYPE_NORMAL));
-		}
+		//CCamera* pCamera = CCameraManager::getInstance()->findCameraById(nIDEvent);
+		//if (pCamera) {
+		//	/*CTime time = CTime::GetCurrentTime();
+		//	pCamera->stopRecord(time);*/
+		//	pCamera->stopRecord();
+		//	RecordFileManager* pMgr = RecordFileManager::GetInstance();
+		//	pMgr->RecallRecordFile(pCamera->mId, RECORD_TYPE_NORMAL);			
+		//	pCamera->startRecord(pMgr->DistributeRecordFile(pCamera->mId, RECORD_TYPE_NORMAL));
+		//}
 	}
 	else if (nIDEvent == ALARM_TIMER_EVENT_ID) {
 		TRACE("alarm timer event\n");

@@ -6,6 +6,10 @@
 #include "SystemConfigDlg.h"
 #include "afxdialogex.h"
 #include "CameraManager.h"
+#include "BoatNameConfDlg.h"
+#include "VersionUpdateDlg.h"
+#include "HostInfoDlg.h"
+#include "CameraConfDlg.h"
 
 
 // CSystemConfigDlg 对话框
@@ -41,9 +45,9 @@ afx_msg LRESULT CSystemConfigDlg::OnUserMsgNotifyFocus(WPARAM wParam, LPARAM lPa
 {
 	if (wParam) {
 		int i = lParam - IDC_BUTTON1;
-		if (i >= IDC_BUTTON1  &&  i <= IDC_BUTTON9) {
+		if (i >= 0  &&  i < 9) {
 			mCurrCursor = i;
-
+			ShowSubView();
 		}
 	}
 	else {
@@ -72,10 +76,27 @@ void CSystemConfigDlg::InitButton()
 			TRACE("Subclass failed!\n");
 		}
 		mItems[i].MoveWindow(r.left+2, r.top+i*45, 80, 40, false);
-		mItems[i].ShowWindow(SW_HIDE);
 	}
+
+	UpdateItemLayout();
 }
 
+
+
+void CSystemConfigDlg::InitSubView()
+{
+	mSubViews[0] = new CBoatNameConfDlg();
+	((CBoatNameConfDlg*)mSubViews[0])->Create(IDD_BOATNAME_CONF, this);
+
+	mSubViews[1] = new CVersionUpdateDlg();
+	((CVersionUpdateDlg*)mSubViews[1])->Create(IDD_UPDATE, this);
+
+	mSubViews[2] = new CHostInfoDlg();
+	((CHostInfoDlg*)mSubViews[2])->Create(IDD_HOSTINFO, this);
+
+	mSubViews[3] = new CCameraConfDlg();
+	((CCameraConfDlg*)mSubViews[3])->Create(IDD_CAMERA_CONF, this);
+}
 
 
 void CSystemConfigDlg::ShowSubView()
@@ -158,9 +179,11 @@ BOOL CSystemConfigDlg::OnInitDialog()
 	GetClientRect(&r);
 
 	InitButton();
-	mCameraConfDlg.Create(IDD_CAMERA_CONF, this);
-	mCameraConfDlg.MoveWindow(r.left+ 100, r.top, r.Width() - 100, r.Height(), true);
-	mCameraConfDlg.ShowWindow(SW_SHOW);
+	InitSubView();
+
+	//mCameraConfDlg.Create(IDD_CAMERA_CONF, this);
+	//mCameraConfDlg.MoveWindow(r.left+ 100, r.top, r.Width() - 100, r.Height(), true);
+	//mCameraConfDlg.ShowWindow(SW_SHOW);
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 异常: OCX 属性页应返回 FALSE
 }

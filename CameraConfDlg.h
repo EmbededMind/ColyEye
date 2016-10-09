@@ -1,5 +1,7 @@
 #pragma once
 #include "afxwin.h"
+#include "VirtualPanel.h"
+#include "TagButton.h"
 
 
 // CCameraConfDlg ¶Ô»°¿ò
@@ -29,4 +31,15 @@ public:
 	int mVolumn;
 	CButton mStoreSwitch;
 	CButton mAutoWatchSwitch;
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	virtual BOOL OnInitDialog();
+
+private:
+	CTagButton  mNameItmes[18];
+
+	VirtualPanel mNameConfPanel;
+	VirtualPanel mOtherConfPanel;
+
+	void InitNameItem();
+	void InitPanel();
 };
