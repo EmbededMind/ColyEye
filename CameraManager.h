@@ -25,6 +25,7 @@ public:
 
 	// 当前登录设备所占用的 id 
 	BOOL mConsumptionOfCameraId[CAMERA_MAX_NUM];
+	CCamera* mLoginDevice[CAMERA_MAX_NUM];
 
 
 

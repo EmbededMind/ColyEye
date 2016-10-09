@@ -35,6 +35,7 @@ BEGIN_MESSAGE_MAP(CColyEyeDlg, CDialogEx)
 	ON_MESSAGE(USER_MSG_SCAN_DEV, &CColyEyeDlg::OnUserMsgScanDev)
 	ON_WM_CLOSE()
 	ON_MESSAGE(USER_MSG_NOTIFY, &CColyEyeDlg::OnUserMsgNotify)
+	ON_MESSAGE(USER_MSG_LOGIN, &CColyEyeDlg::OnUserMsgLogin)
 END_MESSAGE_MAP()
 
 
@@ -193,5 +194,13 @@ afx_msg LRESULT CColyEyeDlg::OnUserMsgNotify(WPARAM wParam, LPARAM lParam)
 		}
 		break;
 	}
+	return 0;
+}
+
+
+afx_msg LRESULT CColyEyeDlg::OnUserMsgLogin(WPARAM wParam, LPARAM lParam)
+{
+	::SendMessage(mWall.m_hWnd, USER_MSG_LOGIN, wParam, lParam);
+	::SendMessage(mMenu.m_hWnd, USER_MSG_LOGIN, wParam, lParam);
 	return 0;
 }

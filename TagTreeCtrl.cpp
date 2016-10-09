@@ -41,7 +41,7 @@ void CTagTreeCtrl::Refresh(CPtrList& dataSource, CTime&  refTime)
 		return;
 	}
 	else {
-		TRACE("Record info cnt:%d\n", dataSource.GetCount());
+
 	}
 
 	CString label;

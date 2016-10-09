@@ -8,6 +8,7 @@
 #include "afxdialogex.h"
 #include "RecordFileManager.h"
 
+
 const char alarmEventTab[29][40] = { "sdk_event_code_init",          ///0
 "sdk_event_code_local_alarm",   ///1
 "sdk_event_code_net_alarm",     ///2
@@ -279,6 +280,7 @@ afx_msg LRESULT CWallDlg::OnUserMsgLogin(WPARAM wParam, LPARAM lParam)
 		else {
 			TRACE("id is:%d\n", pDev->mId);
 		}
+		
 
 		H264_DVR_SetupAlarmChan(pDev->mLoginId);
 
@@ -292,7 +294,6 @@ afx_msg LRESULT CWallDlg::OnUserMsgLogin(WPARAM wParam, LPARAM lParam)
 		pDev->startRecord(RecordFileManager::GetInstance()->DistributeRecordFile(pDev->mId, RECORD_TYPE_NORMAL));
 
 		/*pDev->putRecordInfoIntoDB(time);*/
-
 	}
 	else {
 		AfxMessageBox(_T("Login fail"));

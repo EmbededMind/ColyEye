@@ -3,6 +3,7 @@
 #include "CameraConfDlg.h"
 #include "TagButton.h"
 
+#define ID_BTN_CAMERA_BASE   IDC_BUTTON4
 
 // CSystemConfigDlg ¶Ô»°¿ò
 
@@ -35,8 +36,12 @@ private:
 	CCameraConfDlg mCameraConfDlg;
 
 	void InitButton();
+
+	void UpdateItemLayout();
 	void ShowSubView();
 
 public:
 	virtual BOOL OnInitDialog();
+protected:
+	afx_msg LRESULT OnUserMsgLogin(WPARAM wParam, LPARAM lParam);
 };

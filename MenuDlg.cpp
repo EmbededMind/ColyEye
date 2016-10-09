@@ -86,6 +86,7 @@ BEGIN_MESSAGE_MAP(CMenuDlg, CDialogEx)
 	ON_MESSAGE(USER_MSG_NOTIFY, &CMenuDlg::OnUserMsgNotify)
 	ON_MESSAGE(USER_MSG_NOTIFY_FOCUS, &CMenuDlg::OnUserMsgNotifyFocus)
 	ON_MESSAGE(USER_MSG_PLAY, &CMenuDlg::OnUserMsgPlay)
+	ON_MESSAGE(USER_MSG_LOGIN, &CMenuDlg::OnUserMsgLogin)
 END_MESSAGE_MAP()
 
 
@@ -225,3 +226,10 @@ LRESULT CMenuDlg::OnUserMsgPlay(WPARAM wParam, LPARAM lParam)
 
 
 
+
+
+afx_msg LRESULT CMenuDlg::OnUserMsgLogin(WPARAM wParam, LPARAM lParam)
+{
+	::SendMessage(mSubWnds[1]->m_hWnd, USER_MSG_LOGIN, wParam, lParam);
+	return 0;
+}

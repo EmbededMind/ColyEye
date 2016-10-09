@@ -43,4 +43,5 @@ public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 protected:
 	afx_msg LRESULT OnUserMsgNotify(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnUserMsgLogin(WPARAM wParam, LPARAM lParam);
 };

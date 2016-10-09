@@ -5,6 +5,7 @@
 #include "ColyEye.h"
 #include "SystemConfigDlg.h"
 #include "afxdialogex.h"
+#include "CameraManager.h"
 
 
 // CSystemConfigDlg 对话框
@@ -29,6 +30,7 @@ void CSystemConfigDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CSystemConfigDlg, CDialogEx)
 	ON_MESSAGE(USER_MSG_NOTIFY_FOCUS, &CSystemConfigDlg::OnUserMsgNotifyFocus)
+	ON_MESSAGE(USER_MSG_LOGIN, &CSystemConfigDlg::OnUserMsgLogin)
 END_MESSAGE_MAP()
 
 
@@ -61,10 +63,16 @@ void CSystemConfigDlg::InitButton()
 	//for (int i = 1; i < CAMERA_MAX_NUM + 1; i++) {
 	//	mItemPtrs[i]->ShowWindow(SW_HIDE);
 	//}
+	CRect r;
+	GetClientRect(&r);
+
+
 	for (int i = 0; i < CAMERA_MAX_NUM + 3; i++) {
 		if (!mItems[i].SubclassDlgItem(IDC_BUTTON1 + i, this)) {
 			TRACE("Subclass failed!\n");
 		}
+		mItems[i].MoveWindow(r.left+2, r.top+i*45, 80, 40, false);
+		mItems[i].ShowWindow(SW_HIDE);
 	}
 }
 
@@ -106,6 +114,41 @@ void CSystemConfigDlg::ShowSubView()
 
 
 
+void CSystemConfigDlg::UpdateItemLayout()
+{
+	CCameraManager * pMgr = CCameraManager::getInstance();
+	POSITION pos = pMgr->mCameras.GetHeadPosition();
+	CCamera* pDev;
+	CWnd* pItem;
+	int   cnt = 1;
+	CRect r;
+
+	GetClientRect(&r);
+
+	for (int i = 0; i < CAMERA_MAX_NUM; i++) {
+		pItem = GetDlgItem(ID_BTN_CAMERA_BASE + i);
+
+		if (pMgr->mLoginDevice[i] != nullptr  &&  pMgr->mLoginDevice[i]->mLoginId) {
+			pItem->MoveWindow(r.left+2, r.top + cnt*45, 80, 40, true);
+			pItem->ShowWindow(SW_SHOW);
+			cnt++;
+		}
+		else {
+			pItem->ShowWindow(SW_HIDE);
+		}
+	}
+
+
+	pItem = GetDlgItem(IDC_BUTTON2);
+	pItem->MoveWindow(r.left+2, r.top+cnt*45, 80, 40, true);
+
+	cnt++;
+	pItem = GetDlgItem(IDC_BUTTON3);
+	pItem->MoveWindow(r.left+2, r.top+cnt*45, 80, 40, true);
+}
+
+
+
 BOOL CSystemConfigDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
@@ -120,4 +163,11 @@ BOOL CSystemConfigDlg::OnInitDialog()
 	mCameraConfDlg.ShowWindow(SW_SHOW);
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 异常: OCX 属性页应返回 FALSE
+}
+
+
+afx_msg LRESULT CSystemConfigDlg::OnUserMsgLogin(WPARAM wParam, LPARAM lParam)
+{
+	UpdateItemLayout();
+	return 0;
 }

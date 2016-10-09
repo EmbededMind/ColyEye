@@ -62,6 +62,7 @@ void CRecordFileInfoManager::instantiateNormalRecordInfoFromDB(int owner)
 			pNewInfo->mEndTime = end_sec;
 			pNewInfo->mTotalSize = total_size;
 			pNewInfo->mOwner = owner;
+			pNewInfo->mStatus = RECORD_TYPE_NORMAL;
 
 			mNormalRecordInfoLists[owner - 1].AddTail(pNewInfo);
 			mNormalRecordFileSize[owner - 1] += total_size;
@@ -114,6 +115,7 @@ void CRecordFileInfoManager::instantiateAlarmRecordInfoFromDB(int owner)
 			pNewInfo->mTotalSize = total_size;
 			pNewInfo->mStatus = stmt->ValueInt(DB_COL_STATUS);
 			pNewInfo->mOwner = owner;
+			pNewInfo->mStatus = RECORD_TYPE_ALARM;
 
 			mAlarmRecordInfoLists[owner - 1].AddTail(pNewInfo);
 			mAlarmRecordFileSize[owner - 1] += pNewInfo->mTotalSize;

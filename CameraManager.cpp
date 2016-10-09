@@ -72,27 +72,48 @@ BOOL CCameraManager::distributeId(CCamera* pCamera)
 		}
 		else {
 			//如果历史记录里没有此设备的信息，先找历史设备没有占用的id
+			//for (int i = 0; i < CAMERA_MAX_NUM; i++) {
+			//	if (this->mHasAppearedInHistory[i] == FALSE) {
+			//		this->mConsumptionOfCameraId[i] = 1;
+			//		pCamera->mId = i + 1;
+			//		this->mHasAppearedInHistory[i] = TRUE;
+			//		putIdIntoDB(i + 1, pCamera->mCommonNetConfig.sMac);
+			//		return true;
+			//	}
+			//}
+
 			for (int i = 0; i < CAMERA_MAX_NUM; i++) {
-				if (this->mHasAppearedInHistory[i] == FALSE) {
-					this->mConsumptionOfCameraId[i] = 1;
+				if (mLoginDevice[i] == nullptr) {
+					mLoginDevice[i] = pCamera;
 					pCamera->mId = i + 1;
-					this->mHasAppearedInHistory[i] = TRUE;
-					putIdIntoDB(i + 1, pCamera->mCommonNetConfig.sMac);
+					mHasAppearedInHistory[i] = true;
+					putIdIntoDB(i+1, pCamera->mCommonNetConfig.sMac);
 					return true;
 				}
 			}
+
 			//如果历史设备没有未占用的id，再找当前已登录设备没有占用的id
 			//如果有的话，覆盖对应的历史设备的信息并将此id分配之
+			//for (int i = 0; i < CAMERA_MAX_NUM; i++) {
+			//	/// 新的设备，分配新的id并存入数据库。
+			//	if (this->mConsumptionOfCameraId[i] == 0) {
+			//		this->mConsumptionOfCameraId[i] = 1;
+			//		pCamera->mId = i + 1;
+			//		//
+			//		updateIdInDB(i + 1, pCamera->mCommonNetConfig.sMac);
+			//		return true;
+			//	}
+			//}
+
 			for (int i = 0; i < CAMERA_MAX_NUM; i++) {
-				/// 新的设备，分配新的id并存入数据库。
-				if (this->mConsumptionOfCameraId[i] == 0) {
-					this->mConsumptionOfCameraId[i] = 1;
+				if (mLoginDevice[i] == nullptr) {
+					mLoginDevice[i] = pCamera;
 					pCamera->mId = i + 1;
-					//
-					updateIdInDB(i + 1, pCamera->mCommonNetConfig.sMac);
+					updateIdInDB(i+1, pCamera->mCommonNetConfig.sMac);
 					return true;
 				}
 			}
+
 			return false;
 		}
 	}

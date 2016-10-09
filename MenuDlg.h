@@ -62,4 +62,6 @@ protected:
 	afx_msg LRESULT OnUserMsgPlay(WPARAM wParam, LPARAM lParam);
 public:
 	afx_msg void OnBnClickedButton1();
+protected:
+	afx_msg LRESULT OnUserMsgLogin(WPARAM wParam, LPARAM lParam);
 };

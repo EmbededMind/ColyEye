@@ -194,7 +194,7 @@ unsigned int __stdcall loginThread(PVOID pM)
 				}
 				else {
 					TRACE("%s login fail. error code:%d\n", pCamera->mIp, errCode);
-					PostMessage(((CColyEyeDlg*)(AfxGetApp()->m_pMainWnd))->mWall.m_hWnd, USER_MSG_LOGIN, FALSE, msg.lParam);
+					PostMessage(((CColyEyeDlg*)(AfxGetApp()->m_pMainWnd))->m_hWnd, USER_MSG_LOGIN, FALSE, msg.lParam);
 					//delete(pCamera);
 				}
 			}
