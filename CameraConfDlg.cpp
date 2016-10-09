@@ -86,7 +86,16 @@ void CCameraConfDlg::InitPanel()
 
 void CCameraConfDlg::InitNameItem()
 {
+	CString name;
+	RECT rClient;
+	RECT r = {0, 0, 60, 30};
+	GetClientRect(&rClient);
+
+
 	for (int i = 0; i < 18; i++) {
-		
+		name.LoadStringW(IDS_STR_CAMERA_NAME_1+i);
+		r.left = rClient.left + (i % 4) * 65 + 5;
+		r.top = rClient.top + (i / 4) * 35 + 5;
+		mNameItmes[i].Create(name, WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, r, this, i+1);
 	}
 }
