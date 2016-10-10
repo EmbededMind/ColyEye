@@ -89,3 +89,14 @@ void VirtualPanel::ShowPanel(int nCmdShow)
 		pWnd->ShowWindow(nCmdShow);
 	}
 }
+
+
+
+/**@brief Panels是否可见
+ *
+ * @return 可见返回true,反之返回false
+ */
+bool VirtualPanel::IsVisible()
+{
+	return (*mWndPtrList.begin())->IsWindowVisible();
+}

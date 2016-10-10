@@ -83,7 +83,7 @@ BOOL CCameraManager::distributeId(CCamera* pCamera)
 			//}
 
 			for (int i = 0; i < CAMERA_MAX_NUM; i++) {
-				if (mLoginDevice[i] == nullptr) {
+				if (mHasAppearedInHistory[i] == false) {
 					mLoginDevice[i] = pCamera;
 					pCamera->mId = i + 1;
 					mHasAppearedInHistory[i] = true;

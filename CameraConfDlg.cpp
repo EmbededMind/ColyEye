@@ -54,8 +54,14 @@ BOOL CCameraConfDlg::PreTranslateMessage(MSG* pMsg)
 		case VK_SPACE:
 			if (GetFocus()->GetDlgCtrlID() == IDC_EDIT1) {
 				TRACE("camera name edit space\n");
-				mNameConfPanel.ShowPanel(SW_SHOW);
-				mOtherConfPanel.MovePanel(0, 100);
+				if (mNameConfPanel.IsVisible()) {
+					mNameConfPanel.ShowPanel(SW_HIDE);
+					mOtherConfPanel.MovePanel(0, -100);
+				}
+				else {
+					mNameConfPanel.ShowPanel(SW_SHOW);
+					mOtherConfPanel.MovePanel(0, 100);
+				}				
 			 }
 			return true;
 
