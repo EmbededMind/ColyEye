@@ -1,5 +1,7 @@
 #pragma once
 #include "afxwin.h"
+#include "MCI.h"
+#include "AutoWatchSoundConfirmDlg.h"
 
 
 // CRecordAlarmAudioDlg ¶Ô»°¿ò
@@ -22,7 +24,7 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 public:
-	CButton mRecordSwt;
+
 
 	//void StartRecord();
 	//void StopRecord();
@@ -34,4 +36,8 @@ private:
 	short tick_down;
 	bool  isRecording;
 
+	CButton mRecordSwt;
+	CMCI    mRecorder;
+
+	CAutoWatchSoundConfirmDlg mConfirmDlg;
 };

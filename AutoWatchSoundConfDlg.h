@@ -23,7 +23,7 @@ protected:
 public:
 	afx_msg void OnBnClickedButton1();
 
-
 private:
 	CRecordAlarmAudioDlg mRecordAlarmAudioDlg;
+
 };

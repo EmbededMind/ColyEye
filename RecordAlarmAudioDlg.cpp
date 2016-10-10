@@ -47,6 +47,8 @@ void CRecordAlarmAudioDlg::OnBnClickedButton1()
 
 		// TODO: 在此添加开始录音的代码
 		// StartRecord();
+		mRecorder.SetReocrdPath(_T("E:\\Record\\Sound\\tmp.wav"));
+		mRecorder.Record();
 
 		SetTimer(1, 1000, NULL);
 	}
@@ -56,9 +58,11 @@ void CRecordAlarmAudioDlg::OnBnClickedButton1()
 
 		// TODO: 在此添加停止录音的代码
 		// StopRecord();
-
+		mRecorder.Save();
+		if (mConfirmDlg.DoModal() == IDOK) {
+			OnCancel();
+		}
 		mRecordSwt.SetWindowTextW(_T("手咪"));
-		OnCancel();
 	}
 	
 	
@@ -80,9 +84,14 @@ void CRecordAlarmAudioDlg::OnTimer(UINT_PTR nIDEvent)
 
 		// TODO: 在此添加停止录音的代码
 		// StopRecord();
+		mRecorder.Save();
+
+
+		if (mConfirmDlg.DoModal() == IDOK) {
+			OnCancel();
+		}
 
 		mRecordSwt.SetWindowTextW(_T("手咪"));
-		OnOK();
 	}
 	CDialogEx::OnTimer(nIDEvent);
 }

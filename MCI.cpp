@@ -4,7 +4,7 @@
 
 CMCI::CMCI()
 {
-	m_Filepath = _T("E:\\Â¼Òô.wav");
+
 }
 
 
@@ -100,11 +100,7 @@ int CMCI::GetTotaltime()
 	return m_Totaltime;
 }
 
-int CMCI::PlayRecord()
+void CMCI::SetReocrdPath(LPCTSTR name)
 {
-	MCI_PLAY_PARMS mci_play;
-	mci_play.dwFrom = 0;
-	mciSendCommand(m_PlayDeviceID, MCI_PLAY, MCI_FROM, (DWORD)(LPVOID)&mci_play);
-	return 0;
+	m_Filepath = name;
 }
-

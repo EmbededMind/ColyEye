@@ -9,7 +9,7 @@ public:
 	CMCI();
 	~CMCI();
 
-public:
+private:
 	DWORD m_RecordDeviceID;
 	DWORD m_PlayDeviceID;
 	CString m_Filepath;
@@ -25,6 +25,7 @@ public:
 	int GetRecordTime();
 	int GetPlayTime();
 	int GetTotaltime();
-	int PlayRecord();
+	
+	void SetReocrdPath(LPCTSTR name);
 };
 
