@@ -1,5 +1,9 @@
 #pragma once
-
+#include "AutoWatchTimeConf.h"
+#include "AutoWatchSoundConfDlg.h"
+#include "AutoWatchLightConf.h"
+#include "AutoWatchLogDlg.h"
+#include "TagButton.h"
 
 // CAutoWatchDlg ¶Ô»°¿ò
 
@@ -21,4 +25,18 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 	afx_msg LRESULT OnUserMsgNotifyFocus(WPARAM wParam, LPARAM lParam);
+
+private:
+	CWnd* mSubDlg[4];
+	CTagButton mItems[4];
+
+	int mCurrCursor;
+	int mPrevCursor;
+
+	void InitTagButton();
+	void InitSubDlg();
+
+	void ShowSubDlg();
+public:
+	virtual BOOL OnInitDialog();
 };

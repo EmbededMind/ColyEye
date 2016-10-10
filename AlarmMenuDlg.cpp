@@ -232,3 +232,4 @@ afx_msg LRESULT CAlarmMenuDlg::OnUserMsgDelFile(WPARAM wParam, LPARAM lParam)
 	}
 	return 0;
 }
+
