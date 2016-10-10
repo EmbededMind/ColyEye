@@ -22,7 +22,7 @@ int CMCI::Record()
 	DWORD dwReturn = mciSendCommand(NULL, MCI_OPEN, MCI_OPEN_ELEMENT|MCI_OPEN_TYPE, (DWORD)(LPVOID)&mci_open);
 	if (dwReturn)
 	{
-		TRACE("mci open error %d",dwReturn);
+		TRACE("mci open error %d\n",dwReturn);
 		return dwReturn;
 	}
 	m_RecordDeviceID = mci_open.wDeviceID;
@@ -38,7 +38,7 @@ int CMCI::Save()
 	DWORD dwReturn = mciSendCommand(m_RecordDeviceID, MCI_SAVE, MCI_SAVE_FILE, (DWORD)(LPVOID)&mci_save);
 	if (dwReturn)
 	{
-		TRACE("mci save error %d",dwReturn);
+		TRACE("mci save error %d\n",dwReturn);
 		return dwReturn;
 	}
 	mciSendCommand(m_RecordDeviceID, MCI_STOP, NULL, NULL);
@@ -51,15 +51,15 @@ int CMCI::Play()
 	MCI_OPEN_PARMS mci_open;
 	MCI_PLAY_PARMS mci_play;
 
-	mci_open.lpstrDeviceType = _T("waveaudio");
 	mci_open.lpstrElementName = m_Filepath;
-	DWORD dwReturn = mciSendCommand(NULL, MCI_OPEN, MCI_OPEN_ELEMENT | MCI_OPEN_TYPE, (DWORD)(LPVOID)&mci_open);
+	DWORD dwReturn = mciSendCommand(NULL, MCI_OPEN, MCI_OPEN_ELEMENT, (DWORD)(LPVOID)&mci_open);
 	if (dwReturn)
 	{
-		TRACE("mci open error %d", dwReturn);
+		TRACE("mci open error %d\n", dwReturn);
 		return dwReturn;
 	}
 	m_PlayDeviceID = mci_open.wDeviceID;
+	GetTotaltime();
 	mci_play.dwFrom = 0;
 	mciSendCommand(m_PlayDeviceID, MCI_PLAY, MCI_FROM, (DWORD)(LPVOID)&mci_play);
 	return 0;
@@ -89,3 +89,22 @@ int CMCI::GetPlayTime()
 	m_PlayTime = mci_status.dwReturn / 1000;
 	return m_PlayTime;
 }
+
+int CMCI::GetTotaltime()
+{
+	MCI_STATUS_PARMS mci_status;
+	memset(&mci_status, 0, sizeof(MCI_STATUS_PARMS));
+	mci_status.dwItem = MCI_STATUS_LENGTH;
+	mciSendCommand(m_PlayDeviceID, MCI_STATUS, MCI_STATUS_ITEM, (DWORD)(LPVOID)&mci_status);
+	m_Totaltime = mci_status.dwReturn / 1000;
+	return m_Totaltime;
+}
+
+int CMCI::PlayRecord()
+{
+	MCI_PLAY_PARMS mci_play;
+	mci_play.dwFrom = 0;
+	mciSendCommand(m_PlayDeviceID, MCI_PLAY, MCI_FROM, (DWORD)(LPVOID)&mci_play);
+	return 0;
+}
+
