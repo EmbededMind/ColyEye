@@ -77,7 +77,8 @@ int CMCI::GetRecordTime()
 	MCI_STATUS_PARMS mci_status;
 	mci_status.dwItem = MCI_STATUS_LENGTH;
 	mciSendCommand(m_RecordDeviceID, MCI_STATUS, MCI_STATUS_ITEM, (DWORD)(LPVOID)&mci_status);
-	return mci_status.dwReturn/1000;
+	m_RecordTime = mci_status.dwReturn / 1000;
+	return m_RecordTime;
 }
 
 int CMCI::GetPlayTime()
@@ -85,5 +86,6 @@ int CMCI::GetPlayTime()
 	MCI_STATUS_PARMS mci_status;
 	mci_status.dwItem = MCI_STATUS_POSITION;
 	mciSendCommand(m_PlayDeviceID, MCI_STATUS, MCI_STATUS_ITEM, (DWORD)(LPVOID)&mci_status);
-	return mci_status.dwReturn/1000;
+	m_PlayTime = mci_status.dwReturn / 1000;
+	return m_PlayTime;
 }
