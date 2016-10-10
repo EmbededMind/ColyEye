@@ -42,4 +42,6 @@ private:
 
 	void InitNameItem();
 	void InitPanel();
+
+	void FocusJumpTo(int dst_id);
 };

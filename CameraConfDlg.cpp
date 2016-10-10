@@ -43,16 +43,23 @@ END_MESSAGE_MAP()
 // CCameraConfDlg 消息处理程序
 
 
+void CCameraConfDlg::FocusJumpTo(int dst_id)
+{
+	GetDlgItem(dst_id)->SetFocus();
+}
+
 
 
 BOOL CCameraConfDlg::PreTranslateMessage(MSG* pMsg)
 {
 	// TODO: 在此添加专用代码和/或调用基类
 	if (pMsg->message == WM_KEYDOWN) {
+			int id = GetFocus()->GetDlgCtrlID();
+
 		switch (pMsg->wParam)
 		{
 		case VK_SPACE:
-			if (GetFocus()->GetDlgCtrlID() == IDC_EDIT1) {
+			if (id == IDC_EDIT1) {
 				TRACE("camera name edit space\n");
 				if (mNameConfPanel.IsVisible()) {
 					mNameConfPanel.ShowPanel(SW_HIDE);
@@ -61,10 +68,64 @@ BOOL CCameraConfDlg::PreTranslateMessage(MSG* pMsg)
 				else {
 					mNameConfPanel.ShowPanel(SW_SHOW);
 					mOtherConfPanel.MovePanel(0, 100);
+					GetDlgItem(1)->SetFocus();
 				}				
 			 }
 			return true;
+        
+		case VK_UP:
+			// 船名选项
+			if (id >= 1 && id <= 18) {
+				if (id > 4) {
+					FocusJumpTo(id - 4);
+				}
+			}
+			else {
+				//
+			}
+			return true;
 
+		case VK_DOWN:
+			if (id >= 1 && id <= 18) {
+				if (id < 15) {
+					FocusJumpTo(id + 4);
+				}
+			}
+			else
+			{
+				//
+			}
+			return true;
+
+		case VK_LEFT:
+			if (id >= 1 && id <= 18) {
+				if (id > 1) {
+					FocusJumpTo(id -1);
+				}
+			}
+			return true;
+
+		case VK_RIGHT:
+			if (id >= 1 && id <= 18) {
+				if (id < 18) {
+					FocusJumpTo(id+1);
+				}
+			}
+			return true;
+
+		case VK_RETURN:
+			if (id >= 1 && id <= 18) {
+
+				GetDlgItem(IDC_EDIT1)->SetFocus();
+				CString name;
+				((CTagButton*)GetDlgItem(id))->GetWindowTextW(name);
+				((CEdit*)GetDlgItem(IDC_EDIT1))->SetWindowTextW(name);
+				mNameConfPanel.ShowPanel(SW_HIDE);
+				mOtherConfPanel.MovePanel(0, -100);
+				return true;
+			}
+			break;
+			
 		}
 	}
 
