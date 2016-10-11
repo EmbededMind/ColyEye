@@ -278,7 +278,7 @@ void CCameraManager::loadDeviceHistoryFrmoDB()
 	while (stmt->NextRow()) {
 		id = stmt->ValueInt(0);
 		if (id > 0) {
-			this->mHasAppearedInHistory[id] = true;
+			this->mHasAppearedInHistory[id-1] = true;
 		}
 	}
 }
