@@ -142,11 +142,11 @@ CFile* RecordFileManager::DistributeRecordFile(int id, UINT8 record_type)
 {
 	ASSERT(id > 0 && id <= CAMERA_MAX_NUM);
 
-	this->RemoveOldFile(id, RECORD_TYPE_ALARM);
-	this->RemoveOldFile(id, RECORD_TYPE_NORMAL);
+	//this->RemoveOldFile(id, RECORD_TYPE_ALARM);
+	//this->RemoveOldFile(id, RECORD_TYPE_NORMAL);
 
-	this->LimitSpace(id, RECORD_TYPE_ALARM);
-	this->LimitSpace(id, RECORD_TYPE_NORMAL);
+	//this->LimitSpace(id, RECORD_TYPE_ALARM);
+	//this->LimitSpace(id, RECORD_TYPE_NORMAL);
 
 	CFile* paRecordFiles  = (record_type & RECORD_TYPE_ALARM) ? m_aAlarmRecordFiles : m_aRecordFiles;
 	int index = id - 1;

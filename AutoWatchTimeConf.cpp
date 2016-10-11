@@ -28,6 +28,7 @@ void CAutoWatchTimeConfDlg::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CAutoWatchTimeConfDlg, CDialogEx)
+	ON_BN_CLICKED(IDC_BUTTON1, &CAutoWatchTimeConfDlg::OnBnClickedButton1)
 END_MESSAGE_MAP()
 
 
@@ -39,9 +40,25 @@ BOOL CAutoWatchTimeConfDlg::OnInitDialog()
 	CDialogEx::OnInitDialog();
 
 	// TODO:  在此添加额外的初始化
-	mTimePicker = (CDateTimeCtrl*)GetDlgItem(IDC_DATETIMEPICKER3);
-	mTimePicker->SetFormat(_T("hh:mm"));
+	mBeginTimePicker = (CDateTimeCtrl*)GetDlgItem(IDC_DATETIMEPICKER3);
+	mBeginTimePicker->SetFormat(_T("HH:mm"));
+
+	mEndTimePicker = (CDateTimeCtrl*)GetDlgItem(IDC_DATETIMEPICKER1);
+	mEndTimePicker->SetFormat(_T("HH:mm"));
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 异常: OCX 属性页应返回 FALSE
+}
+
+
+void CAutoWatchTimeConfDlg::OnBnClickedButton1()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	CTime endTime;
+	CTime beginTime;
+	mEndTimePicker->GetTime(endTime);
+	mBeginTimePicker->GetTime(beginTime);
+
+	
+	TRACE("Auto watch time fragment:%S -- %S\n", beginTime.Format(_T("%y-%m-%d %H:%M:%S")), endTime.Format(_T("%y-%m-%d %H:%M:%S")));
 }

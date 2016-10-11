@@ -7,6 +7,7 @@
 #include "CameraManager.h"
 #include "afxdialogex.h"
 #include "RecordFileManager.h"
+#include "Util.h"
 
 
 const char alarmEventTab[29][40] = { "sdk_event_code_init",          ///0
@@ -49,7 +50,6 @@ typedef struct {
 static AlarmRecordStatus alarmRecordStatus = { 0, 0 };
 void __stdcall disConnnectCallback(LONG lLoginID, char* pchDVRIP, LONG nDVRPort, DWORD dwUser);
 bool __stdcall messageCallbackFunc(long lLoginID, char* pBuf, unsigned long dwBufLen, long dwUser);
-
 
 
 
@@ -195,36 +195,6 @@ void CWallDlg::updateLayout()
 
 
 
-//void CWallDlg::startRecord(CSurfaceHolderDlg* pHolder, CFile* pFile)
-//{
-//
-//}
-
-
-
-//void CWallDlg::stopRecord(CCamera* pCamera)
-//{
-//	CSurfaceHolderDlg* pHolder = findSurfaceHolder(pCamera);
-//
-//}
-//
-//
-//
-//CSurfaceHolderDlg* CWallDlg::findSurfaceHolder(CCamera* pCamera)
-//{
-//	POSITION pos = mHolderes.GetHeadPosition();
-//	CSurfaceHolderDlg* pHolder;
-//	while (pos) {
-//		pHolder = (CSurfaceHolderDlg*)mHolderes.GetNext(pos);
-//		if (pHolder->pCamera == pCamera) {
-//			return pHolder;
-//		}
-//	}
-//
-//	return nullptr;
-//}
-
-
 void CWallDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
@@ -263,6 +233,7 @@ BOOL CWallDlg::OnInitDialog()
 }
 
 
+
 afx_msg LRESULT CWallDlg::OnUserMsgLogin(WPARAM wParam, LPARAM lParam)
 {
 	if (wParam) {
@@ -281,9 +252,6 @@ afx_msg LRESULT CWallDlg::OnUserMsgLogin(WPARAM wParam, LPARAM lParam)
 			TRACE("id is:%d\n", pDev->mId);
 		}
 		
-
-		H264_DVR_SetupAlarmChan(pDev->mLoginId);
-
 		pDev->clientInfo.hWnd = this->investCamera(pDev)->mSurface.m_hWnd;
 
 		pDev->subscribeAlarmMessage();
@@ -292,8 +260,6 @@ afx_msg LRESULT CWallDlg::OnUserMsgLogin(WPARAM wParam, LPARAM lParam)
 		SetTimer(pDev->mId, 30*1000, NULL);
 
 		pDev->startRecord(RecordFileManager::GetInstance()->DistributeRecordFile(pDev->mId, RECORD_TYPE_NORMAL));
-
-		/*pDev->putRecordInfoIntoDB(time);*/
 	}
 	else {
 		AfxMessageBox(_T("Login fail"));
@@ -344,16 +310,6 @@ void CWallDlg::interruptAlarmRecord(CCamera* pCamera)
 }
 
 
-void CWallDlg::onCameraDisconnect(CCamera* pCamera)
-{
-	interruptAlarmRecord(pCamera);
-	interruptRecord(pCamera);	
-	pCamera->stopRealPlay();
-	//spitCamera(pCamera);
-	//updateLayout();
-}
-
-
 /**@brief  断线重连(ClientDemo)
  *
  */
@@ -381,11 +337,6 @@ void CWallDlg::ReConnect(LONG lLoginID, char* pchDVRIP, LONG nDVRPort)
 */
 void __stdcall disConnnectCallback(LONG lLoginID, char* pchDVRIP, LONG nDVRPort, DWORD dwUser)
 {
-	//CCamera* pDev = CCameraManager::getInstance()->findCameraByLoginId(lLoginID);
-
-	//if (pDev) {
-	//	((CWallDlg*)dwUser)->onCameraDisconnect(pDev);
-	//}
 	TRACE("-----DisConnect-----%s\n", pchDVRIP);
 	CWallDlg* pThis = (CWallDlg*)dwUser;
 	assert(pThis != nullptr);
@@ -429,16 +380,17 @@ bool __stdcall messageCallbackFunc(long lLoginID, char* pBuf, unsigned long dwBu
 
 void CWallDlg::OnTimer(UINT_PTR nIDEvent)
 {
+	static bool flag = false;
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	if (nIDEvent <= CAMERA_MAX_NUM) {
 		CCamera* pCamera = CCameraManager::getInstance()->findCameraById(nIDEvent);
 		if (pCamera) {
-			/*CTime time = CTime::GetCurrentTime();
-			pCamera->stopRecord(time);*/
 			pCamera->stopRecord();
 			RecordFileManager* pMgr = RecordFileManager::GetInstance();
-			pMgr->RecallRecordFile(pCamera->mId, RECORD_TYPE_NORMAL);			
+			pMgr->RecallRecordFile(pCamera->mId, RECORD_TYPE_NORMAL);
 			pCamera->startRecord(pMgr->DistributeRecordFile(pCamera->mId, RECORD_TYPE_NORMAL));
+
+			Util::ShowMemoryInfo();		
 		}
 	}
 	else if (nIDEvent == ALARM_TIMER_EVENT_ID) {

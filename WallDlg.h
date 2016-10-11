@@ -52,13 +52,8 @@ public:
 	void   executeLayout();
 	void   updateLayout();
 
-	void   onCameraDisconnect(CCamera* pCamera);
 
 	void ReConnect(LONG lLoginID, char* pchDVRIP, LONG nDVRPort);
-	//void   startRecord(CSurfaceHolderDlg* pHolder, CFile* pFile);
-	//void   stopRecord(CCamera* pCamear);
-
-	//CSurfaceHolderDlg* findSurfaceHolder(CCamera* pCamera);
 
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 protected:

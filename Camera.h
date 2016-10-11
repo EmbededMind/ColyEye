@@ -44,6 +44,7 @@ public:
 	void stopAlarmRecord();
 
 	void subscribeAlarmMessage();
+	void unsubscribeAlarmMessage();
 
 	BOOL login();
 	void logout();

@@ -13,7 +13,7 @@ public:
 
 // 对话框数据
 #ifdef AFX_DESIGN_TIME
-	enum { IDD = IDD_AUTO_WATCH__TIME_CONF };
+	enum { IDD = IDD_AUTO_WATCH_TIME_CONF };
 #endif
 
 protected:
@@ -25,5 +25,8 @@ public:
 
 
 private:
-	CDateTimeCtrl* mTimePicker;
+	CDateTimeCtrl* mEndTimePicker;
+	CDateTimeCtrl* mBeginTimePicker;
+public:
+	afx_msg void OnBnClickedButton1();
 };

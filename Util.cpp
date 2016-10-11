@@ -2,6 +2,8 @@
 #include "Util.h"
 
 
+#include <Psapi.h>
+
 Util::Util()
 {
 }
@@ -21,4 +23,20 @@ void Util::IPTransform(unsigned char* src_form, char* dst_form)
 			tmp++;
 		}
 	}
+}
+
+
+
+void Util::ShowMemoryInfo()
+{
+	HANDLE handle = GetCurrentProcess();
+	PROCESS_MEMORY_COUNTERS pmc;
+	GetProcessMemoryInfo(handle, &pmc, sizeof(pmc));
+	TRACE("ÄÚ´æÊ¹ÓÃ:%ld K -- %ld K\n", pmc.WorkingSetSize, pmc.PagefileUsage);
+}
+
+
+void Util::CleanMemory()
+{
+	EmptyWorkingSet(GetCurrentProcess());
 }

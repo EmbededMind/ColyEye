@@ -191,7 +191,7 @@ void CCameraConfDlg::InitNameItem()
 		r.right = r.left + 80;
 		r.bottom = r.top + 20;
 
-		TRACE("item pos:(%d,%d)\n", r.left, r.top);
+
 		mNameItems[i].Create(name, WS_CHILD  | BS_PUSHBUTTON, r, this, i+1);
 		mNameItems[i].SetFont(GetFont() , true);
 	}
