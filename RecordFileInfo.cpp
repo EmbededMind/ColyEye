@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "RecordFileInfo.h"
 
-
 CRecordFileInfo::CRecordFileInfo()
 {
 	mStatus = RECORD_TYPE_NORMAL;
