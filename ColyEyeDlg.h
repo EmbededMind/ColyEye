@@ -1,10 +1,10 @@
 
 // ColyEyeDlg.h : 头文件
 //
-
 #pragma once
 #include "WallDlg.h"
 #include "MenuDlg.h"
+
 
 // CColyEyeDlg 对话框
 class CColyEyeDlg : public CDialogEx
