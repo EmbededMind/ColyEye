@@ -10,6 +10,8 @@
 #include "Util.h"
 
 
+
+
 const char alarmEventTab[29][40] = { "sdk_event_code_init",          ///0
 "sdk_event_code_local_alarm",   ///1
 "sdk_event_code_net_alarm",     ///2
@@ -294,7 +296,7 @@ void CWallDlg::interruptAlarmRecord(CCamera* pCamera)
 	assert(pCamera != nullptr);
 
 	
-	if (pCamera->isAlarmRecording) {
+	if (pCamera->isAlarmRecording == true) {
 		int i = pCamera->mId - 1;
 		if (alarmRecordStatus.flag  &  (0x01 << i)) {
 			alarmRecordStatus.flagCnts[i] = 0;
@@ -323,6 +325,7 @@ void CWallDlg::ReConnect(LONG lLoginID, char* pchDVRIP, LONG nDVRPort)
 			interruptAlarmRecord(pHolder->pCamera);
 			interruptRecord(pHolder->pCamera);
 			pHolder->pCamera->stopRealPlay();
+			pHolder->pCamera->unsubscribeAlarmMessage();
 			pHolder->pCamera->logout();
 			mDevReconnectMap[pHolder->pCamera->mId] = pHolder->pCamera;
 			SetTimer(RECONNET_TIMER_EVENT_ID, 30*1000, NULL);

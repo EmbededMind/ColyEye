@@ -79,6 +79,7 @@
 extern 	SQLiteWrapper sqlite;
 
 
+
 #define LOG_PATH                     "e:\\log.txt"
 void WriteLog(LPCTSTR logName, CString msg);
 

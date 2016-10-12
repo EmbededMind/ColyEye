@@ -2,6 +2,10 @@
 #include "RecordFileManager.h"
 #include "RecordFileInfoManager.h"
 
+extern CMutex mutex_RealDataCB;
+
+
+
 void RecordFileManager::Notify(string state, CRecordFileInfo* pInfo)
 {
 	list<Observer*>::iterator iter = this->m_list.begin();
@@ -142,11 +146,11 @@ CFile* RecordFileManager::DistributeRecordFile(int id, UINT8 record_type)
 {
 	ASSERT(id > 0 && id <= CAMERA_MAX_NUM);
 
-	//this->RemoveOldFile(id, RECORD_TYPE_ALARM);
-	//this->RemoveOldFile(id, RECORD_TYPE_NORMAL);
+	this->RemoveOldFile(id, RECORD_TYPE_ALARM);
+	this->RemoveOldFile(id, RECORD_TYPE_NORMAL);
 
-	//this->LimitSpace(id, RECORD_TYPE_ALARM);
-	//this->LimitSpace(id, RECORD_TYPE_NORMAL);
+	this->LimitSpace(id, RECORD_TYPE_ALARM);
+	this->LimitSpace(id, RECORD_TYPE_NORMAL);
 
 	CFile* paRecordFiles  = (record_type & RECORD_TYPE_ALARM) ? m_aAlarmRecordFiles : m_aRecordFiles;
 	int index = id - 1;
@@ -204,6 +208,9 @@ void RecordFileManager::RecallRecordFile(int id, UINT8 record_type)
 
 		//检查文件属性
 		CFileStatus status;
+
+mutex_RealDataCB.Lock();/// @see Camera.cpp realDataCallBack_V2
+
 		if (paRecordFiles[id - 1].GetStatus(status)) {
 			oldInfo.mTotalSize = status.m_size;
 		}
@@ -212,6 +219,8 @@ void RecordFileManager::RecallRecordFile(int id, UINT8 record_type)
 		}
 		
 		paRecordFiles[id - 1].Close();
+
+mutex_RealDataCB.Unlock();/// @see Camera.cpp realDataCallBack_V2
 
 		//文件大小为 0 视为无效，删除文件。
 		if (oldInfo.mTotalSize == 0) {
