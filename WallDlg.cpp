@@ -61,6 +61,7 @@ IMPLEMENT_DYNAMIC(CWallDlg, CDialogEx)
 
 CWallDlg::CWallDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(IDD_WALL, pParent)
+	, mSystemTime(0)
 {
 
 }
@@ -154,12 +155,12 @@ void CWallDlg::executeLayout()
 	GetClientRect(&r);
 
 	int wallWidth = r.right - r.left;
-	int wallHeight = r.bottom - r.top;
+	int wallHeight = r.bottom - r.top-30;
 
 	int holderHeight  = wallHeight / mRows - 10;
 	int holderWidth  = wallWidth / mCols - 10;
 	int orgX = r.left + 5;
-	int orgY = r.top + 5;
+	int orgY = r.top + 30;
 	int totalHolderNumber = mHolderes.GetCount();
 
 
@@ -200,6 +201,7 @@ void CWallDlg::updateLayout()
 void CWallDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_DateTimeCtrl(pDX, IDC_DATETIMEPICKER1, mSystemTime);
 }
 
 
@@ -230,6 +232,9 @@ BOOL CWallDlg::OnInitDialog()
 	PostThreadMessage( ((CColyEyeApp*)AfxGetApp())->pidOfLoginThread, USER_MSG_SCAN_DEV, CAMERA_MAX_NUM, (LPARAM)CCameraManager::getInstance()->mSdkConfNetCommonV2 );
 
 	H264_DVR_SetDVRMessCallBack(messageCallbackFunc, (unsigned long)this);
+
+	
+	SetTimer(SECOND_TICK_TIMER_EVENT_ID, 1000, NULL);
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 异常: OCX 属性页应返回 FALSE
 }
@@ -451,6 +456,11 @@ void CWallDlg::OnTimer(UINT_PTR nIDEvent)
 		if (0 == mDevReconnectMap.size()) {
 			KillTimer(RECONNET_TIMER_EVENT_ID);
 		}
+	}
+	else if (SECOND_TICK_TIMER_EVENT_ID){
+		mSystemTime = CTime::GetCurrentTime();
+		UpdateData(false);
+		
 	}
 	CDialogEx::OnTimer(nIDEvent);
 }

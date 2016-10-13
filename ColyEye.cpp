@@ -159,47 +159,49 @@ unsigned int __stdcall loginThread(PVOID pM)
 	int length = 0;
 	while (GetMessage(&msg, 0, 0, 0))
 	{
-		switch (msg.message) {
-		case USER_MSG_SCAN_DEV:
+		switch (msg.message) 
 		{
-			/*BOOL bRet = H264_DVR_SearchDevice((char*)devs, sizeof(SDK_CONFIG_NET_COMMON_V2), &length, 5000);*/
+			case USER_MSG_SCAN_DEV:
+			{
+				/*BOOL bRet = H264_DVR_SearchDevice((char*)devs, sizeof(SDK_CONFIG_NET_COMMON_V2), &length, 5000);*/
 
-			SDK_CONFIG_NET_COMMON_V2* pCommon = (SDK_CONFIG_NET_COMMON_V2*)msg.lParam;
-			BOOL bRet = H264_DVR_SearchDevice((char*)pCommon, sizeof(SDK_CONFIG_NET_COMMON_V2)*msg.wParam, &length, 7000);
-			if (bRet) {
-				int devNum = length / sizeof(SDK_CONFIG_NET_COMMON_V2);
-				if (devNum) {
-					/// 将扫描结果发送给主窗口:ColyEyeDlg
-					PostMessage(AfxGetApp()->m_pMainWnd->m_hWnd, USER_MSG_SCAN_DEV, devNum, 0);
-				}
+				SDK_CONFIG_NET_COMMON_V2* pCommon = (SDK_CONFIG_NET_COMMON_V2*)msg.lParam;
+				BOOL bRet = H264_DVR_SearchDevice((char*)pCommon, sizeof(SDK_CONFIG_NET_COMMON_V2)*msg.wParam, &length, 7000);
+				if (bRet) {
+					int devNum = length / sizeof(SDK_CONFIG_NET_COMMON_V2);
+					if (devNum) {
+						/// 将扫描结果发送给主窗口:ColyEyeDlg
+						PostMessage(AfxGetApp()->m_pMainWnd->m_hWnd, USER_MSG_SCAN_DEV, devNum, 0);
+					}
 
-				TRACE("find %d devices\n", devNum);
-			}
-			else {
-				TRACE("find fail\n");
-			}
-			break;
-		}
-		case USER_MSG_LOGIN: {
-			int errCode = 0;
-			CCamera* pCamera = (CCamera*)msg.lParam;
-			if (pCamera) {
-				long loginId = H264_DVR_Login(pCamera->mIp, pCamera->mPort, pCamera->mUserName, pCamera->mPwd,
-					&pCamera->deviceInfo, &errCode);
-
-				if (loginId) {
-					TRACE("%s login Ok\n", pCamera->mIp);
-					pCamera->mLoginId = loginId;
-					PostMessage(((CColyEyeDlg*)(AfxGetApp()->m_pMainWnd))->m_hWnd, USER_MSG_LOGIN, TRUE, msg.lParam);
+					TRACE("find %d devices\n", devNum);
 				}
 				else {
-					TRACE("%s login fail. error code:%d\n", pCamera->mIp, errCode);
-					PostMessage(((CColyEyeDlg*)(AfxGetApp()->m_pMainWnd))->m_hWnd, USER_MSG_LOGIN, FALSE, msg.lParam);
-					//delete(pCamera);
+					TRACE("find fail\n");
 				}
+				break;
 			}
-		}
-							 break;
+			case USER_MSG_LOGIN: 
+			{
+				int errCode = 0;
+				CCamera* pCamera = (CCamera*)msg.lParam;
+				if (pCamera) {
+					long loginId = H264_DVR_Login(pCamera->mIp, pCamera->mPort, pCamera->mUserName, pCamera->mPwd,
+						&pCamera->deviceInfo, &errCode);
+
+					if (loginId) {
+						TRACE("%s login Ok\n", pCamera->mIp);
+						pCamera->mLoginId = loginId;
+						PostMessage(((CColyEyeDlg*)(AfxGetApp()->m_pMainWnd))->m_hWnd, USER_MSG_LOGIN, TRUE, msg.lParam);
+					}
+					else {
+						TRACE("%s login fail. error code:%d\n", pCamera->mIp, errCode);
+						PostMessage(((CColyEyeDlg*)(AfxGetApp()->m_pMainWnd))->m_hWnd, USER_MSG_LOGIN, FALSE, msg.lParam);
+						//delete(pCamera);
+					}
+				}
+				break;
+		     }
 		}
 		DispatchMessage(&msg);
 	}
