@@ -38,6 +38,7 @@ BEGIN_MESSAGE_MAP(CColyEyeDlg, CDialogEx)
 	ON_MESSAGE(USER_MSG_LOGIN, &CColyEyeDlg::OnUserMsgLogin)
 	ON_MESSAGE(WM_COMM_RXCHAR, &CColyEyeDlg::OnCommChar)
 	ON_MESSAGE(WM_COMM_RXDATA, &CColyEyeDlg::OnCommData)
+	ON_WM_DEVICECHANGE()
 END_MESSAGE_MAP()
 
 
@@ -185,6 +186,7 @@ BOOL CColyEyeDlg::PreTranslateMessage(MSG* pMsg)
 			mWall.SetFocus();
 		}		
 	}
+
 	return CDialogEx::PreTranslateMessage(pMsg);
 }
 
@@ -218,18 +220,33 @@ afx_msg LRESULT CColyEyeDlg::OnUserMsgLogin(WPARAM wParam, LPARAM lParam)
 }
 LONG CColyEyeDlg::OnCommChar(WPARAM ch, LPARAM port)
 {
-	char cht = ch;
-	TRACE(_T("%c\n"), cht);
-	//keybd_event(VK_DOWN, 0, 0, 0);
-	//keybd_event(VK_DOWN, 0, KEYEVENTF_KEYUP, 0);
 	return 0;
 }
 
 LONG CColyEyeDlg::OnCommData(WPARAM pData, LPARAM port)
 {
-	onedata *p = (onedata*)pData;
-	int i;
-	p->ch[p->num] = '\0';
-	TRACE(_T("%S\n"), p->ch);
+	CSerialPort *pPort = (CSerialPort*)port;
+	if (pPort->m_nPortNr == 8)
+	{
+		onedata *p = (onedata*)pData;
+		int i;
+		p->ch[p->num] = '\0';
+		TRACE(_T("%S\n"), p->ch);
+		return 0;
+	}
+}
+
+BOOL CColyEyeDlg::OnDeviceChange(UINT nEventType, DWORD_PTR dwData)
+{
+	switch (nEventType)
+	{
+	case DBT_DEVICEARRIVAL:
+		TRACE(_T("U≈Ã≤Â»Î\n"));
+		return TRUE;
+	case DBT_DEVICEREMOVECOMPLETE:
+		TRACE(_T("U≈Ã∞Œ≥ˆ\n"));
+		return TRUE;
+	}
 	return 0;
 }
+

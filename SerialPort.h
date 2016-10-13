@@ -125,13 +125,13 @@ protected:
     CWnd*                m_pOwner;
     
     // misc
-    UINT                m_nPortNr;        //?????
 	char*                m_szWriteBuffer;
     DWORD                m_dwCommEvents;
     DWORD                m_nWriteBufferSize;
     
     int                 m_nWriteSize; //add by mrlong 2007-12-25
 public :
+	UINT                m_nPortNr;
 	onedata             m_queuecom[20];
 	int                 m_queueth;
 	int                 m_charth;
