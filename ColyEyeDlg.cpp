@@ -36,6 +36,8 @@ BEGIN_MESSAGE_MAP(CColyEyeDlg, CDialogEx)
 	ON_WM_CLOSE()
 	ON_MESSAGE(USER_MSG_NOTIFY, &CColyEyeDlg::OnUserMsgNotify)
 	ON_MESSAGE(USER_MSG_LOGIN, &CColyEyeDlg::OnUserMsgLogin)
+	ON_MESSAGE(WM_COMM_RXCHAR, &CColyEyeDlg::OnCommChar)
+	ON_MESSAGE(WM_COMM_RXDATA, &CColyEyeDlg::OnCommData)
 END_MESSAGE_MAP()
 
 
@@ -64,6 +66,17 @@ BOOL CColyEyeDlg::OnInitDialog()
 	mVideoCtr.Create(IDD_VIDEOCTR_DIALOG, this);
 	mVideoCtr.MoveWindow(5, 5, 800, 400);
 	mVideoCtr.ShowWindow(SW_HIDE);
+
+	if (m_SerialPort.InitPort(this, 8, 9600, 'N', 8, 1, EV_RXFLAG | EV_RXCHAR, 512))
+	{
+		m_SerialPort.StartMonitoring();
+		m_bSerialPortOpened = TRUE;
+	}
+	else
+	{
+		AfxMessageBox(_T("没有发现串口或串口被占用"));
+		m_bSerialPortOpened = FALSE;
+	}
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -201,5 +214,22 @@ afx_msg LRESULT CColyEyeDlg::OnUserMsgLogin(WPARAM wParam, LPARAM lParam)
 {
 	::SendMessage(mWall.m_hWnd, USER_MSG_LOGIN, wParam, lParam);
 	::SendMessage(mMenu.m_hWnd, USER_MSG_LOGIN, wParam, lParam);
+	return 0;
+}
+LONG CColyEyeDlg::OnCommChar(WPARAM ch, LPARAM port)
+{
+	char cht = ch;
+	TRACE(_T("%c\n"), cht);
+	//keybd_event(VK_DOWN, 0, 0, 0);
+	//keybd_event(VK_DOWN, 0, KEYEVENTF_KEYUP, 0);
+	return 0;
+}
+
+LONG CColyEyeDlg::OnCommData(WPARAM pData, LPARAM port)
+{
+	onedata *p = (onedata*)pData;
+	int i;
+	p->ch[p->num] = '\0';
+	TRACE(_T("%S\n"), p->ch);
 	return 0;
 }
