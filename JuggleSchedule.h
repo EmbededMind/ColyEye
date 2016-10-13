@@ -18,11 +18,9 @@ typedef enum {
 
 typedef struct _JugSchedule JugSchedule;
 struct _JugSchedule{
-	HWND  hwnd;
-	UINT message;
+	MSG msg;
 	JugSchStatus status;
 	JugSchType type;
-	CTime time;
 	JugSchedule* pBrother;
 };
 
@@ -34,15 +32,21 @@ public:
 
 	void AddZoneSchedule(JugSchedule& pSch);
 	
-	void AddZoneSchedule(HWND hwnd, UINT oMsg,CTime& oTime, UINT yMsg, CTime& yTime);
+	void AddZoneSchedule(MSG* poMsg, MSG* pyMsg);
 
-	void AddSchedule(HWND hwnd, UINT msg, CTime& time);
+
+	void AddSchedule(MSG* pMsg);
+	void AddSchedule(HWND hwnd, UINT message, DWORD time);
 
 	void InsertSchedule(JugSchedule* pSch);
 
-	void Step(CTime& ref_time, std::list<JugSchedule*>& result_list);
+	void Step(CTime& ref_time, std::list<MSG*>& result_list);
 
 private:
-	std::list<JugSchedule*> pSchedules;
+	std::list<JugSchedule*> pSchedules;	
+	DWORD mPrevRefTime;
+	std::list<JugSchedule*>::iterator mPrevRefIter;
+
+	void PatrolSchedule(JugSchedule* pSch, std::list<MSG*>& result_list);
 };
 
