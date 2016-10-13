@@ -175,7 +175,7 @@ CCamera* CCameraManager::FindCameraByIP(char * ip)
 	CCamera* pDev = NULL;
 	while (pos) {
 		pDev = (CCamera*)this->mCameras.GetNext(pos);
-		if (strcpy_s(pDev->mIp, ip) == 0) {
+		if (strcmp(pDev->mIp, ip) == 0) {
 			return pDev;
 		}
 	}

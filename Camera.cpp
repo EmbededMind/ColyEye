@@ -4,9 +4,11 @@
 #include "RecordFileInfo.h"
 #include "RecordFileInfoManager.h"
 
+int __stdcall realDataCallBack_V2(long hRealPlay, const PACKET_INFO_EX* pFrame, unsigned int dwUser);
 int __stdcall normalRealDataCallBack_V2(long hRealPlay, const PACKET_INFO_EX * pFrame, unsigned int dwUser);
 int __stdcall alarmRealDataCallBack_V2(long hRealPlay, const PACKET_INFO_EX * pFrame, unsigned int dwUser);
 
+CMutex mutex_RealDataCB;
 
 CCamera::CCamera()
 {
@@ -21,6 +23,8 @@ CCamera::CCamera()
 	hRealPlay = 0;
 	mNormalRecordFile = NULL;
 	mAlarmRecordFile = NULL;
+	isAlarmRecording = false;
+	isRecording = false;
 	//CRecordFileInfo* pRecordFileInfo;
 }
 
@@ -55,6 +59,9 @@ void CCamera::startRealPlay()
 		if (!hRealPlay) {
 			TRACE("real play fail.Error code:%d\n", H264_DVR_GetLastError());
 		}
+		else {
+			H264_DVR_SetRealDataCallBack_V2(hRealPlay, realDataCallBack_V2, (long)this);
+		}
 	}
 	else {
 		TRACE("please login first\n");
@@ -74,6 +81,8 @@ void CCamera::stopRealPlay()
 			stopAlarmRecord();
 		}
 
+		H264_DVR_DelRealDataCallBack_V2(hRealPlay, realDataCallBack_V2, (long)this);
+
 		H264_DVR_StopRealPlay(hRealPlay, &this->clientInfo.hWnd);
 		hRealPlay = 0;
 	}
@@ -90,12 +99,13 @@ void CCamera::startRecord(CFile* pFile)
 	ASSERT(pFile);
 	ASSERT(pFile->m_hFile != CFile::hFileNull);
 	mNormalRecordFile = pFile;
-	if (!H264_DVR_SetRealDataCallBack_V2(this->hRealPlay, normalRealDataCallBack_V2, (long)this)) {
-		TRACE("Set realdata cb failed:%d\n", H264_DVR_GetLastError());
-	}
-	else{
-		isRecording = true;
-	}
+	//if (!H264_DVR_SetRealDataCallBack_V2(this->hRealPlay, normalRealDataCallBack_V2, (long)this)) {
+	//	TRACE("Set realdata cb failed:%d\n", H264_DVR_GetLastError());
+	//}
+	//else{
+	//	isRecording = true;
+	//}
+	isRecording = true;
 }
 
 
@@ -109,10 +119,10 @@ void CCamera::stopRecord()
 {
 	ASSERT(mNormalRecordFile);
 	if (isRecording) {
-		H264_DVR_DelRealDataCallBack_V2(hRealPlay, normalRealDataCallBack_V2, (long)this);
+		isRecording = false;
+		//H264_DVR_DelRealDataCallBack_V2(hRealPlay, normalRealDataCallBack_V2, (long)this);
 		mNormalRecordFile->Flush();
 		mNormalRecordFile = NULL;
-		isRecording = false;
 	}
 }
 
@@ -131,12 +141,13 @@ void CCamera::startAlarmRecord(CFile* pFile)
 
 	mAlarmRecordFile = pFile;
 
-	if (!H264_DVR_SetRealDataCallBack_V2(this->hRealPlay, alarmRealDataCallBack_V2, (long)this)) {
-		TRACE("Set realdata cb failed:%d\n", H264_DVR_GetLastError());
-	}
-	else {
-		isAlarmRecording = true;
-	}
+	//if (!H264_DVR_SetRealDataCallBack_V2(this->hRealPlay, alarmRealDataCallBack_V2, (long)this)) {
+	//	TRACE("Set realdata cb failed:%d\n", H264_DVR_GetLastError());
+	//}
+	//else {
+	//	isAlarmRecording = true;
+	//}
+	isAlarmRecording = true;
 }
 
 
@@ -148,10 +159,10 @@ void CCamera::stopAlarmRecord()
 	ASSERT(mAlarmRecordFile != NULL);
 
 	if (isAlarmRecording) {
-		H264_DVR_DelRealDataCallBack_V2(hRealPlay, alarmRealDataCallBack_V2, (long)this);
-		mAlarmRecordFile->Flush();
-		mAlarmRecordFile = NULL;
 		isAlarmRecording = false;
+		//H264_DVR_DelRealDataCallBack_V2(hRealPlay, alarmRealDataCallBack_V2, (long)this);
+		mAlarmRecordFile->Flush();
+		mAlarmRecordFile = NULL;		
 	}
 }
 
@@ -235,15 +246,40 @@ void CCamera::logout()
 *        即：摄像头每发送一帧数据，此回调就会被调用一次，将每次回调时的数据帧pFrame写入文件
 *        得到的即时所需的.h264文件(数据帧包含多种信息，目前还不用解析)
 */
+int __stdcall realDataCallBack_V2(long hRealPlay, const PACKET_INFO_EX* pFrame, unsigned int dwUser)
+{
+	CCamera * pDev = (CCamera*)dwUser;
+
+
+mutex_RealDataCB.Lock();/// @see RecordFileManager.cpp  RecallRecordFile()
+
+	if (pDev->isRecording  &&  pDev->mNormalRecordFile != nullptr) {
+		pDev->mNormalRecordFile->Write(pFrame->pPacketBuffer, pFrame->dwPacketSize);
+	}
+
+	if (pDev->isAlarmRecording && pDev->mAlarmRecordFile != nullptr) {
+		pDev->mAlarmRecordFile->Write(pFrame->pPacketBuffer, pFrame->dwPacketSize);
+	}
+
+mutex_RealDataCB.Unlock();/// @see RecordFileManager.cpp  RecallRecordFile()
+
+	return 1;
+}
+
+
 int __stdcall normalRealDataCallBack_V2(long hRealPlay, const PACKET_INFO_EX* pFrame, unsigned int dwUser)
 {
-	((CCamera*)dwUser)->mNormalRecordFile->Write(pFrame->pPacketBuffer, pFrame->dwPacketSize);
+	/*((CCamera*)dwUser)->mNormalRecordFile->Write(pFrame->pPacketBuffer, pFrame->dwPacketSize);*/
+	TRACE("fuck 1\n");
+	return 1;
 }
 
 
 int __stdcall alarmRealDataCallBack_V2(long hRealPlay, const PACKET_INFO_EX* pFrame, unsigned int dwUser)
 {
-	((CCamera*)dwUser)->mAlarmRecordFile->Write(pFrame->pPacketBuffer, pFrame->dwPacketSize);
+	/*((CCamera*)dwUser)->mAlarmRecordFile->Write(pFrame->pPacketBuffer, pFrame->dwPacketSize);*/
+	TRACE("fuck 2\n");
+	return 1;
 }
 
 

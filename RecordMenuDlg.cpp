@@ -184,9 +184,9 @@ afx_msg LRESULT CRecordMenuDlg::OnUserMsgDelFile(WPARAM wParam, LPARAM lParam)
 	int owner = wParam;
 
 	if (owner > 0 && owner <= CAMERA_MAX_NUM) {
-		TRACE("case del normal file msg\n");
+
 		if (!mFileTrees[owner - 1].DelFile(lParam)) {
-			TRACE("Delete item failed\n");
+
 		}
 	}
 	return 0;

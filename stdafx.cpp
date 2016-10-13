@@ -7,6 +7,8 @@
 
 SQLiteWrapper sqlite;
 
+
+
 void WriteLog(LPCTSTR logName, CString msg)
 {
 	try

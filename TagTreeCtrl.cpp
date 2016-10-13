@@ -234,11 +234,11 @@ BOOL CTagTreeCtrl::DelFile(DWORD_PTR data)
 			while (hItem) {
 				// 找到要删除的节点
 				if (GetItemData(hItem) == data) {
-					TRACE("Find item to delete\n");
+
 				    DeleteItem(hItem);
 					// 如果当天只有一条记录，将这一天的label也删掉
 					if (!ItemHasChildren(hRoot)) {
-						TRACE("delete label\n");
+
 						DeleteItem(hRoot);
 					}
 					return TRUE;

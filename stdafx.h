@@ -47,11 +47,13 @@
 #define CAMERA_MAX_NUM  6       // 支持的最大设备数目
 #define STORE_MAX_DAYS  7       // 视频最大存储天数
 
-#define ALARM_TIMER_EVENT_ID   (CAMERA_MAX_NUM+1)
+#define ALARM_TIMER_EVENT_ID        (CAMERA_MAX_NUM + 1)
+#define RECONNET_TIMER_EVENT_ID     (CAMERA_MAX_NUM + 2)
+#define SECOND_TICK_TIMER_EVENT_ID  (CAMERA_MAX_NUM + 3)
 
 #define ALARM_LIVE_TIME   2
 
-#define RECONNET_TIMER_EVENT_ID     (CAMERA_MAX_NUM + 2)
+
 
 #define USER_MSG_LOGIN    (WM_USER + 100)
 #define USER_MSG_SCAN_DEV (WM_USER + 101)
@@ -77,6 +79,7 @@
 
 
 extern 	SQLiteWrapper sqlite;
+
 
 
 #define LOG_PATH                     "e:\\log.txt"

@@ -3,6 +3,7 @@
 #include "SurfaceHolderDlg.h"
 #include "RecordFileInfo.h"
 #include <map>
+#include "atltime.h"
 
 // CWallDlg ¶Ô»°¿ò
 
@@ -58,4 +59,6 @@ public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 protected:
 	afx_msg LRESULT OnUserMsgBring(WPARAM wParam, LPARAM lParam);
+public:
+	CTime mSystemTime;
 };
