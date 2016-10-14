@@ -632,6 +632,8 @@ void CSerialPort::ReceiveChar(CSerialPort* port, COMSTAT comstat)
 			//}
 			//else if(port->m_charth > 1)
 			//{
+			if (port->m_charth > 0)
+			{
 				port->m_queuecom[port->m_queueth].num = port->m_charth;
 				port->m_charth = 0;
 				::SendMessage((port->m_pOwner)->m_hWnd, WM_COMM_RXDATA, (WPARAM)(&(port->m_queuecom[port->m_queueth])), (LPARAM)port->m_nPortNr);
@@ -639,6 +641,7 @@ void CSerialPort::ReceiveChar(CSerialPort* port, COMSTAT comstat)
 					port->m_queueth = 0;
 				else
 					port->m_queueth++;
+			}
 			/*}*/
             break;
         }

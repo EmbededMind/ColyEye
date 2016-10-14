@@ -225,13 +225,13 @@ LONG CColyEyeDlg::OnCommChar(WPARAM ch, LPARAM port)
 
 LONG CColyEyeDlg::OnCommData(WPARAM pData, LPARAM port)
 {
-	CSerialPort *pPort = (CSerialPort*)port;
-	if (pPort->m_nPortNr == 8)
+	if (port == 8)
 	{
 		onedata *p = (onedata*)pData;
 		int i;
 		p->ch[p->num] = '\0';
 		TRACE(_T("%S\n"), p->ch);
+		m_SerialPort.WriteToPort(p->ch, p->num);
 		return 0;
 	}
 }
