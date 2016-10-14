@@ -68,15 +68,25 @@ BOOL CColyEyeDlg::OnInitDialog()
 	mVideoCtr.MoveWindow(5, 5, 800, 400);
 	mVideoCtr.ShowWindow(SW_HIDE);
 
-	if (m_SerialPort.InitPort(this, 8, 9600, 'N', 8, 1, EV_RXFLAG | EV_RXCHAR, 512))
+	if (m_SerialPortKbd.InitPort(this, 8, 9600, 'N', 8, 1, EV_RXFLAG | EV_RXCHAR, 512))
 	{
-		m_SerialPort.StartMonitoring();
-		m_bSerialPortOpened = TRUE;
+		m_SerialPortKbd.StartMonitoring();
+		m_bSerialPortKbdOpened = TRUE;
 	}
 	else
 	{
 		AfxMessageBox(_T("没有发现串口或串口被占用"));
-		m_bSerialPortOpened = FALSE;
+		m_bSerialPortKbdOpened = FALSE;
+	}
+	if (m_SerialPortCom.InitPort(this, 10, 9600, 'N', 8, 1, EV_RXFLAG | EV_RXCHAR, 512))
+	{
+		m_SerialPortCom.StartMonitoring();
+		m_bSerialPortComOpened = TRUE;
+	}
+	else
+	{
+		AfxMessageBox(_T("没有发现串口或串口被占用"));
+		m_bSerialPortComOpened = FALSE;
 	}
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -184,7 +194,7 @@ BOOL CColyEyeDlg::PreTranslateMessage(MSG* pMsg)
 			mMenu.ShowWindow(SW_HIDE);
 			mWall.ShowWindow(SW_SHOW);
 			mWall.SetFocus();
-		}		
+		}
 	}
 
 	return CDialogEx::PreTranslateMessage(pMsg);
@@ -230,21 +240,67 @@ LONG CColyEyeDlg::OnCommData(WPARAM pData, LPARAM port)
 		onedata *p = (onedata*)pData;
 		int i;
 		p->ch[p->num] = '\0';
-		TRACE(_T("%S\n"), p->ch);
-		m_SerialPort.WriteToPort(p->ch, p->num);
+		TRACE(_T("COM%d ---%S\n"), (UINT)port, p->ch);
+		/*m_SerialPortKbd.WriteToPort(p->ch, p->num);*/
+		return 0;
+	}
+	if (port == 11)
+	{
+		onedata *p = (onedata*)pData;
+		int i;
+		p->ch[p->num] = '\0';
+		TRACE(_T("COM%d ---%S\n"), (UINT)port, p->ch);
+		/*m_SerialPortKbd.WriteToPort(p->ch, p->num);*/
 		return 0;
 	}
 }
 
 BOOL CColyEyeDlg::OnDeviceChange(UINT nEventType, DWORD_PTR dwData)
 {
+	int i = 0;
+	CString flag;
+	DWORD mask;
+	TCHAR diskname[5];
+	DEV_BROADCAST_VOLUME* pDisk;
 	switch (nEventType)
 	{
 	case DBT_DEVICEARRIVAL:
-		TRACE(_T("U盘插入\n"));
+		pDisk = (DEV_BROADCAST_VOLUME*)dwData;
+		mask = pDisk->dbcv_unitmask;
+		for (i = 0; i < 32; i++)
+		{
+			if ((mask >> i) == 1)
+			{
+				diskname[0] = 'A' + i;
+				diskname[1] = '\0';
+				wcscat_s(diskname,TEXT(":"));
+				break;
+			}
+		}		
+		flag.Format(_T("%s"), diskname);
+		TRACE(_T("U盘插入 %s\n"), flag);
+		m_usbManager.InitUSB(this, flag);
+		m_usbManager.StartMonitoring();
+		m_usbManager.GetStatus(&m_USBFlashDiskStatus);
+		m_usbManager.CopyRecord(_T("11"));
+		m_usbManager.Updata();
 		return TRUE;
 	case DBT_DEVICEREMOVECOMPLETE:
-		TRACE(_T("U盘拔出\n"));
+		pDisk = (DEV_BROADCAST_VOLUME*)dwData;
+		mask = pDisk->dbcv_unitmask;
+		for (i = 0; i < 32; i++)
+		{
+			if ((mask >> i) == 1)
+			{
+				diskname[0] = 'A' + i;
+				diskname[1] = '\0';
+				wcscat_s(diskname, TEXT(":"));
+				break;
+			}
+		}
+		flag.Format(_T("%s"), diskname);
+		TRACE(_T("U盘拔出 %s\n"), flag);
+		m_usbManager.EndThread();
 		return TRUE;
 	}
 	return 0;
