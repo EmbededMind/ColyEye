@@ -2,11 +2,6 @@
 
 #include <list>
 
-typedef enum {
-	JugSchType_Default = 0,
-	JugSchType_OldBrother,
-	JugSchType_YoungBrother
-}JugSchType;
 
 
 typedef enum {
@@ -16,13 +11,24 @@ typedef enum {
 }JugSchStatus;
 
 
-typedef struct _JugSchedule JugSchedule;
-struct _JugSchedule{
-	MSG msg;
+
+
+typedef struct {
+	HWND hwnd;
+	UINT message;
+	WPARAM wParam;
+	LPARAM lParam;
+}JugSchMsg;
+
+
+typedef struct {
+	JugSchMsg jusSchMsg;
+	DWORD     beginTime;
+	DWORD     endTime;
 	JugSchStatus status;
-	JugSchType type;
-	JugSchedule* pBrother;
-};
+}JugSchedule;
+
+
 
 class JuggleScheduler
 {
@@ -30,23 +36,12 @@ public:
 	JuggleScheduler();
 	~JuggleScheduler();
 
-	void AddZoneSchedule(JugSchedule& pSch);
-	
-	void AddZoneSchedule(MSG* poMsg, MSG* pyMsg);
 
+	void AddZoneSchedule(JugSchMsg* pSchMsg, DWORD begin_time, DWORD end_time);
 
-	void AddSchedule(MSG* pMsg);
-	void AddSchedule(HWND hwnd, UINT message, DWORD time);
-
-	void InsertSchedule(JugSchedule* pSch);
-
-	void Step(CTime& ref_time, std::list<MSG*>& result_list);
+	void Step(CTime& ref_time, std::list<JugSchMsg*>& result_list);
 
 private:
 	std::list<JugSchedule*> pSchedules;	
-	DWORD mPrevRefTime;
-	std::list<JugSchedule*>::iterator mPrevRefIter;
-
-	void PatrolSchedule(JugSchedule* pSch, std::list<MSG*>& result_list);
 };
 

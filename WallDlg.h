@@ -4,6 +4,7 @@
 #include "RecordFileInfo.h"
 #include <map>
 #include "atltime.h"
+#include "JuggleSchedule.h"
 
 // CWallDlg ¶Ô»°¿ò
 
@@ -40,6 +41,8 @@ private:
 	UINT8 mCols;
 
 	Device_Map mDevReconnectMap;
+
+	JuggleScheduler mJugScheduler;
 
 	void interruptRecord(CCamera* pCamera);
 	void interruptAlarmRecord(CCamera* pCamera);

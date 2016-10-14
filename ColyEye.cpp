@@ -81,7 +81,6 @@ BOOL CColyEyeApp::InitInstance()
 
 
 
-
 	if (!sqlite.Open("cold_eye.db")) {
 		TRACE("Database open failed\n");
 	}

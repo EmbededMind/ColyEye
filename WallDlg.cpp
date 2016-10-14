@@ -12,6 +12,7 @@
 
 
 
+
 const char alarmEventTab[29][40] = { "sdk_event_code_init",          ///0
 "sdk_event_code_local_alarm",   ///1
 "sdk_event_code_net_alarm",     ///2
@@ -232,8 +233,13 @@ BOOL CWallDlg::OnInitDialog()
 	PostThreadMessage( ((CColyEyeApp*)AfxGetApp())->pidOfLoginThread, USER_MSG_SCAN_DEV, CAMERA_MAX_NUM, (LPARAM)CCameraManager::getInstance()->mSdkConfNetCommonV2 );
 
 	H264_DVR_SetDVRMessCallBack(messageCallbackFunc, (unsigned long)this);
-
+    
+	JugSchMsg msg;
+	msg.hwnd = this->m_hWnd;
+	msg.message = 100;
 	
+	this->mJugScheduler.AddZoneSchedule(&msg,  16*3600+0*60, 16*3600+1*60);
+
 	SetTimer(SECOND_TICK_TIMER_EVENT_ID, 1000, NULL);
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 异常: OCX 属性页应返回 FALSE
@@ -288,6 +294,8 @@ void CWallDlg::interruptRecord(CCamera* pCamera)
 		pCamera->stopRecord();
 		RecordFileManager::GetInstance()->RecallRecordFile(pCamera->mId, RECORD_TYPE_NORMAL);
 		KillTimer(pCamera->mId);
+
+		pCamera->isRecording = false;
 	}
 }
 
@@ -313,6 +321,8 @@ void CWallDlg::interruptAlarmRecord(CCamera* pCamera)
 				KillTimer(ALARM_TIMER_EVENT_ID);
 			}
 		}
+
+		pCamera->isAlarmRecording = false;
 	}
 }
 
@@ -460,7 +470,16 @@ void CWallDlg::OnTimer(UINT_PTR nIDEvent)
 	else if (SECOND_TICK_TIMER_EVENT_ID){
 		mSystemTime = CTime::GetCurrentTime();
 		UpdateData(false);
-		
+
+		std::list<JugSchMsg*> res;
+		mJugScheduler.Step(mSystemTime, res);
+
+		if (res.size() > 0) {
+			std::list<JugSchMsg*>::iterator  iter;
+			for (iter = res.begin(); iter != res.end(); iter++) {
+				TRACE("schedule msg:%d\n",(*iter)->message);
+			}
+		}
 	}
 	CDialogEx::OnTimer(nIDEvent);
 }
