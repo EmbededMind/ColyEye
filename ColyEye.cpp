@@ -9,7 +9,7 @@
 #include "RecordFileManager.h"
 #include "DBShadow.h"
 #include "CameraManager.h"
-
+#include "Util.h"
 
 
 #ifdef _DEBUG
@@ -185,8 +185,10 @@ unsigned int __stdcall loginThread(PVOID pM)
 				int errCode = 0;
 				CCamera* pCamera = (CCamera*)msg.lParam;
 				if (pCamera) {
+					Util::ShowMemoryInfo();
 					long loginId = H264_DVR_Login(pCamera->mIp, pCamera->mPort, pCamera->mUserName, pCamera->mPwd,
 						&pCamera->deviceInfo, &errCode);
+					Util::ShowMemoryInfo();
 
 					if (loginId) {
 						TRACE("%s login Ok\n", pCamera->mIp);

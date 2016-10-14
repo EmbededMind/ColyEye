@@ -337,11 +337,11 @@ void CWallDlg::ReConnect(LONG lLoginID, char* pchDVRIP, LONG nDVRPort)
 	while (pos) {
 		pHolder = (CSurfaceHolderDlg*)mHolderes.GetNext(pos);
 		if (pHolder->pCamera->mLoginId == lLoginID) {
+			pHolder->pCamera->logout();
 			interruptAlarmRecord(pHolder->pCamera);
 			interruptRecord(pHolder->pCamera);
 			pHolder->pCamera->stopRealPlay();
-			pHolder->pCamera->unsubscribeAlarmMessage();
-			pHolder->pCamera->logout();
+			pHolder->pCamera->unsubscribeAlarmMessage();			
 			mDevReconnectMap[pHolder->pCamera->mId] = pHolder->pCamera;
 			SetTimer(RECONNET_TIMER_EVENT_ID, 30*1000, NULL);
 			return;
@@ -356,6 +356,8 @@ void CWallDlg::ReConnect(LONG lLoginID, char* pchDVRIP, LONG nDVRPort)
 void __stdcall disConnnectCallback(LONG lLoginID, char* pchDVRIP, LONG nDVRPort, DWORD dwUser)
 {
 	TRACE("-----DisConnect-----%s\n", pchDVRIP);
+
+	//H264_DVR_Logout(lLoginID);
 	CWallDlg* pThis = (CWallDlg*)dwUser;
 	assert(pThis != nullptr);
 
@@ -454,9 +456,24 @@ void CWallDlg::OnTimer(UINT_PTR nIDEvent)
 				mDevReconnectMap.erase(p++);
 
 				pDev->subscribeAlarmMessage();
-				pDev->startRealPlay();
+				TRACE("after subcribe alarm message\n");
+				Util::ShowMemoryInfo();
+
+				pDev->startRealPlay();	
+				TRACE("after start real play\n");
+				Util::ShowMemoryInfo();
+
 				SetTimer(pDev->mId, 30 * 1000, NULL);
-				pDev->startRecord(RecordFileManager::GetInstance()->DistributeRecordFile(pDev->mId, RECORD_TYPE_NORMAL));
+				TRACE("after set timer\n");
+				Util::ShowMemoryInfo();
+
+				CFile* pf = RecordFileManager::GetInstance()->DistributeRecordFile(pDev->mId, RECORD_TYPE_NORMAL);
+				TRACE("after distribute file\n");
+				Util::ShowMemoryInfo();
+
+				pDev->startRecord(pf);
+				TRACE("after start record\n");
+				Util::ShowMemoryInfo();
 			}
 			else {
 				p++;

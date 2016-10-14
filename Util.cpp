@@ -32,7 +32,7 @@ void Util::ShowMemoryInfo()
 	HANDLE handle = GetCurrentProcess();
 	PROCESS_MEMORY_COUNTERS pmc;
 	GetProcessMemoryInfo(handle, &pmc, sizeof(pmc));
-	TRACE("内存使用:%ld K -- %ld K\n", pmc.WorkingSetSize, pmc.PagefileUsage);
+	TRACE("内存使用:%0.2f MB\n", (double)pmc.PagefileUsage / 1024 / 1024);
 }
 
 

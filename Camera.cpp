@@ -3,6 +3,7 @@
 #include "CameraManager.h"
 #include "RecordFileInfo.h"
 #include "RecordFileInfoManager.h"
+#include "Util.h"
 
 int __stdcall realDataCallBack_V2(long hRealPlay, const PACKET_INFO_EX* pFrame, unsigned int dwUser);
 int __stdcall normalRealDataCallBack_V2(long hRealPlay, const PACKET_INFO_EX * pFrame, unsigned int dwUser);
@@ -54,13 +55,18 @@ CCamera::~CCamera()
 void CCamera::startRealPlay()
 {
 	if (mLoginId) {
-		TRACE("client info:%d\n", this->clientInfo.hWnd);
+		//TRACE("client info:%d\n", this->clientInfo.hWnd);
+		Util::ShowMemoryInfo();
 		hRealPlay = H264_DVR_RealPlay(mLoginId, &this->clientInfo);
+		TRACE("after dvr_realplay\n");
+		Util::ShowMemoryInfo();
 		if (!hRealPlay) {
 			TRACE("real play fail.Error code:%d\n", H264_DVR_GetLastError());
 		}
 		else {
 			H264_DVR_SetRealDataCallBack_V2(hRealPlay, realDataCallBack_V2, (long)this);
+			TRACE("after dvr_setrealdata\n");
+			Util::ShowMemoryInfo();
 		}
 	}
 	else {
@@ -204,8 +210,11 @@ BOOL CCamera::login()
 {
 	int errCode;
 	long loginId = 0;
+
+	Util::ShowMemoryInfo();
 	loginId = H264_DVR_Login(mIp, mPort, mUserName, mPwd, &deviceInfo, &errCode);
-		
+	Util::ShowMemoryInfo();
+
 	if (loginId > 0) {
 		this->mLoginId = loginId;
 		return true;
