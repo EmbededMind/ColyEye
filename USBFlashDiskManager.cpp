@@ -105,8 +105,19 @@ UINT CUSBFlashDiskManager::USBThread(LPVOID pParam)
 			ResetEvent(usb->m_scanEvent);
 			break;
 		case 1:
+		{
+			usb->m_copyFromPath += _T('\0');
+			usb->m_diskflag += _T("\\");
 			TRACE("m_copyEvent\n");
+			SHFILEOPSTRUCT FileOp = { 0 };
+			FileOp.fFlags = FOF_NOCONFIRMATION | FOF_NOCONFIRMMKDIR;
+			FileOp.pFrom = usb->m_copyFromPath;
+			FileOp.pTo = usb->m_diskflag;
+			FileOp.wFunc = FO_COPY;
+			FileOp.hwnd = usb->m_owner->GetSafeHwnd();
+			SHFileOperation(&FileOp);
 			ResetEvent(usb->m_copyEvent);
+		}
 			break;
 		case 2:
 			TRACE("m_updataEvent\n");
@@ -159,7 +170,7 @@ BOOL CUSBFlashDiskManager::Updata()
 
 BOOL CUSBFlashDiskManager::CopyRecord(CString path)
 {
-	m_existingFileName = path;
+	m_copyFromPath = path;
 	SetEvent(m_copyEvent);
 	return 0;
 }

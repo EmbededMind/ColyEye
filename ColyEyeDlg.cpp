@@ -189,6 +189,7 @@ BOOL CColyEyeDlg::PreTranslateMessage(MSG* pMsg)
 			mWall.ShowWindow(SW_HIDE);
 			mMenu.ShowWindow(SW_SHOW);
 			::SendMessage(mMenu.m_hWnd, USER_MSG_BRING, 0, 0);
+			m_usbManager.CopyRecord(_T("E:\\Record\\normal\\1"));
 		}
 		else {
 			mMenu.ShowWindow(SW_HIDE);
@@ -282,7 +283,7 @@ BOOL CColyEyeDlg::OnDeviceChange(UINT nEventType, DWORD_PTR dwData)
 		m_usbManager.InitUSB(this, flag);
 		m_usbManager.StartMonitoring();
 		m_usbManager.GetStatus(&m_USBFlashDiskStatus);
-		m_usbManager.CopyRecord(_T("11"));
+		//m_usbManager.CopyRecord(_T("11"));
 		m_usbManager.Updata();
 		return TRUE;
 	case DBT_DEVICEREMOVECOMPLETE:

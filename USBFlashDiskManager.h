@@ -17,7 +17,8 @@ protected:
 	USBFlashDiskStatus* m_pStatus;
 	CWnd *m_owner;
 	CString m_diskflag;
-	CString m_existingFileName;
+	CString m_copyFromPath;
+
 	HANDLE m_endEvent;
 	HANDLE m_updataEvent;
 	HANDLE m_copyEvent;
