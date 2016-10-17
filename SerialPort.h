@@ -118,7 +118,7 @@ protected:
     
     // structures
     OVERLAPPED            m_ov;
-    COMMTIMEOUTS        m_CommTimeouts;
+    COMMTIMEOUTS          m_CommTimeouts;
     DCB                    m_dcb;
     
     // owner window
@@ -128,10 +128,10 @@ protected:
 	char*                m_szWriteBuffer;
     DWORD                m_dwCommEvents;
     DWORD                m_nWriteBufferSize;
-    
-    int                 m_nWriteSize; //add by mrlong 2007-12-25
-public :
 	UINT                m_nPortNr;
+    int                 m_nWriteSize; //add by mrlong 2007-12-25
+
+public :
 	onedata             m_queuecom[20];
 	int                 m_queueth;
 	int                 m_charth;

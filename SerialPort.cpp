@@ -167,7 +167,14 @@ BOOL CSerialPort::InitPort(CWnd* pPortOwner,    // the owner (CWnd) of the port 
     }
 
     // prepare port strings
-    wsprintf(szPort, L"COM%d", portnr);
+	if (portnr > 9)
+	{
+		wsprintf(szPort, L"\\\\.\\COM%d", portnr);
+	}
+	else
+	{
+		wsprintf(szPort, L"COM%d", portnr);
+	}
 	//_itow_s(portnr, szPort, 50, 10);
     // stop is index 0 = 1 1=1.5 2=2
     int mystop;

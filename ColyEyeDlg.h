@@ -6,6 +6,7 @@
 #include "MenuDlg.h"
 #include "SerialPort.h"
 #include "dbt.h"
+#include "USBFlashDiskManager.h"
 // CColyEyeDlg ¶Ô»°¿ò
 class CColyEyeDlg : public CDialogEx
 {
@@ -36,6 +37,7 @@ public :
 	CWallDlg mWall;
 	CMenuDlg mMenu;
 	CVideoCtrDlg mVideoCtr;
+	USBFlashDiskStatus m_USBFlashDiskStatus;
 protected:
 	afx_msg LRESULT OnUserMsgScanDev(WPARAM wParam, LPARAM lParam);
 public:
@@ -45,9 +47,13 @@ protected:
 	afx_msg LRESULT OnUserMsgNotify(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnUserMsgLogin(WPARAM wParam, LPARAM lParam);
 protected:
-	CSerialPort m_SerialPort;
-	BOOL m_bSerialPortOpened;
+	CSerialPort m_SerialPortKbd;
+	CSerialPort m_SerialPortCom;
+	BOOL m_bSerialPortKbdOpened;
+	BOOL m_bSerialPortComOpened;
 	afx_msg LONG OnCommChar(WPARAM ch, LPARAM port);
 	afx_msg LONG OnCommData(WPARAM pData, LPARAM port);
 	afx_msg BOOL OnDeviceChange(UINT nEventType, DWORD_PTR dwData);
+protected:
+	CUSBFlashDiskManager m_usbManager;
 };
