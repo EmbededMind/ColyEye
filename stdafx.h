@@ -57,6 +57,7 @@
 
 #define USER_MSG_LOGIN    (WM_USER + 100)
 #define USER_MSG_SCAN_DEV (WM_USER + 101)
+#define USER_MSG_RELOGIN  (WM_USER + 102)
 
 #define USER_MSG_BRING    (WM_USER + 110)
 #define USER_MSG_PLAY     (WM_USER + 111)
