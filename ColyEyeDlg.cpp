@@ -254,6 +254,8 @@ LONG CColyEyeDlg::OnCommData(WPARAM pData, LPARAM port)
 		/*m_SerialPortKbd.WriteToPort(p->ch, p->num);*/
 		return 0;
 	}
+
+	return 0;
 }
 
 BOOL CColyEyeDlg::OnDeviceChange(UINT nEventType, DWORD_PTR dwData)

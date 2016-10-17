@@ -172,7 +172,7 @@ afx_msg LRESULT CRecordMenuDlg::OnUserMsgAddFile(WPARAM wParam, LPARAM lParam)
 {
 	CRecordFileInfo* pInfo = (CRecordFileInfo*)lParam;
 	if (pInfo->mOwner > 0 && pInfo->mOwner <= CAMERA_MAX_NUM) {
-		TRACE("case add record file msg\n");
+		//TRACE("case add record file msg\n");
 		mFileTrees[pInfo->mOwner - 1].AddFile(pInfo);
 	}
 	return 0;
