@@ -68,7 +68,7 @@ BOOL CColyEyeDlg::OnInitDialog()
 	mVideoCtr.MoveWindow(5, 5, 800, 400);
 	mVideoCtr.ShowWindow(SW_HIDE);
 
-	if (m_SerialPortKbd.InitPort(this, 8, 9600, 'N', 8, 1, EV_RXFLAG | EV_RXCHAR, 512))
+	/*if (m_SerialPortKbd.InitPort(this, COM_KEYBD, 9600, 'N', 8, 1, EV_RXFLAG | EV_RXCHAR, 512))
 	{
 		m_SerialPortKbd.StartMonitoring();
 		m_bSerialPortKbdOpened = TRUE;
@@ -77,8 +77,8 @@ BOOL CColyEyeDlg::OnInitDialog()
 	{
 		AfxMessageBox(_T("没有发现串口或串口被占用"));
 		m_bSerialPortKbdOpened = FALSE;
-	}
-	if (m_SerialPortCom.InitPort(this, 10, 9600, 'N', 8, 1, EV_RXFLAG | EV_RXCHAR, 512))
+	}*/
+	if (m_SerialPortCom.InitPort(this, COM_CAMERA, 9600, 'N', 8, 1, EV_RXFLAG | EV_RXCHAR, 512))
 	{
 		m_SerialPortCom.StartMonitoring();
 		m_bSerialPortComOpened = TRUE;
@@ -189,7 +189,6 @@ BOOL CColyEyeDlg::PreTranslateMessage(MSG* pMsg)
 			mWall.ShowWindow(SW_HIDE);
 			mMenu.ShowWindow(SW_SHOW);
 			::SendMessage(mMenu.m_hWnd, USER_MSG_BRING, 0, 0);
-			m_usbManager.CopyRecord(_T("E:\\Record\\normal\\1"));
 		}
 		else {
 			mMenu.ShowWindow(SW_HIDE);
@@ -236,7 +235,7 @@ LONG CColyEyeDlg::OnCommChar(WPARAM ch, LPARAM port)
 
 LONG CColyEyeDlg::OnCommData(WPARAM pData, LPARAM port)
 {
-	if (port == 8)
+	if (port == COM_KEYBD)
 	{
 		onedata *p = (onedata*)pData;
 		int i;
@@ -245,7 +244,7 @@ LONG CColyEyeDlg::OnCommData(WPARAM pData, LPARAM port)
 		/*m_SerialPortKbd.WriteToPort(p->ch, p->num);*/
 		return 0;
 	}
-	if (port == 11)
+	if (port == COM_CAMERA)
 	{
 		onedata *p = (onedata*)pData;
 		int i;
@@ -297,7 +296,7 @@ BOOL CColyEyeDlg::OnDeviceChange(UINT nEventType, DWORD_PTR dwData)
 			{
 				diskname[0] = 'A' + i;
 				diskname[1] = '\0';
-				wcscat_s(diskname, TEXT(":"));
+				wcscat_s(diskname, TEXT(":\\"));
 				break;
 			}
 		}
