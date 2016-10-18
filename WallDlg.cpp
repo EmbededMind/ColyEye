@@ -464,14 +464,13 @@ bool __stdcall messageCallbackFunc(long lLoginID, char* pBuf, unsigned long dwBu
 
 void CWallDlg::OnTimer(UINT_PTR nIDEvent)
 {	
+	CCamera* pCamera = CCameraManager::getInstance()->findCameraById(nIDEvent);
 	if (nIDEvent <= CAMERA_MAX_NUM) {
-		CCamera* pCamera = CCameraManager::getInstance()->findCameraById(nIDEvent);
-		if (pCamera) {
+		if (pCamera&&pCamera->mLoginId) {
 			pCamera->stopRecord();
 			RecordFileManager* pMgr = RecordFileManager::GetInstance();
 			pMgr->RecallRecordFile(pCamera->mId, RECORD_TYPE_NORMAL);
 			pCamera->startRecord(pMgr->DistributeRecordFile(pCamera->mId, RECORD_TYPE_NORMAL));
-
 			Util::ShowMemoryInfo();		
 		}
 	}

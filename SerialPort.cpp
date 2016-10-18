@@ -41,7 +41,6 @@ CSerialPort::CSerialPort()
     m_nWriteSize = 1;
 
 	m_queueth = 0;
-	m_charth = 0;
 }
 
 //
@@ -304,7 +303,7 @@ UINT CSerialPort::CommThread(LPVOID pParam)
     DWORD dwError = 0;
 	static COMSTAT comstat;
     BOOL  bResult = TRUE;
-        
+	int length = 0;
     // Clear comm buffers at startup
     if (port->m_hComm)        // check if the port is opened
         PurgeComm(port->m_hComm, PURGE_RXCLEAR | PURGE_TXCLEAR | PURGE_RXABORT | PURGE_TXABORT);
@@ -337,7 +336,6 @@ UINT CSerialPort::CommThread(LPVOID pParam)
                     // This is a normal return value if there are no bytes
                     // to read at the port.
                     // Do nothing and continue
-				    // 没有字符了，在这里POST
                     break;
                 }
             case 87:
@@ -404,7 +402,7 @@ UINT CSerialPort::CommThread(LPVOID pParam)
             {
                 // Shutdown event.  This is event zero so it will be
                 // the higest priority and be serviced first.
-
+			    
                  port->m_bThreadAlive = FALSE;
                 
                 // Kill this thread.  break is not needed, but makes me feel better.
@@ -413,10 +411,29 @@ UINT CSerialPort::CommThread(LPVOID pParam)
             }
         case 1:    // read event
             {
+				ResetEvent(port->m_ov.hEvent);
                 GetCommMask(port->m_hComm, &CommEvent);
-                if (CommEvent & EV_RXCHAR) //接收到字符，并置于输入缓冲区中 
-                    ReceiveData(port, comstat);
-                
+				ClearCommError(port->m_hComm, &dwError, &comstat);
+				if ((CommEvent & EV_RXCHAR)&& comstat.cbInQue) //接收到字符，并置于输入缓冲区中
+				{
+					while (1)
+					{
+						ClearCommError(port->m_hComm, &dwError, &comstat);
+						if (length != comstat.cbInQue)
+						{
+							length = comstat.cbInQue;
+							Sleep(2);
+						}
+						else
+						{
+							ReceiveData(port, comstat);
+							port->m_queuecom[port->m_queueth].num = length;
+							::SendMessage((port->m_pOwner)->m_hWnd, WM_COMM_RXDATA, (WPARAM)(&(port->m_queuecom[port->m_queueth])), (LPARAM)port->m_nPortNr);
+							length = 0;
+							break;
+						}
+					}
+				}
                 if (CommEvent & EV_CTS) //CTS信号状态发生变化
                     ::SendMessage(port->m_pOwner->m_hWnd, WM_COMM_CTS_DETECTED, (WPARAM) 0, (LPARAM) port->m_nPortNr);
                 if (CommEvent & EV_RXFLAG) //接收到事件字符，并置于输入缓冲区中 
@@ -631,25 +648,6 @@ void CSerialPort::ReceiveData(CSerialPort* port, COMSTAT comstat)
         
         if (comstat.cbInQue == 0)
         {
-            // break out when all bytes have been read
-			//if (port->m_charth == 1)
-			//{
-			//	port->m_charth = 0;
-			//	::SendMessage((port->m_pOwner)->m_hWnd, WM_COMM_RXCHAR, (WPARAM)RXBuff, (LPARAM)port->m_nPortNr);
-			//}
-			//else if(port->m_charth > 1)
-			//{
-			if (port->m_charth > 0)
-			{
-				port->m_queuecom[port->m_queueth].num = port->m_charth;
-				port->m_charth = 0;
-				::SendMessage((port->m_pOwner)->m_hWnd, WM_COMM_RXDATA, (WPARAM)(&(port->m_queuecom[port->m_queueth])), (LPARAM)port->m_nPortNr);
-				if (port->m_queueth == 19)
-					port->m_queueth = 0;
-				else
-					port->m_queueth++;
-			}
-			/*}*/
             break;
         }
                         
@@ -658,13 +656,10 @@ void CSerialPort::ReceiveData(CSerialPort* port, COMSTAT comstat)
         if (bRead)
         {
             bResult = ReadFile(port->m_hComm,        // Handle to COMM port 
-                               &RXBuff,                // RX Buffer Pointer
-                               1,                    // Read one byte
+				               port->m_queuecom[port->m_queueth].ch,                // RX Buffer Pointer
+                               comstat.cbInQue,                    // Read one byte
                                &BytesRead,            // Stores number of bytes read
                                &port->m_ov);        // pointer to the m_ov structure
-			//time = GetTickCount();
-			//TRACE(_T("time = %d\n"), time);
-            // deal with the error code 
             if (!bResult)  
             { 
                 switch (dwError = GetLastError()) 
@@ -689,6 +684,7 @@ void CSerialPort::ReceiveData(CSerialPort* port, COMSTAT comstat)
                 // ReadFile() returned complete. It is not necessary to call GetOverlappedResults()
                 bRead = TRUE;
             }
+			
         }  // close if (bRead)
 
         if (!bRead)
@@ -706,12 +702,7 @@ void CSerialPort::ReceiveData(CSerialPort* port, COMSTAT comstat)
         }  // close if (!bRead)
                 
         LeaveCriticalSection(&port->m_csCommunicationSync);
-
-        // notify parent that a byte was received
-        //::SendMessage((port->m_pOwner)->m_hWnd, WM_COMM_RXCHAR, (WPARAM) RXBuff, (LPARAM) port->m_nPortNr);
-		port->m_queuecom[port->m_queueth].ch[port->m_charth] = RXBuff;
-		port->m_charth++;
-		Sleep(2);
+		break;
     } // end forever loop
 
 }

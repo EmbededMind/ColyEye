@@ -5,7 +5,7 @@
 #include "ColyEye.h"
 #include "CameraConfDlg.h"
 #include "afxdialogex.h"
-
+#include "RecordFileManager.h"
 
 // CCameraConfDlg 对话框
 
@@ -35,13 +35,13 @@ void CCameraConfDlg::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CCameraConfDlg, CDialogEx)
-
-
 	ON_MESSAGE(USER_MSG_GIVE_FOCUS, &CCameraConfDlg::OnUserMsgGiveFocus)
 	ON_MESSAGE(USER_MSG_DEVICE_CONFIG, &CCameraConfDlg::OnUserMsgDeviceConfig)
-
 	ON_WM_HSCROLL()
-
+	ON_BN_CLICKED(IDC_BUTTON1, &CCameraConfDlg::OnBnClickedButton1)
+	ON_BN_CLICKED(IDC_BUTTON2, &CCameraConfDlg::OnBnClickedButton2)
+	ON_BN_CLICKED(IDC_BUTTON3, &CCameraConfDlg::OnBnClickedButton3)
+	ON_BN_CLICKED(IDC_BUTTON4, &CCameraConfDlg::OnBnClickedButton4)
 END_MESSAGE_MAP()
 
 
@@ -240,4 +240,41 @@ void CCameraConfDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	}	
 	CDialogEx::OnHScroll(nSBCode, mVolume, pScrollBar);
 
+}
+
+
+void CCameraConfDlg::OnBnClickedButton1()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	if (pCamera->mLoginId)
+	{
+		pCamera->stopRecord();
+		RecordFileManager* pMgr = RecordFileManager::GetInstance();
+		pMgr->RecallRecordFile(pCamera->mId, RECORD_TYPE_NORMAL);
+		pCamera->logout();
+	}
+	else
+	{
+		pCamera->login();
+		RecordFileManager* pMgr = RecordFileManager::GetInstance();
+		pCamera->startRecord(pMgr->DistributeRecordFile(pCamera->mId, RECORD_TYPE_NORMAL));
+	}
+}
+
+
+void CCameraConfDlg::OnBnClickedButton2()
+{
+	// TODO: 在此添加控件通知处理程序代码
+}
+
+
+void CCameraConfDlg::OnBnClickedButton3()
+{
+	// TODO: 在此添加控件通知处理程序代码
+}
+
+
+void CCameraConfDlg::OnBnClickedButton4()
+{
+	// TODO: 在此添加控件通知处理程序代码
 }
