@@ -14,7 +14,6 @@ IMPLEMENT_DYNAMIC(CCameraConfDlg, CDialogEx)
 CCameraConfDlg::CCameraConfDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(IDD_CAMERA_CONF, pParent)
 	, mCurrName(_T(""))
-	, mVolumn(0)
 {
 
 }
@@ -29,7 +28,6 @@ void CCameraConfDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT1, mCurrName);
 	DDX_Control(pDX, IDC_BUTTON1, mSwitch);
 	DDX_Control(pDX, IDC_BUTTON2, mPicDirection);
-	DDX_Slider(pDX, IDC_SLIDER1, mVolumn);
 	DDX_Control(pDX, IDC_BUTTON3, mStoreSwitch);
 	DDX_Control(pDX, IDC_BUTTON4, mAutoWatchSwitch);
 	DDX_Control(pDX, IDC_SLIDER1, mSlider);
@@ -99,18 +97,20 @@ BOOL CCameraConfDlg::PreTranslateMessage(MSG* pMsg)
 		case VK_LEFT:
 			if (id >= 1 && id <= 18) {
 				if (id > 1) {
-					FocusJumpTo(id -1);
+					FocusJumpTo(id - 1);
 				}
+				return true;
 			}
-			return true;
+			break;
 
 		case VK_RIGHT:
 			if (id >= 1 && id <= 18) {
 				if (id < 18) {
-					FocusJumpTo(id+1);
+					FocusJumpTo(id + 1);
 				}
+				return true;
 			}
-			return true;
+			break;
 
 		case VK_RETURN:
 			if (id >= 1 && id <= 18) {
@@ -137,10 +137,12 @@ BOOL CCameraConfDlg::OnInitDialog()
 	CDialogEx::OnInitDialog();
 
 	// TODO:  在此添加额外的初始化
+	mVolume = 5;
 	InitNameItem();
 	InitPanel();
-	mSlider.SetRange(0,10);
+	mSlider.SetRange(0,10,TRUE);
 	mSlider.SetTicFreq(1);
+	mSlider.SetPos(mVolume);
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 异常: OCX 属性页应返回 FALSE
 }
@@ -202,17 +204,16 @@ void CCameraConfDlg::InitNameItem()
 void CCameraConfDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
+	int curpos = mSlider.GetPos();
 	switch (nSBCode)
 	{
-	case SB_LINELEFT:
-		mVolumn = nPos;
+	case SB_ENDSCROLL:
+		if (mVolume != curpos)
+		{
+			mVolume = curpos;
+			TRACE(_T("mVolume = %d\n"), mVolume);
+		}
 		break;
-	case SB_LINERIGHT:
-		mVolumn = nPos;
-		break;
-	case SB_THUMBPOSITION:
-		mVolumn = nPos;
-		break;
-	}
-	CDialogEx::OnHScroll(nSBCode, nPos, pScrollBar);
+	}	
+	CDialogEx::OnHScroll(nSBCode, mVolume, pScrollBar);
 }

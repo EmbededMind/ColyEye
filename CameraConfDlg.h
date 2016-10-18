@@ -29,12 +29,13 @@ public:
 	CString mCurrName;
 	CButton mSwitch;
 	CButton mPicDirection;
-	int mVolumn;
 	CButton mStoreSwitch;
 	CButton mAutoWatchSwitch;
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual BOOL OnInitDialog();
 	CSliderCtrl mSlider;
+	int mVolume;
+	SCROLLINFO mHScrollInfo;
 private:
 	CTagButton  mNameItems[18];
 
