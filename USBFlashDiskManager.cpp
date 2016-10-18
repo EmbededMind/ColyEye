@@ -60,11 +60,11 @@ BOOL CUSBFlashDiskManager::InitUSB(CWnd * pUSBOwner, CString diskname)
 	else
 		m_scanEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 
-	m_hEventArray[0] = m_scanEvent;
-	m_hEventArray[1] = m_copyEvent;
-	m_hEventArray[2] = m_updataEvent;
-	m_hEventArray[3] = m_endEvent;
-
+	m_hEventArray[0] = m_endEvent;
+	m_hEventArray[1] = m_scanEvent;
+	m_hEventArray[2] = m_copyEvent;
+	m_hEventArray[3] = m_updataEvent;
+	
 	m_diskflag = diskname;
 	m_owner = pUSBOwner;
 	
@@ -84,6 +84,12 @@ UINT CUSBFlashDiskManager::USBThread(LPVOID pParam)
 		switch (Event)
 		{
 		case 0:
+			TRACE("m_endEvent\n");
+			usb->m_isThreadAlive = FALSE;
+			ResetEvent(usb->m_endEvent);
+			AfxEndThread(100);
+			break;
+		case 1:
 			ULARGE_INTEGER   uiFreeBytesAvailableToCaller;
 			ULARGE_INTEGER   uiTotalNumberOfBytes;
 			ULARGE_INTEGER   uiTotalNumberOfFreeBytes;
@@ -104,14 +110,13 @@ UINT CUSBFlashDiskManager::USBThread(LPVOID pParam)
 			}
 			ResetEvent(usb->m_scanEvent);
 			break;
-		case 1:
+		case 2:
 		{
-			usb->m_copyFromPath += _T('\0');
-			usb->m_diskflag += _T("\\");
 			TRACE("m_copyEvent\n");
 			SHFILEOPSTRUCT FileOp = { 0 };
-			FileOp.fFlags = FOF_NOCONFIRMATION | FOF_NOCONFIRMMKDIR;
+			FileOp.fFlags = FOF_NOCONFIRMATION | FOF_NOCONFIRMMKDIR| FOF_SIMPLEPROGRESS | FOF_NOERRORUI;
 			FileOp.pFrom = usb->m_copyFromPath;
+			FileOp.lpszProgressTitle = _T("录像文件复制中...");
 			FileOp.pTo = usb->m_diskflag;
 			FileOp.wFunc = FO_COPY;
 			FileOp.hwnd = usb->m_owner->GetSafeHwnd();
@@ -119,15 +124,9 @@ UINT CUSBFlashDiskManager::USBThread(LPVOID pParam)
 			ResetEvent(usb->m_copyEvent);
 		}
 			break;
-		case 2:
+		case 3:
 			TRACE("m_updataEvent\n");
 			ResetEvent(usb->m_updataEvent);
-			break;
-		case 3:
-			TRACE("m_endEvent\n");
-			usb->m_isThreadAlive = FALSE;
-			ResetEvent(usb->m_endEvent);
-			AfxEndThread(100);
 			break;
 		}
 	}
@@ -170,7 +169,7 @@ BOOL CUSBFlashDiskManager::Updata()
 
 BOOL CUSBFlashDiskManager::CopyRecord(CString path)
 {
-	m_copyFromPath = path;
+	m_copyFromPath = path + _T('\0');
 	SetEvent(m_copyEvent);
 	return 0;
 }

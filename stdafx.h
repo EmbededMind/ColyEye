@@ -75,10 +75,12 @@
 
 #define USER_MSG_DEVICE_CONFIG        (WM_USER + 160)
 
-
+#define RECORD_PATH                   "e:\\Record\\"
 #define NORMAL_RECORD_PATH            "e:\\Record\\normal\\"
 #define ALARM_RECORD_PATH             "e:\\Record\\alarm\\"
 
+#define COM_KEYBD    8
+#define COM_CAMERA   10
 
 extern 	SQLiteWrapper sqlite;
 

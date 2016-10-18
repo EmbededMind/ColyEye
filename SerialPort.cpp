@@ -415,7 +415,7 @@ UINT CSerialPort::CommThread(LPVOID pParam)
             {
                 GetCommMask(port->m_hComm, &CommEvent);
                 if (CommEvent & EV_RXCHAR) //接收到字符，并置于输入缓冲区中 
-                    ReceiveChar(port, comstat);
+                    ReceiveData(port, comstat);
                 
                 if (CommEvent & EV_CTS) //CTS信号状态发生变化
                     ::SendMessage(port->m_pOwner->m_hWnd, WM_COMM_CTS_DETECTED, (WPARAM) 0, (LPARAM) port->m_nPortNr);
@@ -591,7 +591,7 @@ void CSerialPort::WriteChar(CSerialPort* port)
 //
 // Character received. Inform the owner
 //
-void CSerialPort::ReceiveChar(CSerialPort* port, COMSTAT comstat)
+void CSerialPort::ReceiveData(CSerialPort* port, COMSTAT comstat)
 {
     BOOL  bRead = TRUE; 
     BOOL  bResult = TRUE;
