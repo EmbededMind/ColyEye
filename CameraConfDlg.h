@@ -2,7 +2,12 @@
 #include "afxwin.h"
 #include "VirtualPanel.h"
 #include "TagButton.h"
+
 #include "CameraManager.h"
+
+#include "afxcmn.h"
+
+
 
 // CCameraConfDlg ¶Ô»°¿ò
 
@@ -35,9 +40,10 @@ public:
 	virtual BOOL OnInitDialog();
 
 
+
 protected:
 	afx_msg LRESULT OnUserMsgGiveFocus(WPARAM wParam, LPARAM lParam);
-
+	CSliderCtrl mSlider;
 
 private:
 	CCamera*    pCamera;
@@ -52,6 +58,11 @@ private:
 
 	void FocusJumpTo(int dst_id);
 
+
 protected:
 	afx_msg LRESULT OnUserMsgDeviceConfig(WPARAM wParam, LPARAM lParam);
+
+public:
+	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+
 };

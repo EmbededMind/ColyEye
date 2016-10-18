@@ -213,6 +213,7 @@ BOOL CSystemConfigDlg::PreTranslateMessage(MSG* pMsg)
 		{
 		case VK_RIGHT:
 			inx = pFocusedWnd->GetDlgCtrlID() - IDC_BUTTON1;
+
 				
 			if (inx >= 0 && inx < 3) {
 				mSubViews[inx]->SetFocus();

@@ -31,6 +31,12 @@ public:
 		{
 			CreateDirectory(_T(ALARM_RECORD_PATH), NULL);
 		}
+
+		if (!PathIsDirectory(_T(SOUND_PATH)))
+		{
+			CreateDirectory(_T(SOUND_PATH), NULL);
+		}
+
 		CString strRecordPath, temp;
 		for (int i = 1; i <= 6; i++)
 		{
@@ -49,7 +55,6 @@ public:
 		static RecordFileManager instance;
 		return &instance;
 	}
-
 
 private:
 	CFile m_aRecordFiles[CAMERA_MAX_NUM];
