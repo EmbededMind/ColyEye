@@ -39,4 +39,8 @@ private:
 	void ShowSubDlg();
 public:
 	virtual BOOL OnInitDialog();
+protected:
+	afx_msg LRESULT OnUserMsgGiveFocus(WPARAM wParam, LPARAM lParam);
+public:
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 };

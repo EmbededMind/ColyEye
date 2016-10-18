@@ -210,6 +210,7 @@ BEGIN_MESSAGE_MAP(CWallDlg, CDialogEx)
 	ON_MESSAGE(USER_MSG_LOGIN, &CWallDlg::OnUserMsgLogin)
 	ON_WM_TIMER()
 	ON_MESSAGE(USER_MSG_BRING, &CWallDlg::OnUserMsgBring)
+	ON_MESSAGE(USER_MSG_RELOGIN, &CWallDlg::OnUserMsgReLogin)
 END_MESSAGE_MAP()
 
 
@@ -247,6 +248,9 @@ BOOL CWallDlg::OnInitDialog()
 
 
 
+/**@brief 设备登录消息处理
+ *
+ */
 afx_msg LRESULT CWallDlg::OnUserMsgLogin(WPARAM wParam, LPARAM lParam)
 {
 	if (wParam) {
@@ -282,13 +286,58 @@ afx_msg LRESULT CWallDlg::OnUserMsgLogin(WPARAM wParam, LPARAM lParam)
 
 
 
+/**@brief 设备掉线重连接的消息处理
+ *
+ */
+afx_msg LRESULT CWallDlg::OnUserMsgReLogin(WPARAM wParam, LPARAM lParam)
+{
+	if (wParam)
+	{
+		Device_Map::iterator iter;
+		CCamera* pDev = (CCamera*)lParam;
+
+		pDev->subscribeAlarmMessage();
+		TRACE("after subcribe alarm message\n");
+		Util::ShowMemoryInfo();
+
+		pDev->startRealPlay();
+		TRACE("after start real play\n");
+		Util::ShowMemoryInfo();
+
+		SetTimer(pDev->mId, 30 * 1000, NULL);
+		TRACE("after set timer\n");
+		Util::ShowMemoryInfo();
+
+		CFile* pf = RecordFileManager::GetInstance()->DistributeRecordFile(pDev->mId, RECORD_TYPE_NORMAL);
+		TRACE("after distribute file\n");
+		Util::ShowMemoryInfo();
+
+		pDev->startRecord(pf);
+		TRACE("after start record\n");
+		Util::ShowMemoryInfo();
+
+		iter = mDevReconnectMap.find(pDev->mId);
+
+		if (iter != mDevReconnectMap.end()) {
+			mDevReconnectMap.erase(iter);
+		}
+
+		if (0 == mDevReconnectMap.size()) {
+			KillTimer(RECONNET_TIMER_EVENT_ID);
+		}
+	}
+
+	return 0;
+}
+
+
 /**@brief 中断正常录像
  *
  * @param [in] 要中断录像的摄像机
  */
 void CWallDlg::interruptRecord(CCamera* pCamera)
 {
-	assert(pCamera != nullptr);
+	ASSERT(pCamera != nullptr);
 
 	if (pCamera->isRecording) {
 		pCamera->stopRecord();
@@ -306,10 +355,10 @@ void CWallDlg::interruptRecord(CCamera* pCamera)
  */
 void CWallDlg::interruptAlarmRecord(CCamera* pCamera)
 {
-	assert(pCamera != nullptr);
+	ASSERT(pCamera != nullptr);
 
 	
-	if (pCamera->isAlarmRecording == true) {
+	if (pCamera->isAlarmRecording == TRUE) {
 		int i = pCamera->mId - 1;
 		if (alarmRecordStatus.flag  &  (0x01 << i)) {
 			alarmRecordStatus.flagCnts[i] = 0;
@@ -332,21 +381,33 @@ void CWallDlg::interruptAlarmRecord(CCamera* pCamera)
  */
 void CWallDlg::ReConnect(LONG lLoginID, char* pchDVRIP, LONG nDVRPort)
 {
-	POSITION pos = mHolderes.GetHeadPosition();
-	CSurfaceHolderDlg* pHolder;
-	while (pos) {
-		pHolder = (CSurfaceHolderDlg*)mHolderes.GetNext(pos);
-		if (pHolder->pCamera->mLoginId == lLoginID) {
-			pHolder->pCamera->logout();
-			interruptAlarmRecord(pHolder->pCamera);
-			interruptRecord(pHolder->pCamera);
-			pHolder->pCamera->stopRealPlay();
-			pHolder->pCamera->unsubscribeAlarmMessage();			
-			mDevReconnectMap[pHolder->pCamera->mId] = pHolder->pCamera;
-			SetTimer(RECONNET_TIMER_EVENT_ID, 30*1000, NULL);
-			return;
-		}
+	CCamera* pDev = CCameraManager::getInstance()->findCameraByLoginId(lLoginID);
+
+	if (pDev != nullptr) {
+		pDev->logout();
+		interruptAlarmRecord(pDev);
+		interruptRecord(pDev);
+		pDev->stopRealPlay();
+		pDev->unsubscribeAlarmMessage();
+		mDevReconnectMap[pDev->mId] = pDev;
+		SetTimer(RECONNET_TIMER_EVENT_ID, 30*1000, NULL);
 	}
+
+	//POSITION pos = mHolderes.GetHeadPosition();
+	//CSurfaceHolderDlg* pHolder;
+	//while (pos) {
+	//	pHolder = (CSurfaceHolderDlg*)mHolderes.GetNext(pos);
+	//	if (pHolder->pCamera->mLoginId == lLoginID) {
+	//		pHolder->pCamera->logout();
+	//		interruptAlarmRecord(pHolder->pCamera);
+	//		interruptRecord(pHolder->pCamera);
+	//		pHolder->pCamera->stopRealPlay();
+	//		pHolder->pCamera->unsubscribeAlarmMessage();			
+	//		mDevReconnectMap[pHolder->pCamera->mId] = pHolder->pCamera;
+	//		SetTimer(RECONNET_TIMER_EVENT_ID, 30*1000, NULL);
+	//		return;
+	//	}
+	//}
 }
 
 
@@ -359,13 +420,16 @@ void __stdcall disConnnectCallback(LONG lLoginID, char* pchDVRIP, LONG nDVRPort,
 
 	//H264_DVR_Logout(lLoginID);
 	CWallDlg* pThis = (CWallDlg*)dwUser;
-	assert(pThis != nullptr);
+	ASSERT(pThis != nullptr);
 
 	pThis->ReConnect(lLoginID, pchDVRIP, nDVRPort);
 }
 
 
-
+/**@brief 设备订阅消息回调处理
+ *
+ *
+ */
 bool __stdcall messageCallbackFunc(long lLoginID, char* pBuf, unsigned long dwBufLen, long dwUser)
 {
 	TRACE("Something happened! %d\n", lLoginID);
@@ -399,9 +463,7 @@ bool __stdcall messageCallbackFunc(long lLoginID, char* pBuf, unsigned long dwBu
 
 
 void CWallDlg::OnTimer(UINT_PTR nIDEvent)
-{
-	static bool flag = false;
-	// TODO: 在此添加消息处理程序代码和/或调用默认值
+{	
 	if (nIDEvent <= CAMERA_MAX_NUM) {
 		CCamera* pCamera = CCameraManager::getInstance()->findCameraById(nIDEvent);
 		if (pCamera) {
@@ -413,6 +475,7 @@ void CWallDlg::OnTimer(UINT_PTR nIDEvent)
 			Util::ShowMemoryInfo();		
 		}
 	}
+	// 报警录像打包判断
 	else if (nIDEvent == ALARM_TIMER_EVENT_ID) {
 		TRACE("alarm timer event\n");
 		if (alarmRecordStatus.flag) {
@@ -448,42 +511,49 @@ void CWallDlg::OnTimer(UINT_PTR nIDEvent)
 	else if (nIDEvent == RECONNET_TIMER_EVENT_ID) {
 		TRACE("execute reconnect\n");
 		Device_Map::iterator p = mDevReconnectMap.begin();
+
 		while (p != mDevReconnectMap.end()) {
-			CCamera* pDev = p->second;
-
-			if (pDev->login()) {
-				TRACE("%s ReLogin\n", pDev->mIp);
-				mDevReconnectMap.erase(p++);
-
-				pDev->subscribeAlarmMessage();
-				TRACE("after subcribe alarm message\n");
-				Util::ShowMemoryInfo();
-
-				pDev->startRealPlay();	
-				TRACE("after start real play\n");
-				Util::ShowMemoryInfo();
-
-				SetTimer(pDev->mId, 30 * 1000, NULL);
-				TRACE("after set timer\n");
-				Util::ShowMemoryInfo();
-
-				CFile* pf = RecordFileManager::GetInstance()->DistributeRecordFile(pDev->mId, RECORD_TYPE_NORMAL);
-				TRACE("after distribute file\n");
-				Util::ShowMemoryInfo();
-
-				pDev->startRecord(pf);
-				TRACE("after start record\n");
-				Util::ShowMemoryInfo();
-			}
-			else {
-				p++;
-			}
+			PostThreadMessage( ((CColyEyeApp*)AfxGetApp())->pidOfLoginThread, USER_MSG_RELOGIN, 0, (LPARAM)p->second );
+			p++;
 		}
+		
+		//while (p != mDevReconnectMap.end()) {
+			//CCamera* pDev = p->second;
 
-		if (0 == mDevReconnectMap.size()) {
-			KillTimer(RECONNET_TIMER_EVENT_ID);
-		}
+		//	if (pDev->login()) {
+		//		TRACE("%s ReLogin\n", pDev->mIp);
+		//		mDevReconnectMap.erase(p++);
+
+		//		pDev->subscribeAlarmMessage();
+		//		TRACE("after subcribe alarm message\n");
+		//		Util::ShowMemoryInfo();
+
+		//		pDev->startRealPlay();	
+		//		TRACE("after start real play\n");
+		//		Util::ShowMemoryInfo();
+
+		//		SetTimer(pDev->mId, 30 * 1000, NULL);
+		//		TRACE("after set timer\n");
+		//		Util::ShowMemoryInfo();
+
+		//		CFile* pf = RecordFileManager::GetInstance()->DistributeRecordFile(pDev->mId, RECORD_TYPE_NORMAL);
+		//		TRACE("after distribute file\n");
+		//		Util::ShowMemoryInfo();
+
+		//		pDev->startRecord(pf);
+		//		TRACE("after start record\n");
+		//		Util::ShowMemoryInfo();
+		//	}
+		//	else {
+		//		p++;
+		//	}
+		//}
+
+		//if (0 == mDevReconnectMap.size()) {
+		//	KillTimer(RECONNET_TIMER_EVENT_ID);
+		//}
 	}
+	// 1s 定时时间到
 	else if (SECOND_TICK_TIMER_EVENT_ID){
 		mSystemTime = CTime::GetCurrentTime();
 		UpdateData(false);

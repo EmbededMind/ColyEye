@@ -35,6 +35,7 @@ void CSystemConfigDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CSystemConfigDlg, CDialogEx)
 	ON_MESSAGE(USER_MSG_NOTIFY_FOCUS, &CSystemConfigDlg::OnUserMsgNotifyFocus)
 	ON_MESSAGE(USER_MSG_LOGIN, &CSystemConfigDlg::OnUserMsgLogin)
+	ON_MESSAGE(USER_MSG_GIVE_FOCUS, &CSystemConfigDlg::OnUserMsgGiveFocus)
 END_MESSAGE_MAP()
 
 
@@ -102,7 +103,7 @@ void CSystemConfigDlg::ShowSubView()
 				mSubViews[3]->ShowWindow(SW_SHOW);
 			}
 
-			::SendMessage(mSubViews[3]->m_hWnd, USER_MSG_DEVICE_CONFIG, mCurrCursor-3, 0);
+			::SendMessage(mSubViews[3]->m_hWnd, USER_MSG_DEVICE_CONFIG, mCurrCursor-2, 0);
 		}
 		//其他按钮得到焦点
 		else {
@@ -191,4 +192,56 @@ afx_msg LRESULT CSystemConfigDlg::OnUserMsgLogin(WPARAM wParam, LPARAM lParam)
 {
 	UpdateItemLayout();
 	return 0;
+}
+
+
+afx_msg LRESULT CSystemConfigDlg::OnUserMsgGiveFocus(WPARAM wParam, LPARAM lParam)
+{
+	GetDlgItem(IDC_BUTTON1)->SetFocus();
+	return 0;
+}
+
+
+BOOL CSystemConfigDlg::PreTranslateMessage(MSG* pMsg)
+{
+	// TODO: 在此添加专用代码和/或调用基类
+	if (pMsg->message == WM_KEYDOWN) {
+		CWnd* pFocusedWnd = GetFocus();
+		int inx = -1;
+
+		switch (pMsg->wParam)
+		{
+		case VK_RIGHT:
+			inx = pFocusedWnd->GetDlgCtrlID() - IDC_BUTTON1;
+				
+			if (inx >= 0 && inx < 3) {
+				mSubViews[inx]->SetFocus();
+			}
+			else if (inx < 9) {
+				::SendMessage(mSubViews[3]->m_hWnd, USER_MSG_GIVE_FOCUS, inx - 3, 0);
+			}
+			return true;
+
+		case VK_UP:
+			keybd_event(VK_SHIFT, 0, 0, 0);
+			keybd_event(VK_TAB, 0, 0, 0);
+			keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);
+			keybd_event(VK_TAB, 0, KEYEVENTF_KEYUP, 0);
+			return true;
+
+		case VK_DOWN:
+			keybd_event(VK_TAB, 0, 0, 0);
+			keybd_event(VK_TAB, 0, KEYEVENTF_KEYUP, 0);
+			return true;
+
+		case VK_BACK:
+			inx = pFocusedWnd->GetDlgCtrlID() - IDC_BUTTON1;
+			if (inx >= 0 && inx < 9) {
+				TRACE("tag btn %d case back\n", inx );
+				::SendMessage(GetParent()->m_hWnd, USER_MSG_NOTIFY_BACK, 1, (LPARAM)this);
+			}
+			return true;
+		}
+	}
+	return CDialogEx::PreTranslateMessage(pMsg);
 }

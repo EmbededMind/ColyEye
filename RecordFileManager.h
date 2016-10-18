@@ -7,7 +7,10 @@ class RecordFileManager :
 	public Subject
 {
 private:
-	RecordFileManager() {}
+	RecordFileManager() 
+	{
+		
+	}
 	RecordFileManager(const RecordFileManager&);
 	RecordFileManager & operator = (const RecordFileManager &);
 	~RecordFileManager() {}
@@ -15,7 +18,34 @@ private:
 
 public:
 	static RecordFileManager * GetInstance()
-	{		
+	{
+		if (!PathIsDirectory(_T(RECORD_PATH)))
+		{
+			CreateDirectory(_T(RECORD_PATH), NULL);
+		}
+		if (!PathIsDirectory(_T(NORMAL_RECORD_PATH)))
+		{
+			CreateDirectory(_T(NORMAL_RECORD_PATH), NULL);
+		}
+		if (!PathIsDirectory(_T(ALARM_RECORD_PATH)))
+		{
+			CreateDirectory(_T(ALARM_RECORD_PATH), NULL);
+		}
+		CString strRecordPath, temp;
+		for (int i = 1; i <= 6; i++)
+		{
+			temp.Format(_T("%d\\"), i);
+			strRecordPath = _T(NORMAL_RECORD_PATH) + temp;
+			if (!PathIsDirectory(strRecordPath))
+			{
+				CreateDirectory(strRecordPath, NULL);
+			}
+			strRecordPath = _T(ALARM_RECORD_PATH) + temp;
+			if (!PathIsDirectory(strRecordPath))
+			{
+				CreateDirectory(strRecordPath, NULL);
+			}
+		}
 		static RecordFileManager instance;
 		return &instance;
 	}

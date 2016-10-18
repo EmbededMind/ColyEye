@@ -33,6 +33,7 @@ public:
 	virtual BOOL OnInitDialog();
 protected:
 	afx_msg LRESULT OnUserMsgLogin(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnUserMsgReLogin(WPARAM wParam, LPARAM lParam);
 
 private:
 	CPtrList mHolderes;

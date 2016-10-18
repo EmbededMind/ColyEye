@@ -33,6 +33,7 @@ BEGIN_MESSAGE_MAP(CRecordMenuDlg, CDialogEx)
 	ON_MESSAGE(USER_MSG_NOTIFY_FOCUS, &CRecordMenuDlg::OnUserMsgNotifyFocus)
 	ON_MESSAGE(USER_MSG_ADD_FILE, &CRecordMenuDlg::OnUserMsgAddFile)
 	ON_MESSAGE(USER_MSG_DEL_FILE, &CRecordMenuDlg::OnUserMsgDelFile)
+	ON_MESSAGE(USER_MSG_GIVE_FOCUS, &CRecordMenuDlg::OnUserMsgGiveFocus)
 END_MESSAGE_MAP()
 
 
@@ -120,7 +121,10 @@ BOOL CRecordMenuDlg::PreTranslateMessage(MSG* pMsg)
 		switch (pMsg->wParam)
 		{
 		case VK_RIGHT:
-			inx = pFocusedWnd->GetDlgCtrlID();
+			inx = pFocusedWnd->GetDlgCtrlID() - IDC_BUTTON1;
+			if (inx >= 0 && inx < CAMERA_MAX_NUM) {
+				mFileTrees[inx].SetFocus();
+			}
 			return true;
 			
 		case VK_UP:
@@ -135,13 +139,15 @@ BOOL CRecordMenuDlg::PreTranslateMessage(MSG* pMsg)
 			keybd_event(VK_TAB, 0, KEYEVENTF_KEYUP, 0);
 			return true;
 
-		//case VK_TAB:
-		//	inx = pFocusedWnd->GetDlgCtrlID() - IDC_BUTTON7;
-		//	if (inx >= 0 && inx < CAMERA_MAX_NUM) {
-		//		mCurrCursor = inx;
-		//		showTreeCtrl();
-		//	}
-		//	return CDialogEx::PreTranslateMessage(pMsg);
+		case VK_BACK:
+			inx = pFocusedWnd->GetDlgCtrlID();
+			if (inx >= IDC_TREE1  &&  inx < IDC_TREE1 + CAMERA_MAX_NUM) {
+				mItems[inx-IDC_TREE1].SetFocus();
+			}
+			else if (inx >= IDC_BUTTON1  &&  inx < IDC_BUTTON1 + CAMERA_MAX_NUM) {
+				::SendMessage(GetParent()->m_hWnd, USER_MSG_NOTIFY_BACK, 3, (LPARAM)this);
+			}
+			return true;
 
 		default:
 			return CDialogEx::PreTranslateMessage(pMsg);
@@ -189,5 +195,12 @@ afx_msg LRESULT CRecordMenuDlg::OnUserMsgDelFile(WPARAM wParam, LPARAM lParam)
 
 		}
 	}
+	return 0;
+}
+
+
+afx_msg LRESULT CRecordMenuDlg::OnUserMsgGiveFocus(WPARAM wParam, LPARAM lParam)
+{
+	GetDlgItem(IDC_BUTTON1)->SetFocus();
 	return 0;
 }

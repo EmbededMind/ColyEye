@@ -327,4 +327,3 @@ UINT8 RecordFileManager::DeleteRecordFile(CString & delPath)
 	}
 	return UINT8();
 }
-

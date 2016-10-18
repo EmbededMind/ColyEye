@@ -203,6 +203,30 @@ unsigned int __stdcall loginThread(PVOID pM)
 				}
 				break;
 		     }
+
+			case USER_MSG_RELOGIN:
+			{
+				int errCode = 0;
+				CCamera* pCamera = (CCamera*)msg.lParam;
+				if (pCamera) {
+					Util::ShowMemoryInfo();
+					long loginId = H264_DVR_Login(pCamera->mIp, pCamera->mPort, pCamera->mUserName, pCamera->mPwd,
+						&pCamera->deviceInfo, &errCode);
+					Util::ShowMemoryInfo();
+
+					if (loginId) {
+						TRACE("%s login Ok\n", pCamera->mIp);
+						pCamera->mLoginId = loginId;
+						PostMessage(((CColyEyeDlg*)(AfxGetApp()->m_pMainWnd))->mWall.m_hWnd, USER_MSG_RELOGIN, TRUE, msg.lParam);
+					}
+					else {
+						TRACE("%s login fail. error code:%d\n", pCamera->mIp, errCode);
+						PostMessage(((CColyEyeDlg*)(AfxGetApp()->m_pMainWnd))->mWall.m_hWnd, USER_MSG_RELOGIN, FALSE, msg.lParam);
+						//delete(pCamera);
+					}
+				}
+				break;
+			}
 		}
 		DispatchMessage(&msg);
 	}

@@ -57,6 +57,7 @@
 
 #define USER_MSG_LOGIN    (WM_USER + 100)
 #define USER_MSG_SCAN_DEV (WM_USER + 101)
+#define USER_MSG_RELOGIN  (WM_USER + 102)
 
 #define USER_MSG_BRING    (WM_USER + 110)
 #define USER_MSG_PLAY     (WM_USER + 111)
@@ -65,6 +66,7 @@
 #define USER_MSG_NOTIFY               (WM_USER + 120)
 #define USER_MSG_NOTIFY_FOCUS         (WM_USER + 121)
 #define USER_MSG_GIVE_FOCUS           (WM_USER + 122)
+#define USER_MSG_NOTIFY_BACK          (WM_USER + 123)
 
 #define USER_MSG_ADD_FILE             (WM_USER + 140)
 #define USER_MSG_DEL_FILE             (WM_USER + 141)
@@ -73,10 +75,12 @@
 
 #define USER_MSG_DEVICE_CONFIG        (WM_USER + 160)
 
-
+#define RECORD_PATH                   "e:\\Record\\"
 #define NORMAL_RECORD_PATH            "e:\\Record\\normal\\"
 #define ALARM_RECORD_PATH             "e:\\Record\\alarm\\"
 
+#define COM_KEYBD    8
+#define COM_CAMERA   10
 
 extern 	SQLiteWrapper sqlite;
 

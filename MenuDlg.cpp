@@ -87,6 +87,7 @@ BEGIN_MESSAGE_MAP(CMenuDlg, CDialogEx)
 	ON_MESSAGE(USER_MSG_NOTIFY_FOCUS, &CMenuDlg::OnUserMsgNotifyFocus)
 	ON_MESSAGE(USER_MSG_PLAY, &CMenuDlg::OnUserMsgPlay)
 	ON_MESSAGE(USER_MSG_LOGIN, &CMenuDlg::OnUserMsgLogin)
+	ON_MESSAGE(USER_MSG_NOTIFY_BACK, &CMenuDlg::OnUserMsgNotifyBack)
 END_MESSAGE_MAP()
 
 
@@ -144,7 +145,7 @@ BOOL CMenuDlg::PreTranslateMessage(MSG* pMsg)
 
 		switch (pMsg->wParam)
 		{
-			///在第一列菜单按 '右' 发送 USER_MSG_NOTIFY_FOCUS 消息给下级窗口，由下级窗口判断是否获得焦点。
+			///在第一列菜单按 '右' 发送 USER_MSG_GIVE_FOCUS 消息给下级窗口，由下级窗口判断是否获得焦点。
 		case VK_RIGHT:
 			inx = pFocusedWnd->GetDlgCtrlID() - IDC_BUTTON1;
 			if (inx >= 0 && inx <= MENU_ITEM_NUM) {
@@ -231,5 +232,12 @@ LRESULT CMenuDlg::OnUserMsgPlay(WPARAM wParam, LPARAM lParam)
 afx_msg LRESULT CMenuDlg::OnUserMsgLogin(WPARAM wParam, LPARAM lParam)
 {
 	::SendMessage(mSubWnds[1]->m_hWnd, USER_MSG_LOGIN, wParam, lParam);
+	return 0;
+}
+
+
+afx_msg LRESULT CMenuDlg::OnUserMsgNotifyBack(WPARAM wParam, LPARAM lParam)
+{
+	mItems[wParam].SetFocus();
 	return 0;
 }

@@ -37,6 +37,8 @@ void CCameraConfDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CCameraConfDlg, CDialogEx)
 
+	ON_MESSAGE(USER_MSG_GIVE_FOCUS, &CCameraConfDlg::OnUserMsgGiveFocus)
+	ON_MESSAGE(USER_MSG_DEVICE_CONFIG, &CCameraConfDlg::OnUserMsgDeviceConfig)
 END_MESSAGE_MAP()
 
 
@@ -195,4 +197,21 @@ void CCameraConfDlg::InitNameItem()
 		mNameItems[i].Create(name, WS_CHILD  | BS_PUSHBUTTON, r, this, i+1);
 		mNameItems[i].SetFont(GetFont() , true);
 	}
+}
+
+afx_msg LRESULT CCameraConfDlg::OnUserMsgGiveFocus(WPARAM wParam, LPARAM lParam)
+{
+	GetDlgItem(IDC_EDIT1)->SetFocus();
+
+	return 0;
+}
+
+
+afx_msg LRESULT CCameraConfDlg::OnUserMsgDeviceConfig(WPARAM wParam, LPARAM lParam)
+{
+	pCamera = CCameraManager::getInstance()->findCameraById(wParam);
+	if (pCamera != NULL) {
+		//   Ë¢ĞÂÉèÖÃÏî
+	}
+	return 0;
 }
