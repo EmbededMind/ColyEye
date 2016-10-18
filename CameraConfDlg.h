@@ -33,7 +33,6 @@ public:
 	CString mCurrName;
 	CButton mSwitch;
 	CButton mPicDirection;
-	int mVolumn;
 	CButton mStoreSwitch;
 	CButton mAutoWatchSwitch;
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
@@ -44,7 +43,8 @@ public:
 protected:
 	afx_msg LRESULT OnUserMsgGiveFocus(WPARAM wParam, LPARAM lParam);
 	CSliderCtrl mSlider;
-
+	int mVolume;
+	SCROLLINFO mHScrollInfo;
 private:
 	CCamera*    pCamera;
 

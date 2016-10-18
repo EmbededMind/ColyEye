@@ -237,7 +237,12 @@ void CCameraConfDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 			TRACE(_T("mVolume = %d\n"), mVolume);
 		}
 		break;
+<<<<<<< HEAD
 	}	
 	CDialogEx::OnHScroll(nSBCode, mVolume, pScrollBar);
+=======
+	}
+	CDialogEx::OnHScroll(nSBCode, nPos, pScrollBar);
 
+>>>>>>> fd5231d9edd7e4a0062ad29b9c0b56c48caad831
 }
