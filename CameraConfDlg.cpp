@@ -32,11 +32,12 @@ void CCameraConfDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Slider(pDX, IDC_SLIDER1, mVolumn);
 	DDX_Control(pDX, IDC_BUTTON3, mStoreSwitch);
 	DDX_Control(pDX, IDC_BUTTON4, mAutoWatchSwitch);
+	DDX_Control(pDX, IDC_SLIDER1, mSlider);
 }
 
 
 BEGIN_MESSAGE_MAP(CCameraConfDlg, CDialogEx)
-
+	ON_WM_HSCROLL()
 END_MESSAGE_MAP()
 
 
@@ -47,8 +48,6 @@ void CCameraConfDlg::FocusJumpTo(int dst_id)
 {
 	GetDlgItem(dst_id)->SetFocus();
 }
-
-
 
 BOOL CCameraConfDlg::PreTranslateMessage(MSG* pMsg)
 {
@@ -140,7 +139,8 @@ BOOL CCameraConfDlg::OnInitDialog()
 	// TODO:  在此添加额外的初始化
 	InitNameItem();
 	InitPanel();
-
+	mSlider.SetRange(0,10);
+	mSlider.SetTicFreq(1);
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 异常: OCX 属性页应返回 FALSE
 }
@@ -195,4 +195,24 @@ void CCameraConfDlg::InitNameItem()
 		mNameItems[i].Create(name, WS_CHILD  | BS_PUSHBUTTON, r, this, i+1);
 		mNameItems[i].SetFont(GetFont() , true);
 	}
+}
+
+
+
+void CCameraConfDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+	switch (nSBCode)
+	{
+	case SB_LINELEFT:
+		mVolumn = nPos;
+		break;
+	case SB_LINERIGHT:
+		mVolumn = nPos;
+		break;
+	case SB_THUMBPOSITION:
+		mVolumn = nPos;
+		break;
+	}
+	CDialogEx::OnHScroll(nSBCode, nPos, pScrollBar);
 }

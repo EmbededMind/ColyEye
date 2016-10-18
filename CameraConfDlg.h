@@ -2,6 +2,7 @@
 #include "afxwin.h"
 #include "VirtualPanel.h"
 #include "TagButton.h"
+#include "afxcmn.h"
 
 
 // CCameraConfDlg ¶Ô»°¿ò
@@ -33,7 +34,7 @@ public:
 	CButton mAutoWatchSwitch;
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual BOOL OnInitDialog();
-
+	CSliderCtrl mSlider;
 private:
 	CTagButton  mNameItems[18];
 
@@ -44,4 +45,6 @@ private:
 	void InitPanel();
 
 	void FocusJumpTo(int dst_id);
+public:
+	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 };
