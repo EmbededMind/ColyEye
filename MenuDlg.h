@@ -64,4 +64,5 @@ public:
 	afx_msg void OnBnClickedButton1();
 protected:
 	afx_msg LRESULT OnUserMsgLogin(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnUserMsgNotifyBack(WPARAM wParam, LPARAM lParam);
 };

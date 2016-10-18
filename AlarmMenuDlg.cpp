@@ -63,25 +63,17 @@ BOOL CAlarmMenuDlg::OnInitDialog()
 	CDialogEx::OnInitDialog();
 
 	// TODO:  在此添加额外的初始化
-	if (!mItems[0].SubclassDlgItem(IDC_BUTTON7, this)) {
-		TRACE("gg\n");
-	}
-	if (!mItems[1].SubclassDlgItem(IDC_BUTTON8, this)) {
-		TRACE("gg\n");
-	}
-	if (!mItems[2].SubclassDlgItem(IDC_BUTTON9, this)) {
-		TRACE("gg\n");
-	}
-	if (!mItems[3].SubclassDlgItem(IDC_BUTTON10, this)) {
-		TRACE("gg\n");
-	}
-	if (!mItems[4].SubclassDlgItem(IDC_BUTTON11, this)) {
-		TRACE("gg\n");
-	}	
-	if (!mItems[5].SubclassDlgItem(IDC_BUTTON12, this)) {
-		TRACE("gg\n");
-	}
-    
+	mItems[0].SubclassDlgItem(IDC_BUTTON7, this);
+
+	mItems[1].SubclassDlgItem(IDC_BUTTON8, this);
+
+	mItems[2].SubclassDlgItem(IDC_BUTTON9, this);
+
+	mItems[3].SubclassDlgItem(IDC_BUTTON10, this);
+
+	mItems[4].SubclassDlgItem(IDC_BUTTON11, this);
+	
+	mItems[5].SubclassDlgItem(IDC_BUTTON12, this);
 
 	initTreeCtrl();
 
@@ -117,8 +109,10 @@ BOOL CAlarmMenuDlg::PreTranslateMessage(MSG* pMsg)
 		switch (pMsg->wParam)
 		{
 		case VK_RIGHT:
-			inx = pFocusedWnd->GetDlgCtrlID();
-
+			inx = pFocusedWnd->GetDlgCtrlID() - IDC_BUTTON7;
+			if (inx >= 0 && inx < CAMERA_MAX_NUM) {
+				mFileTrees[inx].SetFocus();
+			}
 			return true;
 
 		case VK_UP:
@@ -133,13 +127,16 @@ BOOL CAlarmMenuDlg::PreTranslateMessage(MSG* pMsg)
 			keybd_event(VK_TAB, 0, KEYEVENTF_KEYUP, 0);
 			return true;
 
-		//case VK_TAB:
-		//	inx = pFocusedWnd->GetDlgCtrlID() - IDC_BUTTON7;
-		//	if (inx >= 0 && inx < CAMERA_MAX_NUM) {
-		//		mCurrCursor = inx;
-		//		showTreeCtrl();
-		//	}
-		//	return CDialogEx::PreTranslateMessage(pMsg);
+		case VK_BACK:
+			inx = pFocusedWnd->GetDlgCtrlID();
+			if (inx >= IDC_TREE1  &&  inx <IDC_TREE1+CAMERA_MAX_NUM) {
+				mItems[inx-IDC_TREE1].SetFocus();
+			}
+			else if (inx >= IDC_BUTTON7  &&  inx < IDC_BUTTON7 + CAMERA_MAX_NUM) {
+				TRACE("tag btn %d case back\n", inx - IDC_BUTTON7);
+				::SendMessage(GetParent()->m_hWnd, USER_MSG_NOTIFY_BACK, 0, (LPARAM)this);
+			}
+			return true;
 
 		default:
 			return CDialogEx::PreTranslateMessage(pMsg);
@@ -151,7 +148,9 @@ BOOL CAlarmMenuDlg::PreTranslateMessage(MSG* pMsg)
 
 
 
-
+/**@brief 切换报警文件列表
+ *
+ */
 afx_msg LRESULT CAlarmMenuDlg::OnUserMsgNotifyFocus(WPARAM wParam, LPARAM lParam)
 {
 	if (wParam) {
@@ -169,6 +168,7 @@ afx_msg LRESULT CAlarmMenuDlg::OnUserMsgNotifyFocus(WPARAM wParam, LPARAM lParam
 }
 
 
+
 afx_msg LRESULT CAlarmMenuDlg::OnUserMsgBring(WPARAM wParam, LPARAM lParam)
 {
 	if (wParam) {
@@ -176,7 +176,7 @@ afx_msg LRESULT CAlarmMenuDlg::OnUserMsgBring(WPARAM wParam, LPARAM lParam)
 		RECT r;
 		GetClientRect(&r);
 		mTotalNewRecord = 0;
-		CDBOperator * pDBOptor = CDBOperator::getInstance();
+		/*CDBOperator * pDBOptor = CDBOperator::getInstance();
 		for (int i = 0; i < CAMERA_MAX_NUM; i++) {
 			mNewAlarmRecordNumber[i] = pDBOptor->queryNewAlarmRecord(i+1);
 			if (mNewAlarmRecordNumber[i]) {
@@ -189,7 +189,8 @@ afx_msg LRESULT CAlarmMenuDlg::OnUserMsgBring(WPARAM wParam, LPARAM lParam)
 			else {
 				mItems[i].ShowWindow(SW_HIDE);
 			}
-		}
+		}*/
+
 	}
 
 	return 0;

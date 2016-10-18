@@ -49,4 +49,5 @@ protected:
 	afx_msg LRESULT OnUserMsgNotifyFocus(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnUserMsgAddFile(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnUserMsgDelFile(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnUserMsgGiveFocus(WPARAM wParam, LPARAM lParam);
 };
