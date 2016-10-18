@@ -185,11 +185,6 @@ BOOL CTagTreeCtrl::PreTranslateMessage(MSG * pMsg)
 			return true;
 		}
 	}
-	else if (pMsg->message == WM_CONTEXTMENU) {
-		::SendMessage(GetParent()->m_hWnd, USER_MSG_NOTIFY, WM_CONTEXTMENU, (LPARAM)this);
-
-		return true;
-	}
 
 	return CTreeCtrl::PreTranslateMessage(pMsg);
 }

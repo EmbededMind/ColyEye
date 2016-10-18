@@ -45,4 +45,7 @@ public:
 	virtual BOOL OnInitDialog();
 protected:
 	afx_msg LRESULT OnUserMsgLogin(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnUserMsgGiveFocus(WPARAM wParam, LPARAM lParam);
+public:
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 };

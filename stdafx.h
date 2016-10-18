@@ -66,6 +66,7 @@
 #define USER_MSG_NOTIFY               (WM_USER + 120)
 #define USER_MSG_NOTIFY_FOCUS         (WM_USER + 121)
 #define USER_MSG_GIVE_FOCUS           (WM_USER + 122)
+#define USER_MSG_NOTIFY_BACK          (WM_USER + 123)
 
 #define USER_MSG_ADD_FILE             (WM_USER + 140)
 #define USER_MSG_DEL_FILE             (WM_USER + 141)

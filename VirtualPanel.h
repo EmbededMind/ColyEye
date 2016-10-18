@@ -12,7 +12,7 @@ public:
 	void RemoveWindow(CWnd* pWnd);
 	void MovePanel(int dx, int dy);
 	void ShowPanel(int nCmdShow);
-	bool IsVisible();
+	BOOL IsVisible();
 
 private:
 	std::list<CWnd*> mWndPtrList;

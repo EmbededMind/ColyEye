@@ -29,6 +29,7 @@ void CAutoWatchDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CAutoWatchDlg, CDialogEx)
 	ON_MESSAGE(USER_MSG_NOTIFY_FOCUS, &CAutoWatchDlg::OnUserMsgNotifyFocus)
+	ON_MESSAGE(USER_MSG_GIVE_FOCUS, &CAutoWatchDlg::OnUserMsgGiveFocus)
 END_MESSAGE_MAP()
 
 
@@ -97,4 +98,50 @@ void CAutoWatchDlg::ShowSubDlg()
 	}
 
 	mSubDlg[mPrevCursor]->ShowWindow(SW_SHOW);
+}
+
+
+afx_msg LRESULT CAutoWatchDlg::OnUserMsgGiveFocus(WPARAM wParam, LPARAM lParam)
+{
+	GetDlgItem(IDC_BUTTON1)->SetFocus();
+	return 0;
+}
+
+
+BOOL CAutoWatchDlg::PreTranslateMessage(MSG* pMsg)
+{
+	// TODO: 在此添加专用代码和/或调用基类
+	if (pMsg->message == WM_KEYDOWN) {
+		CWnd* pFocusedWnd = GetFocus();
+		int inx = -1;
+
+		switch (pMsg->wParam)
+		{
+		case VK_RIGHT:
+			inx = pFocusedWnd->GetDlgCtrlID() - IDC_BUTTON1;
+			if (inx >= 0 && inx < 4) {
+				mSubDlg[inx]->SetFocus();
+			}
+			return true;
+
+		case VK_UP:
+			keybd_event(VK_SHIFT, 0, 0, 0);
+			keybd_event(VK_TAB, 0, 0, 0);
+			keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);
+			keybd_event(VK_TAB, 0, KEYEVENTF_KEYUP, 0);
+			return true;
+
+		case VK_DOWN:
+			keybd_event(VK_TAB, 0, 0, 0);
+			keybd_event(VK_TAB, 0, KEYEVENTF_KEYUP, 0);
+			return true;
+
+		case VK_BACK:
+			inx = pFocusedWnd->GetDlgCtrlID();
+			::SendMessage(GetParent()->m_hWnd, USER_MSG_NOTIFY_BACK, 2, (LPARAM)this);
+			return true;
+		}
+	}
+
+	return CDialogEx::PreTranslateMessage(pMsg);
 }

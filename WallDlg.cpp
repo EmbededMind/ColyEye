@@ -337,7 +337,7 @@ afx_msg LRESULT CWallDlg::OnUserMsgReLogin(WPARAM wParam, LPARAM lParam)
  */
 void CWallDlg::interruptRecord(CCamera* pCamera)
 {
-	assert(pCamera != nullptr);
+	ASSERT(pCamera != nullptr);
 
 	if (pCamera->isRecording) {
 		pCamera->stopRecord();
@@ -355,10 +355,10 @@ void CWallDlg::interruptRecord(CCamera* pCamera)
  */
 void CWallDlg::interruptAlarmRecord(CCamera* pCamera)
 {
-	assert(pCamera != nullptr);
+	ASSERT(pCamera != nullptr);
 
 	
-	if (pCamera->isAlarmRecording == true) {
+	if (pCamera->isAlarmRecording == TRUE) {
 		int i = pCamera->mId - 1;
 		if (alarmRecordStatus.flag  &  (0x01 << i)) {
 			alarmRecordStatus.flagCnts[i] = 0;
@@ -420,7 +420,7 @@ void __stdcall disConnnectCallback(LONG lLoginID, char* pchDVRIP, LONG nDVRPort,
 
 	//H264_DVR_Logout(lLoginID);
 	CWallDlg* pThis = (CWallDlg*)dwUser;
-	assert(pThis != nullptr);
+	ASSERT(pThis != nullptr);
 
 	pThis->ReConnect(lLoginID, pchDVRIP, nDVRPort);
 }

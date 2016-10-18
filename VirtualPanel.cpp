@@ -96,7 +96,7 @@ void VirtualPanel::ShowPanel(int nCmdShow)
  *
  * @return 可见返回true,反之返回false
  */
-bool VirtualPanel::IsVisible()
+BOOL VirtualPanel::IsVisible()
 {
 	return (*mWndPtrList.begin())->IsWindowVisible();
 }
