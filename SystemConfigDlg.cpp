@@ -103,7 +103,7 @@ void CSystemConfigDlg::ShowSubView()
 				mSubViews[3]->ShowWindow(SW_SHOW);
 			}
 
-			::SendMessage(mSubViews[3]->m_hWnd, USER_MSG_DEVICE_CONFIG, mCurrCursor-3, 0);
+			::SendMessage(mSubViews[3]->m_hWnd, USER_MSG_DEVICE_CONFIG, mCurrCursor-2, 0);
 		}
 		//其他按钮得到焦点
 		else {
@@ -213,8 +213,13 @@ BOOL CSystemConfigDlg::PreTranslateMessage(MSG* pMsg)
 		{
 		case VK_RIGHT:
 			inx = pFocusedWnd->GetDlgCtrlID() - IDC_BUTTON1;
-			if (inx >= 0 && inx < 9) {
+
+				
+			if (inx >= 0 && inx < 3) {
 				mSubViews[inx]->SetFocus();
+			}
+			else if (inx < 9) {
+				::SendMessage(mSubViews[3]->m_hWnd, USER_MSG_GIVE_FOCUS, inx - 3, 0);
 			}
 			return true;
 

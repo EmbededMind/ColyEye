@@ -35,13 +35,7 @@ void CCameraConfDlg::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CCameraConfDlg, CDialogEx)
-
-
-	ON_MESSAGE(USER_MSG_GIVE_FOCUS, &CCameraConfDlg::OnUserMsgGiveFocus)
-	ON_MESSAGE(USER_MSG_DEVICE_CONFIG, &CCameraConfDlg::OnUserMsgDeviceConfig)
-
 	ON_WM_HSCROLL()
-
 END_MESSAGE_MAP()
 
 
@@ -206,23 +200,6 @@ void CCameraConfDlg::InitNameItem()
 }
 
 
-afx_msg LRESULT CCameraConfDlg::OnUserMsgGiveFocus(WPARAM wParam, LPARAM lParam)
-{
-	GetDlgItem(IDC_EDIT1)->SetFocus();
-
-	return 0;
-}
-
-
-afx_msg LRESULT CCameraConfDlg::OnUserMsgDeviceConfig(WPARAM wParam, LPARAM lParam)
-{
-	pCamera = CCameraManager::getInstance()->findCameraById(wParam);
-	if (pCamera != NULL) {
-		//   À¢–¬…Ë÷√œÓ
-	}
-	return 0;
-}
-
 
 void CCameraConfDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
@@ -239,5 +216,4 @@ void CCameraConfDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 		break;
 	}	
 	CDialogEx::OnHScroll(nSBCode, mVolume, pScrollBar);
-
 }
