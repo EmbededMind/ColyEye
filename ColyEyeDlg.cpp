@@ -250,10 +250,10 @@ LONG CColyEyeDlg::OnCommData(WPARAM pData, LPARAM port)
 		int i;
 		p->ch[p->num] = '\0';
 		TRACE(_T("COM%d ---%S\n"), (UINT)port, p->ch);
-		/*m_SerialPortKbd.WriteToPort(p->ch, p->num);*/
+		Sleep(2);
+		m_SerialPortCom.WriteToPort(p->ch, p->num);
 		return 0;
 	}
-
 	return 0;
 }
 
