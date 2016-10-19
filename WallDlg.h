@@ -38,6 +38,9 @@ protected:
 private:
 	CPtrList mHolderes;
 
+	DWORD mBeginRecordTime;
+	DWORD mEndRecordTime;
+
 	UINT8 mRows;
 	UINT8 mCols;
 
@@ -57,6 +60,12 @@ public:
 	void   executeLayout();
 	void   updateLayout();
 
+	void SuspendCamera(CCamera* pCamera);
+	void ResumeCamera(CCamera* pCamera);
+
+	void Schedule(CCamera* pCamera);
+	void StepSchedule(CTime& refTime);
+	
 
 	void ReConnect(LONG lLoginID, char* pchDVRIP, LONG nDVRPort);
 

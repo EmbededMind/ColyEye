@@ -282,3 +282,5 @@ void CCameraManager::loadDeviceHistoryFrmoDB()
 		}
 	}
 }
+
+
