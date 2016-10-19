@@ -26,6 +26,10 @@ CCamera::CCamera()
 	mAlarmRecordFile = NULL;
 	isAlarmRecording = false;
 	isRecording = false;
+
+	userConf.name_inx = 0;
+	userConf.vol = 5;
+	userConf.toggleConf = CAMERA_USER_CONF_ON | CAMERA_USER_CONF_UP | CAMERA_USER_CONF_STORE | CAMERA_USER_CONF_AWATCH;
 	//CRecordFileInfo* pRecordFileInfo;
 }
 
@@ -56,17 +60,17 @@ void CCamera::startRealPlay()
 {
 	if (mLoginId) {
 		//TRACE("client info:%d\n", this->clientInfo.hWnd);
-		Util::ShowMemoryInfo();
-		hRealPlay = H264_DVR_RealPlay(mLoginId, &this->clientInfo);
-		TRACE("after dvr_realplay\n");
-		Util::ShowMemoryInfo();
+		//Util::ShowMemoryInfo();
+		//hRealPlay = H264_DVR_RealPlay(mLoginId, &this->clientInfo);
+		//TRACE("after dvr_realplay\n");
+		//Util::ShowMemoryInfo();
 		if (!hRealPlay) {
 			TRACE("real play fail.Error code:%d\n", H264_DVR_GetLastError());
 		}
 		else {
 			H264_DVR_SetRealDataCallBack_V2(hRealPlay, realDataCallBack_V2, (long)this);
-			TRACE("after dvr_setrealdata\n");
-			Util::ShowMemoryInfo();
+			//TRACE("after dvr_setrealdata\n");
+			//Util::ShowMemoryInfo();
 		}
 	}
 	else {
@@ -200,6 +204,8 @@ void CCamera::unsubscribeAlarmMessage()
 		TRACE("Find 0 loginId when unsubscribe alarm message\n");
 	}
 }
+
+
 
 
 /**@brief ÉãÏñÍ·µÇÂ¼

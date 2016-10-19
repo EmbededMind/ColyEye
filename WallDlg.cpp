@@ -297,24 +297,24 @@ afx_msg LRESULT CWallDlg::OnUserMsgReLogin(WPARAM wParam, LPARAM lParam)
 		CCamera* pDev = (CCamera*)lParam;
 
 		pDev->subscribeAlarmMessage();
-		TRACE("after subcribe alarm message\n");
-		Util::ShowMemoryInfo();
+		//TRACE("after subcribe alarm message\n");
+		//Util::ShowMemoryInfo();
 
 		pDev->startRealPlay();
-		TRACE("after start real play\n");
-		Util::ShowMemoryInfo();
+		//TRACE("after start real play\n");
+		//Util::ShowMemoryInfo();
 
 		SetTimer(pDev->mId, 30 * 1000, NULL);
 		TRACE("after set timer\n");
-		Util::ShowMemoryInfo();
+		/*Util::ShowMemoryInfo();*/
 
 		CFile* pf = RecordFileManager::GetInstance()->DistributeRecordFile(pDev->mId, RECORD_TYPE_NORMAL);
-		TRACE("after distribute file\n");
-		Util::ShowMemoryInfo();
+		//TRACE("after distribute file\n");
+		/*Util::ShowMemoryInfo();*/
 
 		pDev->startRecord(pf);
-		TRACE("after start record\n");
-		Util::ShowMemoryInfo();
+		//TRACE("after start record\n");
+		/*Util::ShowMemoryInfo();*/
 
 		iter = mDevReconnectMap.find(pDev->mId);
 
@@ -376,6 +376,103 @@ void CWallDlg::interruptAlarmRecord(CCamera* pCamera)
 }
 
 
+/**@brief 挂起摄像机（假装摄像头关机）
+ *
+ * @param[in] pCamera 要挂起的摄像机
+ * @note  挂起的操作有：
+ *            0.取消报警订阅
+ *            1.停止报警录像，并停止报警音和灯光
+ *            2.停止正常录像
+ *            3.停止实时播放，并刷新播放窗口
+ *            4.停止对讲
+ */
+void CWallDlg::SuspendCamera(CCamera* pCamera)
+{
+	ASSERT(pCamera != NULL);
+	pCamera->userConf.toggleConf &= (~CAMERA_USER_CONF_ON);
+
+	pCamera->unsubscribeAlarmMessage();
+	interruptAlarmRecord(pCamera);
+	interruptRecord(pCamera);
+	pCamera->stopRealPlay();
+
+	// stop talk
+}
+
+
+
+void CWallDlg::ResumeCamera(CCamera* pCamera)
+{
+	ASSERT(pCamera != NULL);
+
+	pCamera->subscribeAlarmMessage();
+	pCamera->startRealPlay();
+	Schedule(pCamera);
+
+	pCamera->userConf.toggleConf |= CAMERA_USER_CONF_ON;
+}
+
+
+
+/**@brief 对指定摄像机进行录像调度
+ *
+ * @param[in]  调度的摄像机
+ */
+void CWallDlg::Schedule(CCamera* pCamera)
+{
+	CTime t = CTime::GetCurrentTime();
+	DWORD refTime = t.GetHour() * 3600 + t.GetMinute() * 60 + t.GetSecond();
+
+	if (!pCamera->isRecording) {
+		if (refTime >= mBeginRecordTime && refTime < mEndRecordTime) {
+			CFile* pf = RecordFileManager::GetInstance()->DistributeRecordFile(pCamera->mId, RECORD_TYPE_NORMAL);
+			pCamera->startRecord(pf);
+		}
+	}
+	else {
+		if (refTime < mBeginRecordTime || refTime >= mEndRecordTime) {
+			pCamera->stopRecord();
+			RecordFileManager::GetInstance()->RecallRecordFile(pCamera->mId, RECORD_TYPE_NORMAL);
+		}
+	}
+}
+
+
+
+/**@brief 对所有摄像机执行一次录像调度
+ *
+ * @param[in] 参考时间
+ */
+void CWallDlg::StepSchedule(CTime& time)
+{
+	CCameraManager* pMgr = CCameraManager::getInstance();
+	CCamera* pDev;
+	if (pMgr) {
+		DWORD refTime = time.GetHour() * 3600 + time.GetMinute() * 60 + time.GetSecond();
+
+		POSITION  pos = pMgr->mCameras.GetHeadPosition();
+		while (pos) {
+			pDev = (CCamera*)pMgr->mCameras.GetNext(pos);
+			if (pDev->userConf.toggleConf & CAMERA_USER_CONF_ON) {
+				if (!pDev->isRecording) {
+					if (refTime >= mBeginRecordTime && refTime < mEndRecordTime) {
+						CFile* pf = RecordFileManager::GetInstance()->DistributeRecordFile(pDev->mId, RECORD_TYPE_NORMAL);
+						pDev->startRecord(pf);
+					}
+				}
+				else {
+					if (refTime < mBeginRecordTime || refTime >= mEndRecordTime) {
+						pDev->stopRecord();
+						RecordFileManager::GetInstance()->RecallRecordFile(pDev->mId, RECORD_TYPE_NORMAL);
+					}
+				}
+			}
+		}
+	}
+}
+
+
+
 /**@brief  断线重连(ClientDemo)
  *
  */
@@ -385,10 +482,11 @@ void CWallDlg::ReConnect(LONG lLoginID, char* pchDVRIP, LONG nDVRPort)
 
 	if (pDev != nullptr) {
 		pDev->logout();
+		pDev->unsubscribeAlarmMessage();
 		interruptAlarmRecord(pDev);
 		interruptRecord(pDev);
 		pDev->stopRealPlay();
-		pDev->unsubscribeAlarmMessage();
+
 		mDevReconnectMap[pDev->mId] = pDev;
 		SetTimer(RECONNET_TIMER_EVENT_ID, 30*1000, NULL);
 	}

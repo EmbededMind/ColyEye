@@ -12,6 +12,9 @@ private:
 	CCameraManager(const CCameraManager&) {};
 	~CCameraManager() {};
 
+	DWORD mBeginRecordTime;
+	DWORD mEndRecordTime;
+
 public:
 	static CCameraManager* getInstance() {
 		static CCameraManager instance;
@@ -49,5 +52,6 @@ public:
 	BOOL putIdIntoDB(const int id, const char* mac);
 	BOOL updateIdInDB(const int id, const char* mac);
 	void loadDeviceHistoryFrmoDB();
+
 };
 
