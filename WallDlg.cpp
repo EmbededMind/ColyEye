@@ -239,6 +239,8 @@ BOOL CWallDlg::OnInitDialog()
 
 	H264_DVR_SetDVRMessCallBack(messageCallbackFunc, (unsigned long)this);
 
+	host.Load();
+	
 
 	SetTimer(SECOND_TICK_TIMER_EVENT_ID, 1000, NULL);
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -271,6 +273,15 @@ afx_msg LRESULT CWallDlg::OnUserMsgLogin(WPARAM wParam, LPARAM lParam)
 		}
 		
 		pDev->clientInfo.hWnd = this->investCamera(pDev)->mSurface.m_hWnd;
+
+		if (!pDev->LoadUserConfiguration()) {
+			pDev->userConf.name_inx = 0;
+			pDev->userConf.vol = 4;
+			pDev->userConf.switches = 0;
+			if (!pDev->CommitUserConfigurationChange()) {
+				TRACE("Put user configuration into db failed!\n");
+			}
+		}
 
 		EnableCameraConfiguration(pDev);
 	}
@@ -367,7 +378,7 @@ void CWallDlg::interruptAlarmRecord(CCamera* pCamera)
 void CWallDlg::SuspendCamera(CCamera* pCamera)
 {
 	ASSERT(pCamera != NULL);
-	pCamera->userConf.toggleConf &= (~CAMERA_USER_CONF_ON);
+	pCamera->userConf.switches &= (~CAMERA_USER_CONF_ON);
 
 	pCamera->unsubscribeAlarmMessage();
 	interruptAlarmRecord(pCamera);
@@ -386,7 +397,7 @@ void CWallDlg::ResumeCamera(CCamera* pCamera)
 	pCamera->subscribeAlarmMessage();
 	pCamera->startRealPlay();
 
-	pCamera->userConf.toggleConf |= CAMERA_USER_CONF_ON;
+	pCamera->userConf.switches |= CAMERA_USER_CONF_ON;
 }
 
 
@@ -394,18 +405,18 @@ void CWallDlg::ResumeCamera(CCamera* pCamera)
 void CWallDlg::EnableCameraConfiguration(CCamera* pCamera)
 {
 	// 摄像机开启
-	if (pCamera->userConf.toggleConf & CAMERA_USER_CONF_ON) {
+	if (pCamera->userConf.switches & CAMERA_USER_CONF_ON) {
 		if(pCamera->hRealPlay == 0)
 		    pCamera->startRealPlay();
         
-		if (pCamera->userConf.toggleConf & CAMERA_USER_CONF_STORE) {
+		if (pCamera->userConf.switches & CAMERA_USER_CONF_STORE) {
 			if (!pCamera->isRecording) {
 				CFile* pf = RecordFileManager::GetInstance()->DistributeRecordFile(pCamera->mId, RECORD_TYPE_NORMAL);
 				pCamera->startRecord(pf);
 			}
 		}
 
-		if (pCamera->userConf.toggleConf & CAMERA_USER_CONF_AWATCH) {
+		if (pCamera->userConf.switches & CAMERA_USER_CONF_AWATCH) {
 			pCamera->subscribeAlarmMessage();
 		}
 	}
@@ -415,7 +426,7 @@ void CWallDlg::EnableCameraConfiguration(CCamera* pCamera)
 
 void CWallDlg::DisableCameraConfiguration(CCamera* pCamera)
 {
-	if ( (pCamera->userConf.toggleConf & CAMERA_USER_CONF_ON) == 0) {
+	if ( (pCamera->userConf.switches & CAMERA_USER_CONF_ON) == 0) {
 		if (pCamera->hRealPlay) {
 			pCamera->stopRealPlay();
 		}
@@ -427,12 +438,12 @@ void CWallDlg::DisableCameraConfiguration(CCamera* pCamera)
 		pCamera->unsubscribeAlarmMessage();
 	}
 	else {
-		if ( (pCamera->userConf.toggleConf & CAMERA_USER_CONF_STORE) == 0) {
+		if ( (pCamera->userConf.switches & CAMERA_USER_CONF_STORE) == 0) {
 			
 			interruptRecord(pCamera);
 		}
 
-		if ( (pCamera->userConf.toggleConf & CAMERA_USER_CONF_AWATCH) == 0) {
+		if ( (pCamera->userConf.switches & CAMERA_USER_CONF_AWATCH) == 0) {
 			
 			interruptAlarmRecord(pCamera);
 	
@@ -490,7 +501,7 @@ bool __stdcall messageCallbackFunc(long lLoginID, char* pBuf, unsigned long dwBu
 	CCamera* pDev = pMgr->findCameraByLoginId(lLoginID);
 
 	// 自动看船开启
-	if (pDev  && (pDev->userConf.toggleConf & CAMERA_USER_CONF_AWATCH)) {
+	if (pDev  && (pDev->userConf.switches & CAMERA_USER_CONF_AWATCH)) {
 		CWallDlg* pWall = (CWallDlg*)dwUser;
 		CTime t = CTime::GetCurrentTime();
 				

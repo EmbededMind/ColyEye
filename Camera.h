@@ -12,7 +12,7 @@
 typedef struct {
 	UINT8 name_inx;
 	UINT8 vol;
-	UINT16 toggleConf;
+	UINT16 switches;
 }UserConf;
 
 
@@ -67,5 +67,8 @@ public:
 
 	BOOL login();
 	void logout();
+
+	BOOL LoadUserConfiguration();
+	BOOL CommitUserConfigurationChange();
 };
 

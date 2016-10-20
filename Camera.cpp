@@ -29,7 +29,7 @@ CCamera::CCamera()
 
 	userConf.name_inx = 0;
 	userConf.vol = 5;
-	userConf.toggleConf = CAMERA_USER_CONF_ON | CAMERA_USER_CONF_UP | CAMERA_USER_CONF_STORE | CAMERA_USER_CONF_AWATCH;
+	userConf.switches = CAMERA_USER_CONF_ON | CAMERA_USER_CONF_UP | CAMERA_USER_CONF_STORE | CAMERA_USER_CONF_AWATCH;
 	
 	//CRecordFileInfo* pRecordFileInfo;
 }
@@ -258,6 +258,45 @@ void CCamera::logout()
 	}
 	else {
 		TRACE("Invalid loginId:%d logout\n", mLoginId);
+	}
+}
+
+
+
+/**@brief 从数据库中读取摄像机的用户配置
+ *
+ * @return 读取成功返回TRUE, 反之返回FALSE;
+ */
+BOOL CCamera::LoadUserConfiguration()
+{
+	char sqlStmt[128];
+	sprintf_s(sqlStmt, "SELECT name_index, vol, switches FROM login_device WHERE id = %d;", this->mId);
+	SQLiteStatement* stmt = sqlite.Statement(sqlStmt);
+	if (stmt->NextRow()) {
+		userConf.name_inx = stmt->ValueInt(0);
+		userConf.vol = stmt->ValueInt(1);
+		userConf.switches = stmt->ValueInt(2);
+		return TRUE;
+	}
+	else {
+		return FALSE;
+	}
+}
+
+
+/**@brief 将用户配置写入数据库
+ *
+ */
+BOOL CCamera::CommitUserConfigurationChange()
+{
+	char sqlStmt[128];
+	sprintf_s(sqlStmt, "UPDATE login_device SET name_index = %d, vol = %d, switches = %d WHERE id = %d;", userConf.name_inx, userConf.vol, userConf.switches, mId);
+	if (sqlite.DirectStatement(sqlStmt)) {
+		return TRUE;
+	}
+	else {
+		TRACE("sql stmt error:%s\n", sqlStmt);
+		return FALSE;
 	}
 }
 

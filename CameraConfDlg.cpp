@@ -173,28 +173,28 @@ void CCameraConfDlg::ShowConfigurationOf(CCamera* whichCamera)
 
 	mVolume = whichCamera->userConf.vol;
 	
-	if (whichCamera->userConf.toggleConf & CAMERA_USER_CONF_ON) {
+	if (whichCamera->userConf.switches & CAMERA_USER_CONF_ON) {
 		mSwitcher.SetWindowTextW(_T("开"));
 	}
 	else {
 		mSwitcher.SetWindowTextW(_T("关"));
 	}
 
-	if (whichCamera->userConf.toggleConf & CAMERA_USER_CONF_UP) {
+	if (whichCamera->userConf.switches & CAMERA_USER_CONF_UP) {
 		mPicDirection.SetWindowTextW(_T("正着放"));
 	}
 	else {
 		mPicDirection.SetWindowTextW(_T("倒着放"));
 	}
 
-	if (whichCamera->userConf.toggleConf & CAMERA_USER_CONF_STORE) {
+	if (whichCamera->userConf.switches & CAMERA_USER_CONF_STORE) {
 		mStoreSwitcher.SetWindowTextW(_T("开"));
 	}
 	else {
 		mStoreSwitcher.SetWindowTextW(_T("关"));
 	}
 
-	if (whichCamera->userConf.toggleConf & CAMERA_USER_CONF_AWATCH) {
+	if (whichCamera->userConf.switches & CAMERA_USER_CONF_AWATCH) {
 		mAutoWatchSwitcher.SetWindowTextW(_T("开"));
 	}
 	else {
@@ -301,12 +301,12 @@ void CCameraConfDlg::OnBnClickedButton1()
 	ASSERT(pCamera != NULL);
 
 	// 本来是开启，结果点击了
-	if (pCamera->userConf.toggleConf & CAMERA_USER_CONF_ON) {
+	if (pCamera->userConf.switches & CAMERA_USER_CONF_ON) {
 		CCameraOffConfirmDlg dlg;
 		if (dlg.DoModal() == IDOK) {
 			TRACE("确定关闭摄像机\n");
 			mSwitcher.SetWindowTextW(_T("关"));
-			pCamera->userConf.toggleConf &= (~CAMERA_USER_CONF_ON);
+			pCamera->userConf.switches &= (~CAMERA_USER_CONF_ON);
 			::SendMessage(((CColyEyeApp*)AfxGetApp())->m_pWallWnd->m_hWnd, USER_MSG_DEVICE_CONFIG, false, (LPARAM)pCamera);
 		}
 		else {
@@ -316,7 +316,7 @@ void CCameraConfDlg::OnBnClickedButton1()
 	// 本来是关闭，现在开启
 	else {
 		mSwitcher.SetWindowTextW(_T("开"));
-		pCamera->userConf.toggleConf |= CAMERA_USER_CONF_ON;
+		pCamera->userConf.switches |= CAMERA_USER_CONF_ON;
 		::SendMessage(((CColyEyeApp*)AfxGetApp())->m_pWallWnd->m_hWnd, USER_MSG_DEVICE_CONFIG, true, (LPARAM)pCamera);
 	}
 }
@@ -343,18 +343,18 @@ void CCameraConfDlg::OnBnClickedButton3()
 	ASSERT(pCamera != NULL);
 
 	//本来开启了存储，结果悲剧了，点了关闭
-	if (pCamera->userConf.toggleConf & CAMERA_USER_CONF_STORE) {
+	if (pCamera->userConf.switches & CAMERA_USER_CONF_STORE) {
 		CCameraStoreOffConfirmDlg dlg;
 		if (dlg.DoModal() == IDOK) {
 			mStoreSwitcher.SetWindowTextW(_T("关闭"));
-			pCamera->userConf.toggleConf &= (~CAMERA_USER_CONF_STORE);
+			pCamera->userConf.switches &= (~CAMERA_USER_CONF_STORE);
 			::SendMessage(((CColyEyeApp*)AfxGetApp())->m_pWallWnd->m_hWnd, USER_MSG_DEVICE_CONFIG, false, (LPARAM)pCamera);
 		}
 	}
 	// 本来是关闭，现在开启
 	else {
 		mStoreSwitcher.SetWindowTextW(_T("开启"));
-		pCamera->userConf.toggleConf |= CAMERA_USER_CONF_STORE;
+		pCamera->userConf.switches |= CAMERA_USER_CONF_STORE;
 		::SendMessage(((CColyEyeApp*)AfxGetApp())->m_pWallWnd->m_hWnd, USER_MSG_DEVICE_CONFIG, true, (LPARAM)pCamera);
 	}
 }
@@ -367,18 +367,18 @@ void CCameraConfDlg::OnBnClickedButton4()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	//本来开启了自动看船，结果悲剧了，点了关闭
-	if (pCamera->userConf.toggleConf & CAMERA_USER_CONF_AWATCH) {
+	if (pCamera->userConf.switches & CAMERA_USER_CONF_AWATCH) {
 		//CCameraStoreOffConfirmDlg dlg;
 		//if (dlg.DoModal() == IDOK) {
 			mStoreSwitcher.SetWindowTextW(_T("关闭"));
-			pCamera->userConf.toggleConf &= (~CAMERA_USER_CONF_AWATCH);
+			pCamera->userConf.switches &= (~CAMERA_USER_CONF_AWATCH);
 			::SendMessage(((CColyEyeApp*)AfxGetApp())->m_pWallWnd->m_hWnd, USER_MSG_DEVICE_CONFIG, false, (LPARAM)pCamera);
 		//}
 	}
 	// 本来是关闭，现在开启
 	else {
 		mStoreSwitcher.SetWindowTextW(_T("开启"));
-		pCamera->userConf.toggleConf |= CAMERA_USER_CONF_AWATCH;
+		pCamera->userConf.switches |= CAMERA_USER_CONF_AWATCH;
 		::SendMessage(((CColyEyeApp*)AfxGetApp())->m_pWallWnd->m_hWnd, USER_MSG_DEVICE_CONFIG, true, (LPARAM)pCamera);
 	}
 }

@@ -1,7 +1,9 @@
 #pragma once
 
+#include <string>
+
 typedef struct {
-	CString boat_name;
+	std::string boat_name;
 	DWORD   watch_time_begining;
 	DWORD   watch_time_span;
 }HostConfiguration;
@@ -14,5 +16,9 @@ public:
 
 public:
 	HostConfiguration mConfuration;
+
+	BOOL  Load();
+	BOOL  SetWatchTime(DWORD begining, DWORD span);
+	BOOL  SetBoatName(std::string name);
 };
 
