@@ -5,10 +5,14 @@
 #include "ColyEye.h"
 #include "CameraConfDlg.h"
 #include "afxdialogex.h"
+<<<<<<< HEAD
+#include "RecordFileManager.h"
+=======
 
 #include "CameraOffConfirmDlg.h"
 #include "CameraStoreOffConfirmDlg.h"
 
+>>>>>>> 766a6c5d8294362b7725d220ffda10ac14f933cc
 
 // CCameraConfDlg 对话框
 
@@ -38,13 +42,13 @@ void CCameraConfDlg::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CCameraConfDlg, CDialogEx)
-
-
 	ON_MESSAGE(USER_MSG_GIVE_FOCUS, &CCameraConfDlg::OnUserMsgGiveFocus)
 	ON_MESSAGE(USER_MSG_DEVICE_CONFIG, &CCameraConfDlg::OnUserMsgDeviceConfig)
-
 	ON_WM_HSCROLL()
+<<<<<<< HEAD
+=======
 
+>>>>>>> 766a6c5d8294362b7725d220ffda10ac14f933cc
 	ON_BN_CLICKED(IDC_BUTTON1, &CCameraConfDlg::OnBnClickedButton1)
 	ON_BN_CLICKED(IDC_BUTTON2, &CCameraConfDlg::OnBnClickedButton2)
 	ON_BN_CLICKED(IDC_BUTTON3, &CCameraConfDlg::OnBnClickedButton3)
@@ -298,6 +302,20 @@ void CCameraConfDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 void CCameraConfDlg::OnBnClickedButton1()
 {
 	// TODO: 在此添加控件通知处理程序代码
+<<<<<<< HEAD
+	if (pCamera->mLoginId)
+	{
+		pCamera->stopRecord();
+		RecordFileManager* pMgr = RecordFileManager::GetInstance();
+		pMgr->RecallRecordFile(pCamera->mId, RECORD_TYPE_NORMAL);
+		pCamera->logout();
+	}
+	else
+	{
+		pCamera->login();
+		RecordFileManager* pMgr = RecordFileManager::GetInstance();
+		pCamera->startRecord(pMgr->DistributeRecordFile(pCamera->mId, RECORD_TYPE_NORMAL));
+=======
 	ASSERT(pCamera != NULL);
 
 	// 本来是开启，结果点击了
@@ -318,10 +336,28 @@ void CCameraConfDlg::OnBnClickedButton1()
 		mSwitcher.SetWindowTextW(_T("开"));
 		pCamera->userConf.toggleConf |= CAMERA_USER_CONF_ON;
 		::SendMessage(((CColyEyeApp*)AfxGetApp())->m_pWallWnd->m_hWnd, USER_MSG_DEVICE_CONFIG, true, (LPARAM)pCamera);
+>>>>>>> 766a6c5d8294362b7725d220ffda10ac14f933cc
 	}
 }
 
 
+<<<<<<< HEAD
+void CCameraConfDlg::OnBnClickedButton2()
+{
+	// TODO: 在此添加控件通知处理程序代码
+}
+
+
+void CCameraConfDlg::OnBnClickedButton3()
+{
+	// TODO: 在此添加控件通知处理程序代码
+}
+
+
+void CCameraConfDlg::OnBnClickedButton4()
+{
+	// TODO: 在此添加控件通知处理程序代码
+=======
 /**@brief 控制视频方向按钮
  *
  */
@@ -381,4 +417,5 @@ void CCameraConfDlg::OnBnClickedButton4()
 		pCamera->userConf.toggleConf |= CAMERA_USER_CONF_AWATCH;
 		::SendMessage(((CColyEyeApp*)AfxGetApp())->m_pWallWnd->m_hWnd, USER_MSG_DEVICE_CONFIG, true, (LPARAM)pCamera);
 	}
+>>>>>>> 766a6c5d8294362b7725d220ffda10ac14f933cc
 }

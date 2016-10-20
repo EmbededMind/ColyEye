@@ -33,6 +33,9 @@ public:
 	HANDLE hSerialThread;
 	unsigned int pidOfLoginThread;
 	unsigned int pidOfSerialThread;
+
+	CWnd* m_pWallWnd;
+	CWnd* m_pMenuWnd;
 };
 
 extern CColyEyeApp theApp;

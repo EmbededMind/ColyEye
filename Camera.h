@@ -3,10 +3,11 @@
 #include "RecordFileInfo.h"
 
 
-#define CAMERA_USER_CONF_ON      + 0x0001
+#define CAMERA_USER_CONF_ON       0x0001
 #define CAMERA_USER_CONF_UP       0x0002
 #define CAMERA_USER_CONF_STORE    0x0004
 #define CAMERA_USER_CONF_AWATCH   0x0008
+#define CAMERA
 
 typedef struct {
 	UINT8 name_inx;
@@ -46,6 +47,7 @@ public:
 	BOOL isAlarmRecording;
 	BOOL isTalking;
 	UserConf userConf;
+
 
 public:
 	void startRealPlay();

@@ -134,6 +134,7 @@ protected:
 public :
 	onedata             m_queuecom[20];
 	int                 m_queueth;
+	int                 m_charth;
 };
 
 #endif __SERIALPORT_H__

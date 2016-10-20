@@ -9,6 +9,8 @@
 
 
 
+
+
 // CCameraConfDlg ¶Ô»°¿ò
 
 class CCameraConfDlg : public CDialogEx
@@ -31,10 +33,7 @@ protected:
 
 public:
 	CString mCurrName;
-	CButton mSwitch;
-	CButton mPicDirection;
-	CButton mStoreSwitch;
-	CButton mAutoWatchSwitch;
+
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual BOOL OnInitDialog();
 
@@ -56,6 +55,8 @@ private:
 	void InitNameItem();
 	void InitPanel();
 
+	void ShowConfigurationOf(CCamera* whichCamera);
+
 	void FocusJumpTo(int dst_id);
 
 
@@ -67,6 +68,11 @@ public:
 
 	afx_msg void OnBnClickedButton1();
 	afx_msg void OnBnClickedButton2();
+	CEdit mCameraName;
+	CButton mSwitcher;
+	CButton mPicDirection;
+	CButton mStoreSwitcher;
+	CButton mAutoWatchSwitcher;
 	afx_msg void OnBnClickedButton3();
 	afx_msg void OnBnClickedButton4();
 };

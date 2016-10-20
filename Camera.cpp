@@ -30,6 +30,7 @@ CCamera::CCamera()
 	userConf.name_inx = 0;
 	userConf.vol = 5;
 	userConf.toggleConf = CAMERA_USER_CONF_ON | CAMERA_USER_CONF_UP | CAMERA_USER_CONF_STORE | CAMERA_USER_CONF_AWATCH;
+	
 	//CRecordFileInfo* pRecordFileInfo;
 }
 
@@ -45,6 +46,15 @@ CCamera::~CCamera()
 	if (hRealPlay) {
 		H264_DVR_StopRealPlay(hRealPlay);
 	}
+
+	if (isRecording) {
+		stopRecord();
+	}
+
+	if (isAlarmRecording) {
+		stopAlarmRecord();
+	}
+
 	if (mLoginId) {
 		H264_DVR_Logout(this->mLoginId);
 	}
@@ -61,7 +71,7 @@ void CCamera::startRealPlay()
 	if (mLoginId) {
 		//TRACE("client info:%d\n", this->clientInfo.hWnd);
 		//Util::ShowMemoryInfo();
-		//hRealPlay = H264_DVR_RealPlay(mLoginId, &this->clientInfo);
+		hRealPlay = H264_DVR_RealPlay(mLoginId, &this->clientInfo);
 		//TRACE("after dvr_realplay\n");
 		//Util::ShowMemoryInfo();
 		if (!hRealPlay) {
@@ -83,13 +93,13 @@ void CCamera::stopRealPlay()
 {
 	if (hRealPlay) {
 		/*H264_DVR_DelRealDataCallBack_V2(hRealPlay, realDataCallBack_V2, (long)this);*/
-		if (isRecording) {
-			stopRecord();
-		}
+		//if (isRecording) {
+		//	stopRecord();
+		//}
 
-		if (isAlarmRecording) {
-			stopAlarmRecord();
-		}
+		//if (isAlarmRecording) {
+		//	stopAlarmRecord();
+		//}
 
 		H264_DVR_DelRealDataCallBack_V2(hRealPlay, realDataCallBack_V2, (long)this);
 
@@ -128,12 +138,12 @@ void CCamera::startRecord(CFile* pFile)
 void CCamera::stopRecord()
 {
 	ASSERT(mNormalRecordFile);
-	if (isRecording) {
+	//if (isRecording) {
 		isRecording = false;
 		//H264_DVR_DelRealDataCallBack_V2(hRealPlay, normalRealDataCallBack_V2, (long)this);
 		mNormalRecordFile->Flush();
 		mNormalRecordFile = NULL;
-	}
+	//}
 }
 
 
@@ -157,7 +167,7 @@ void CCamera::startAlarmRecord(CFile* pFile)
 	//else {
 	//	isAlarmRecording = true;
 	//}
-	isAlarmRecording = true;
+	isAlarmRecording = TRUE;
 }
 
 
@@ -168,12 +178,12 @@ void CCamera::stopAlarmRecord()
 {
 	ASSERT(mAlarmRecordFile != NULL);
 
-	if (isAlarmRecording) {
+	//if (isAlarmRecording) {
 		isAlarmRecording = false;
 		//H264_DVR_DelRealDataCallBack_V2(hRealPlay, alarmRealDataCallBack_V2, (long)this);
 		mAlarmRecordFile->Flush();
 		mAlarmRecordFile = NULL;		
-	}
+	//}
 }
 
 
