@@ -115,15 +115,23 @@ BOOL CSerialPort::InitPort(CWnd* pPortOwner,    // the owner (CWnd) of the port 
         TRACE("Thread ended\n");
     }
     // create events
+	m_ov.Offset = 0;
+	m_ov.OffsetHigh = 0;
     if (m_ov.hEvent != NULL)
         ResetEvent(m_ov.hEvent);
     else
         m_ov.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 
+	if (m_ov.hEvent == NULL) {
+		TRACE("ov_event create failed %d\n", GetLastError());
+	}
+
     if (m_hWriteEvent != NULL)
         ResetEvent(m_hWriteEvent);
     else
         m_hWriteEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+
+	
     
     if (m_hShutdownEvent != NULL)
         ResetEvent(m_hShutdownEvent);
@@ -413,6 +421,15 @@ UINT CSerialPort::CommThread(LPVOID pParam)
             }
         case 1:    // read event
             {
+			    DWORD dwRead;
+			    if (!GetOverlappedResult(port->m_hComm, &(port->m_ov), &dwRead, FALSE)) {
+				   TRACE("Error:%d\n", GetLastError());
+				   break;
+			    }
+				else {
+
+				}
+
                 GetCommMask(port->m_hComm, &CommEvent);
                 if (CommEvent & EV_RXCHAR) //接收到字符，并置于输入缓冲区中 
                     ReceiveData(port, comstat);
@@ -528,7 +545,7 @@ void CSerialPort::WriteChar(CSerialPort* port)
         port->m_ov.OffsetHigh = 0;
      
         // Clear buffer
-        PurgeComm(port->m_hComm, PURGE_RXCLEAR | PURGE_TXCLEAR | PURGE_RXABORT | PURGE_TXABORT);
+      /*  PurgeComm(port->m_hComm, PURGE_RXCLEAR | PURGE_TXCLEAR | PURGE_RXABORT | PURGE_TXABORT);*/
 
         bResult = WriteFile(port->m_hComm,                            // Handle to COMM Port
                             port->m_szWriteBuffer,                    // Pointer to message buffer in calling finction

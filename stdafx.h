@@ -27,6 +27,8 @@
 #include "lib\sdk_xm\netsdk.h"
 #include "lib\sqlite3\sqlitewrapper.h"
 
+#include "ColyEyeHost.h"
+
 #pragma comment(lib, "lib\\sdk_xm\\H264Play.lib")
 #pragma comment(lib, "lib\\sdk_xm\\NetSdk.lib")
 #pragma comment(lib, "lib\\sqlite3\\sqlite3.lib")
@@ -81,10 +83,10 @@
 #define SOUND_PATH                    "e:\\Record\\Sound\\"
 
 #define COM_KEYBD    8
-#define COM_CAMERA   10
+#define COM_CAMERA   3
 
 extern 	SQLiteWrapper sqlite;
-
+extern  ColyEyeHost   host;
 
 
 #define LOG_PATH                     "e:\\log.txt"

@@ -59,6 +59,13 @@ void CAutoWatchTimeConfDlg::OnBnClickedButton1()
 	mEndTimePicker->GetTime(endTime);
 	mBeginTimePicker->GetTime(beginTime);
 
-	
+	host.mConfuration.watch_time_begining = beginTime.GetHour() * 3600 + beginTime.GetMinute() * 60;
+
+	DWORD end_time = endTime.GetHour() * 3600 + endTime.GetMinute() * 60 ;
+
+
+	host.mConfuration.watch_time_span = (end_time >= host.mConfuration.watch_time_begining ? end_time - host.mConfuration.watch_time_begining :
+		                                end_time + 24 * 3600 - host.mConfuration.watch_time_begining);
 	TRACE("Auto watch time fragment:%S -- %S\n", beginTime.Format(_T("%y-%m-%d %H:%M:%S")), endTime.Format(_T("%y-%m-%d %H:%M:%S")));
+
 }

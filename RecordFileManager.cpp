@@ -157,7 +157,7 @@ CFile* RecordFileManager::DistributeRecordFile(int id, UINT8 record_type)
 
 	if (paRecordFiles[index].m_hFile == CFile::hFileNull) {
 		CRecordFileInfo newInfo;
-		newInfo.mStatus |= record_type;
+		newInfo.mStatus = record_type;
 		CTime time = CTime::GetCurrentTime();
 
 		CString fileName;

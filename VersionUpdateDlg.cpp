@@ -28,7 +28,9 @@ void CVersionUpdateDlg::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CVersionUpdateDlg, CDialogEx)
+
 END_MESSAGE_MAP()
 
 
 // CVersionUpdateDlg 消息处理程序
+
