@@ -73,4 +73,6 @@ public:
 	CButton mPicDirection;
 	CButton mStoreSwitcher;
 	CButton mAutoWatchSwitcher;
+	afx_msg void OnBnClickedButton3();
+	afx_msg void OnBnClickedButton4();
 };

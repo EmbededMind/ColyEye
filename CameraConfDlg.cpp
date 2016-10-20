@@ -7,6 +7,7 @@
 #include "afxdialogex.h"
 
 #include "CameraOffConfirmDlg.h"
+#include "CameraStoreOffConfirmDlg.h"
 
 
 // CCameraConfDlg 对话框
@@ -46,6 +47,8 @@ BEGIN_MESSAGE_MAP(CCameraConfDlg, CDialogEx)
 
 	ON_BN_CLICKED(IDC_BUTTON1, &CCameraConfDlg::OnBnClickedButton1)
 	ON_BN_CLICKED(IDC_BUTTON2, &CCameraConfDlg::OnBnClickedButton2)
+	ON_BN_CLICKED(IDC_BUTTON3, &CCameraConfDlg::OnBnClickedButton3)
+	ON_BN_CLICKED(IDC_BUTTON4, &CCameraConfDlg::OnBnClickedButton4)
 END_MESSAGE_MAP()
 
 
@@ -328,4 +331,54 @@ void CCameraConfDlg::OnBnClickedButton2()
 	ASSERT(pCamera != NULL);
 
 
+}
+
+
+/**@brief 视频存储功能开关
+ *
+ */
+void CCameraConfDlg::OnBnClickedButton3()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	ASSERT(pCamera != NULL);
+
+	//本来开启了存储，结果悲剧了，点了关闭
+	if (pCamera->userConf.toggleConf & CAMERA_USER_CONF_STORE) {
+		CCameraStoreOffConfirmDlg dlg;
+		if (dlg.DoModal() == IDOK) {
+			mStoreSwitcher.SetWindowTextW(_T("关闭"));
+			pCamera->userConf.toggleConf &= (~CAMERA_USER_CONF_STORE);
+			::SendMessage(((CColyEyeApp*)AfxGetApp())->m_pWallWnd->m_hWnd, USER_MSG_DEVICE_CONFIG, false, (LPARAM)pCamera);
+		}
+	}
+	// 本来是关闭，现在开启
+	else {
+		mStoreSwitcher.SetWindowTextW(_T("开启"));
+		pCamera->userConf.toggleConf |= CAMERA_USER_CONF_STORE;
+		::SendMessage(((CColyEyeApp*)AfxGetApp())->m_pWallWnd->m_hWnd, USER_MSG_DEVICE_CONFIG, true, (LPARAM)pCamera);
+	}
+}
+
+
+/**@brief 自动看船功能开关
+ *
+ */
+void CCameraConfDlg::OnBnClickedButton4()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	//本来开启了自动看船，结果悲剧了，点了关闭
+	if (pCamera->userConf.toggleConf & CAMERA_USER_CONF_AWATCH) {
+		//CCameraStoreOffConfirmDlg dlg;
+		//if (dlg.DoModal() == IDOK) {
+			mStoreSwitcher.SetWindowTextW(_T("关闭"));
+			pCamera->userConf.toggleConf &= (~CAMERA_USER_CONF_AWATCH);
+			::SendMessage(((CColyEyeApp*)AfxGetApp())->m_pWallWnd->m_hWnd, USER_MSG_DEVICE_CONFIG, false, (LPARAM)pCamera);
+		//}
+	}
+	// 本来是关闭，现在开启
+	else {
+		mStoreSwitcher.SetWindowTextW(_T("开启"));
+		pCamera->userConf.toggleConf |= CAMERA_USER_CONF_AWATCH;
+		::SendMessage(((CColyEyeApp*)AfxGetApp())->m_pWallWnd->m_hWnd, USER_MSG_DEVICE_CONFIG, true, (LPARAM)pCamera);
+	}
 }
