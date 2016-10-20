@@ -3,7 +3,7 @@
 
 CRecordFileInfo::CRecordFileInfo()
 {
-	mStatus = RECORD_TYPE_NORMAL;
+	
 }
 
 

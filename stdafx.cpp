@@ -6,7 +6,7 @@
 #include "stdafx.h"
 
 SQLiteWrapper sqlite;
-
+ColyEyeHost   host;
 
 
 void WriteLog(LPCTSTR logName, CString msg)

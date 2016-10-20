@@ -484,37 +484,36 @@ void __stdcall disConnnectCallback(LONG lLoginID, char* pchDVRIP, LONG nDVRPort,
  */
 bool __stdcall messageCallbackFunc(long lLoginID, char* pBuf, unsigned long dwBufLen, long dwUser)
 {
-	TRACE("Something happened! %d\n", lLoginID);
-	SDK_AlarmInfo* pAlarmInfo = (SDK_AlarmInfo*)pBuf;
+	//TRACE("Something happened! %d\n", lLoginID);
 
-	if (pAlarmInfo->iEvent < 30) {
-		TRACE("%s-->%d,channel:%d\n", alarmEventTab[pAlarmInfo->iEvent], pAlarmInfo->iStatus, pAlarmInfo->nChannel);
-		if (pAlarmInfo->iStatus == 0) { /// Movation begin
-			CCameraManager* pMgr = CCameraManager::getInstance();
-			CCamera* pDev = pMgr->findCameraByLoginId(lLoginID);
+	CCameraManager* pMgr = CCameraManager::getInstance();
+	CCamera* pDev = pMgr->findCameraByLoginId(lLoginID);
 
-			if (pDev  && (pDev->userConf.toggleConf & CAMERA_USER_CONF_AWATCH)) {
-				CWallDlg* pWall = (CWallDlg*)dwUser;
-				CTime t = CTime::GetCurrentTime();
-				DWORD refTime = t.GetHour() * 3600 + t.GetMinute() * 60 + t.GetSecond();
+	// 自动看船开启
+	if (pDev  && (pDev->userConf.toggleConf & CAMERA_USER_CONF_AWATCH)) {
+		CWallDlg* pWall = (CWallDlg*)dwUser;
+		CTime t = CTime::GetCurrentTime();
+				
+		DWORD refTime = t.GetHour() * 3600 + t.GetMinute() * 60;
 
-				if (refTime >= pWall->mBeginWatchTime  &&  refTime < pWall->mEndWatchTime) {
-					TRACE("status:0x%x\n", alarmRecordStatus.flag);
-					if ((alarmRecordStatus.flag & (0x01 << (pDev->mId - 1))) == 0) {
-						pDev->startAlarmRecord(RecordFileManager::GetInstance()->DistributeRecordFile(pDev->mId, RECORD_TYPE_ALARM));
+		BOOL beingWatching = (refTime >= host.mConfuration.watch_time_begining ?
+			refTime - host.mConfuration.watch_time_begining < host.mConfuration.watch_time_span :
+			refTime + 24 * 3600 - host.mConfuration.watch_time_begining < host.mConfuration.watch_time_span);
+		//当前属于自动看船时段
+		if (beingWatching) {
+			SDK_AlarmInfo* pAlarmInfo = (SDK_AlarmInfo*)pBuf;
+			if (pAlarmInfo->iEvent < 30 && pAlarmInfo->iStatus == 0) {
+				TRACE("status:0x%x\n", alarmRecordStatus.flag);
+				if ((alarmRecordStatus.flag & (0x01 << (pDev->mId - 1))) == 0) {
+					pDev->startAlarmRecord(RecordFileManager::GetInstance()->DistributeRecordFile(pDev->mId, RECORD_TYPE_ALARM));
 
-						SetTimer(((CWallDlg*)dwUser)->m_hWnd, ALARM_TIMER_EVENT_ID, 10 * 1000, NULL);
-						alarmRecordStatus.flag |= (0x01 << (pDev->mId - 1));
-					}
-					else {
-
-					}
-					alarmRecordStatus.flagCnts[pDev->mId - 1] = ALARM_LIVE_TIME;
+					SetTimer(((CWallDlg*)dwUser)->m_hWnd, ALARM_TIMER_EVENT_ID, 10 * 1000, NULL);
+					alarmRecordStatus.flag |= (0x01 << (pDev->mId - 1));
 				}
+				else {
 
-			}
-			else {
-				TRACE("error:loginId %d mismatch any camera when rec alarm message \n", lLoginID);
+				}
+				alarmRecordStatus.flagCnts[pDev->mId - 1] = ALARM_LIVE_TIME;
 			}
 		}
 	}
