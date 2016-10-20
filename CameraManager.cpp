@@ -68,6 +68,7 @@ BOOL CCameraManager::distributeId(CCamera* pCamera)
 		id = getIdFromDB(pCamera->mCommonNetConfig.sMac);
 		if (id) {
 			pCamera->mId = id;
+			mLoginDevice[id-1] = pCamera;
 			return true;
 		}
 		else {

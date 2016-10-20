@@ -6,6 +6,8 @@
 #include "CameraConfDlg.h"
 #include "afxdialogex.h"
 
+#include "CameraOffConfirmDlg.h"
+
 
 // CCameraConfDlg 对话框
 
@@ -26,11 +28,11 @@ void CCameraConfDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Text(pDX, IDC_EDIT1, mCurrName);
-	DDX_Control(pDX, IDC_BUTTON1, mSwitch);
-	DDX_Control(pDX, IDC_BUTTON2, mPicDirection);
-	DDX_Control(pDX, IDC_BUTTON3, mStoreSwitch);
-	DDX_Control(pDX, IDC_BUTTON4, mAutoWatchSwitch);
 	DDX_Control(pDX, IDC_SLIDER1, mSlider);
+	DDX_Control(pDX, IDC_BUTTON1, mSwitcher);
+	DDX_Control(pDX, IDC_BUTTON2, mPicDirection);
+	DDX_Control(pDX, IDC_BUTTON3, mStoreSwitcher);
+	DDX_Control(pDX, IDC_BUTTON4, mAutoWatchSwitcher);
 }
 
 
@@ -42,6 +44,8 @@ BEGIN_MESSAGE_MAP(CCameraConfDlg, CDialogEx)
 
 	ON_WM_HSCROLL()
 
+	ON_BN_CLICKED(IDC_BUTTON1, &CCameraConfDlg::OnBnClickedButton1)
+	ON_BN_CLICKED(IDC_BUTTON2, &CCameraConfDlg::OnBnClickedButton2)
 END_MESSAGE_MAP()
 
 
@@ -155,6 +159,50 @@ BOOL CCameraConfDlg::OnInitDialog()
 
 
 
+void CCameraConfDlg::ShowConfigurationOf(CCamera* whichCamera)
+{
+	if (whichCamera->userConf.name_inx == 0) {
+		mCurrName.Format(_T("摄像机%d"), whichCamera->mId);
+	}
+	else if (whichCamera->userConf.name_inx <= 18) {
+		((CTagButton*)GetDlgItem(whichCamera->userConf.name_inx))->GetWindowTextW(mCurrName);
+	}
+
+	mVolume = whichCamera->userConf.vol;
+	
+	if (whichCamera->userConf.toggleConf & CAMERA_USER_CONF_ON) {
+		mSwitcher.SetWindowTextW(_T("开"));
+	}
+	else {
+		mSwitcher.SetWindowTextW(_T("关"));
+	}
+
+	if (whichCamera->userConf.toggleConf & CAMERA_USER_CONF_UP) {
+		mPicDirection.SetWindowTextW(_T("正着放"));
+	}
+	else {
+		mPicDirection.SetWindowTextW(_T("倒着放"));
+	}
+
+	if (whichCamera->userConf.toggleConf & CAMERA_USER_CONF_STORE) {
+		mStoreSwitcher.SetWindowTextW(_T("开"));
+	}
+	else {
+		mStoreSwitcher.SetWindowTextW(_T("关"));
+	}
+
+	if (whichCamera->userConf.toggleConf & CAMERA_USER_CONF_AWATCH) {
+		mAutoWatchSwitcher.SetWindowTextW(_T("开"));
+	}
+	else {
+		mAutoWatchSwitcher.SetWindowTextW(_T("关"));
+	}
+
+	UpdateData(FALSE);
+}
+
+
+
 void CCameraConfDlg::InitPanel()
 {
 	for (int i = 0; i < 18; i++) {
@@ -215,10 +263,11 @@ afx_msg LRESULT CCameraConfDlg::OnUserMsgGiveFocus(WPARAM wParam, LPARAM lParam)
 
 
 afx_msg LRESULT CCameraConfDlg::OnUserMsgDeviceConfig(WPARAM wParam, LPARAM lParam)
-{
-	pCamera = CCameraManager::getInstance()->findCameraById(wParam);
+{	
+	pCamera = CCameraManager::getInstance()->mLoginDevice[wParam-1];
 	if (pCamera != NULL) {
 		//   刷新设置项
+		ShowConfigurationOf(pCamera);
 	}
 	return 0;
 }
@@ -239,5 +288,44 @@ void CCameraConfDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 		break;
 	}	
 	CDialogEx::OnHScroll(nSBCode, mVolume, pScrollBar);
+
+}
+
+
+void CCameraConfDlg::OnBnClickedButton1()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	ASSERT(pCamera != NULL);
+
+	// 本来是开启，结果点击了
+	if (pCamera->userConf.toggleConf & CAMERA_USER_CONF_ON) {
+		CCameraOffConfirmDlg dlg;
+		if (dlg.DoModal() == IDOK) {
+			TRACE("确定关闭摄像机\n");
+			mSwitcher.SetWindowTextW(_T("关"));
+			pCamera->userConf.toggleConf &= (~CAMERA_USER_CONF_ON);
+			::SendMessage(((CColyEyeApp*)AfxGetApp())->m_pWallWnd->m_hWnd, USER_MSG_DEVICE_CONFIG, false, (LPARAM)pCamera);
+		}
+		else {
+			TRACE("取消关闭摄像机\n");
+		}
+	}
+	// 本来是关闭，现在开启
+	else {
+		mSwitcher.SetWindowTextW(_T("开"));
+		pCamera->userConf.toggleConf |= CAMERA_USER_CONF_ON;
+		::SendMessage(((CColyEyeApp*)AfxGetApp())->m_pWallWnd->m_hWnd, USER_MSG_DEVICE_CONFIG, true, (LPARAM)pCamera);
+	}
+}
+
+
+/**@brief 控制视频方向按钮
+ *
+ */
+void CCameraConfDlg::OnBnClickedButton2()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	ASSERT(pCamera != NULL);
+
 
 }

@@ -38,8 +38,7 @@ protected:
 private:
 	CPtrList mHolderes;
 
-	DWORD mBeginRecordTime;
-	DWORD mEndRecordTime;
+
 
 	UINT8 mRows;
 	UINT8 mCols;
@@ -54,17 +53,22 @@ private:
 
 
 public:
+	DWORD mBeginWatchTime;
+	DWORD mEndWatchTime;
+
 	CSurfaceHolderDlg* investCamera(CCamera* pCamera);
 	void   spitCamera(CCamera* pCamera);
 	BOOL   designLayout();
 	void   executeLayout();
 	void   updateLayout();
 
+	
 	void SuspendCamera(CCamera* pCamera);
 	void ResumeCamera(CCamera* pCamera);
 
-	void Schedule(CCamera* pCamera);
-	void StepSchedule(CTime& refTime);
+
+	void EnableCameraConfiguration(CCamera* pCamera);
+	void DisableCameraConfiguration(CCamera* pCamera);
 	
 
 	void ReConnect(LONG lLoginID, char* pchDVRIP, LONG nDVRPort);
@@ -74,4 +78,6 @@ protected:
 	afx_msg LRESULT OnUserMsgBring(WPARAM wParam, LPARAM lParam);
 public:
 	CTime mSystemTime;
+protected:
+	afx_msg LRESULT OnUserMsgDeviceConfig(WPARAM wParam, LPARAM lParam);
 };

@@ -143,12 +143,12 @@ void CSystemConfigDlg::UpdateItemLayout()
 	for (int i = 0; i < CAMERA_MAX_NUM; i++) {
 		pItem = GetDlgItem(ID_BTN_CAMERA_BASE + i);
 
-		if (i < 2) {
+		/*if (i < 2) {
 			pItem->MoveWindow(r.left + 2, r.top + cnt * 45, 80, 40, true);
 			pItem->ShowWindow(SW_SHOW);
 			cnt++;
 		}
-		else if (pMgr->mLoginDevice[i] != nullptr  &&  pMgr->mLoginDevice[i]->mLoginId) {
+		else*/ if (pMgr->mLoginDevice[i] != nullptr  &&  pMgr->mLoginDevice[i]->mLoginId) {
 			pItem->MoveWindow(r.left+2, r.top + cnt*45, 80, 40, true);
 			pItem->ShowWindow(SW_SHOW);
 			cnt++;

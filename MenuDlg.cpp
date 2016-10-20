@@ -97,7 +97,7 @@ END_MESSAGE_MAP()
 BOOL CMenuDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
-
+	((CColyEyeApp*)AfxGetApp())->m_pMenuWnd = this;
 	// TODO:  在此添加额外的初始化
 	initMenuItem();
 	initSubMenu();

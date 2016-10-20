@@ -64,7 +64,8 @@ CWallDlg::CWallDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(IDD_WALL, pParent)
 	, mSystemTime(0)
 {
-
+	mBeginWatchTime = 0;
+	mEndWatchTime = 24 * 3600;
 }
 
 CWallDlg::~CWallDlg()
@@ -211,6 +212,7 @@ BEGIN_MESSAGE_MAP(CWallDlg, CDialogEx)
 	ON_WM_TIMER()
 	ON_MESSAGE(USER_MSG_BRING, &CWallDlg::OnUserMsgBring)
 	ON_MESSAGE(USER_MSG_RELOGIN, &CWallDlg::OnUserMsgReLogin)
+	ON_MESSAGE(USER_MSG_DEVICE_CONFIG, &CWallDlg::OnUserMsgDeviceConfig)
 END_MESSAGE_MAP()
 
 
@@ -222,6 +224,8 @@ BOOL CWallDlg::OnInitDialog()
 	CDialogEx::OnInitDialog();
 
 	// TODO:  在此添加额外的初始化
+	((CColyEyeApp*)AfxGetApp())->m_pWallWnd = this;
+
 	CWnd* pWndParent = this->GetParent();
 
 	CRect parentClientRect;
@@ -234,12 +238,7 @@ BOOL CWallDlg::OnInitDialog()
 	PostThreadMessage( ((CColyEyeApp*)AfxGetApp())->pidOfLoginThread, USER_MSG_SCAN_DEV, CAMERA_MAX_NUM, (LPARAM)CCameraManager::getInstance()->mSdkConfNetCommonV2 );
 
 	H264_DVR_SetDVRMessCallBack(messageCallbackFunc, (unsigned long)this);
-    
-	JugSchMsg msg;
-	msg.hwnd = this->m_hWnd;
-	msg.message = 100;
-	
-	this->mJugScheduler.AddZoneSchedule(&msg,  16*3600+0*60, 16*3600+1*60);
+
 
 	SetTimer(SECOND_TICK_TIMER_EVENT_ID, 1000, NULL);
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -250,6 +249,8 @@ BOOL CWallDlg::OnInitDialog()
 
 /**@brief 设备登录消息处理
  *
+ * @note 设备登录后：
+ *           
  */
 afx_msg LRESULT CWallDlg::OnUserMsgLogin(WPARAM wParam, LPARAM lParam)
 {
@@ -271,12 +272,7 @@ afx_msg LRESULT CWallDlg::OnUserMsgLogin(WPARAM wParam, LPARAM lParam)
 		
 		pDev->clientInfo.hWnd = this->investCamera(pDev)->mSurface.m_hWnd;
 
-		pDev->subscribeAlarmMessage();
-		pDev->startRealPlay();
-
-		SetTimer(pDev->mId, 30*1000, NULL);
-
-		pDev->startRecord(RecordFileManager::GetInstance()->DistributeRecordFile(pDev->mId, RECORD_TYPE_NORMAL));
+		EnableCameraConfiguration(pDev);
 	}
 	else {
 		AfxMessageBox(_T("Login fail"));
@@ -296,25 +292,7 @@ afx_msg LRESULT CWallDlg::OnUserMsgReLogin(WPARAM wParam, LPARAM lParam)
 		Device_Map::iterator iter;
 		CCamera* pDev = (CCamera*)lParam;
 
-		pDev->subscribeAlarmMessage();
-		//TRACE("after subcribe alarm message\n");
-		//Util::ShowMemoryInfo();
-
-		pDev->startRealPlay();
-		//TRACE("after start real play\n");
-		//Util::ShowMemoryInfo();
-
-		SetTimer(pDev->mId, 30 * 1000, NULL);
-		TRACE("after set timer\n");
-		/*Util::ShowMemoryInfo();*/
-
-		CFile* pf = RecordFileManager::GetInstance()->DistributeRecordFile(pDev->mId, RECORD_TYPE_NORMAL);
-		//TRACE("after distribute file\n");
-		/*Util::ShowMemoryInfo();*/
-
-		pDev->startRecord(pf);
-		//TRACE("after start record\n");
-		/*Util::ShowMemoryInfo();*/
+		EnableCameraConfiguration(pDev);
 
 		iter = mDevReconnectMap.find(pDev->mId);
 
@@ -337,14 +315,14 @@ afx_msg LRESULT CWallDlg::OnUserMsgReLogin(WPARAM wParam, LPARAM lParam)
  */
 void CWallDlg::interruptRecord(CCamera* pCamera)
 {
-	ASSERT(pCamera != nullptr);
+	ASSERT(pCamera != NULL);
 
 	if (pCamera->isRecording) {
 		pCamera->stopRecord();
 		RecordFileManager::GetInstance()->RecallRecordFile(pCamera->mId, RECORD_TYPE_NORMAL);
 		KillTimer(pCamera->mId);
 
-		pCamera->isRecording = false;
+		pCamera->isRecording = FALSE;
 	}
 }
 
@@ -371,7 +349,7 @@ void CWallDlg::interruptAlarmRecord(CCamera* pCamera)
 			}
 		}
 
-		pCamera->isAlarmRecording = false;
+		pCamera->isAlarmRecording = FALSE;
 	}
 }
 
@@ -407,67 +385,59 @@ void CWallDlg::ResumeCamera(CCamera* pCamera)
 
 	pCamera->subscribeAlarmMessage();
 	pCamera->startRealPlay();
-	Schedule(pCamera);
 
 	pCamera->userConf.toggleConf |= CAMERA_USER_CONF_ON;
 }
 
 
 
-/**@brief 对指定摄像机进行录像调度
- *
- * @param[in]  调度的摄像机
- */
-void CWallDlg::Schedule(CCamera* pCamera)
+void CWallDlg::EnableCameraConfiguration(CCamera* pCamera)
 {
-	CTime t = CTime::GetCurrentTime();
-	DWORD refTime = t.GetHour() * 3600 + t.GetMinute() * 60 + t.GetSecond();
-
-	if (!pCamera->isRecording) {
-		if (refTime >= mBeginRecordTime && refTime < mEndRecordTime) {
-			CFile* pf = RecordFileManager::GetInstance()->DistributeRecordFile(pCamera->mId, RECORD_TYPE_NORMAL);
-			pCamera->startRecord(pf);
+	// 摄像机开启
+	if (pCamera->userConf.toggleConf & CAMERA_USER_CONF_ON) {
+		if(pCamera->hRealPlay == 0)
+		    pCamera->startRealPlay();
+        
+		if (pCamera->userConf.toggleConf & CAMERA_USER_CONF_STORE) {
+			if (!pCamera->isRecording) {
+				CFile* pf = RecordFileManager::GetInstance()->DistributeRecordFile(pCamera->mId, RECORD_TYPE_NORMAL);
+				pCamera->startRecord(pf);
+			}
 		}
-	}
-	else {
-		if (refTime < mBeginRecordTime || refTime >= mEndRecordTime) {
-			pCamera->stopRecord();
-			RecordFileManager::GetInstance()->RecallRecordFile(pCamera->mId, RECORD_TYPE_NORMAL);
+
+		if (pCamera->userConf.toggleConf & CAMERA_USER_CONF_AWATCH) {
+			pCamera->subscribeAlarmMessage();
 		}
 	}
 }
 
 
 
-/**@brief 对所有摄像机执行一次录像调度
- *
- * @param[in] 参考时间
- */
-void CWallDlg::StepSchedule(CTime& time)
+void CWallDlg::DisableCameraConfiguration(CCamera* pCamera)
 {
-	CCameraManager* pMgr = CCameraManager::getInstance();
-	CCamera* pDev;
-	if (pMgr) {
-		DWORD refTime = time.GetHour() * 3600 + time.GetMinute() * 60 + time.GetSecond();
-
-		POSITION  pos = pMgr->mCameras.GetHeadPosition();
-		while (pos) {
-			pDev = (CCamera*)pMgr->mCameras.GetNext(pos);
-			if (pDev->userConf.toggleConf & CAMERA_USER_CONF_ON) {
-				if (!pDev->isRecording) {
-					if (refTime >= mBeginRecordTime && refTime < mEndRecordTime) {
-						CFile* pf = RecordFileManager::GetInstance()->DistributeRecordFile(pDev->mId, RECORD_TYPE_NORMAL);
-						pDev->startRecord(pf);
-					}
-				}
-				else {
-					if (refTime < mBeginRecordTime || refTime >= mEndRecordTime) {
-						pDev->stopRecord();
-						RecordFileManager::GetInstance()->RecallRecordFile(pDev->mId, RECORD_TYPE_NORMAL);
-					}
-				}
-			}
+	if ( (pCamera->userConf.toggleConf & CAMERA_USER_CONF_ON) == 0) {
+		if (pCamera->hRealPlay) {
+			pCamera->stopRealPlay();
 		}
+
+	    interruptRecord(pCamera);
+
+	    interruptAlarmRecord(pCamera);
+
+		pCamera->unsubscribeAlarmMessage();
+	}
+	else {
+		if ( (pCamera->userConf.toggleConf & CAMERA_USER_CONF_STORE) == 0) {
+			
+			interruptRecord(pCamera);
+		}
+
+		if ( (pCamera->userConf.toggleConf & CAMERA_USER_CONF_AWATCH) == 0) {
+			
+			interruptAlarmRecord(pCamera);
+	
+		}
+		pCamera->unsubscribeAlarmMessage();
 	}
 }
 
@@ -481,8 +451,8 @@ void CWallDlg::ReConnect(LONG lLoginID, char* pchDVRIP, LONG nDVRPort)
 	CCamera* pDev = CCameraManager::getInstance()->findCameraByLoginId(lLoginID);
 
 	if (pDev != nullptr) {
-		pDev->logout();
 		pDev->unsubscribeAlarmMessage();
+		pDev->logout();
 		interruptAlarmRecord(pDev);
 		interruptRecord(pDev);
 		pDev->stopRealPlay();
@@ -490,22 +460,6 @@ void CWallDlg::ReConnect(LONG lLoginID, char* pchDVRIP, LONG nDVRPort)
 		mDevReconnectMap[pDev->mId] = pDev;
 		SetTimer(RECONNET_TIMER_EVENT_ID, 30*1000, NULL);
 	}
-
-	//POSITION pos = mHolderes.GetHeadPosition();
-	//CSurfaceHolderDlg* pHolder;
-	//while (pos) {
-	//	pHolder = (CSurfaceHolderDlg*)mHolderes.GetNext(pos);
-	//	if (pHolder->pCamera->mLoginId == lLoginID) {
-	//		pHolder->pCamera->logout();
-	//		interruptAlarmRecord(pHolder->pCamera);
-	//		interruptRecord(pHolder->pCamera);
-	//		pHolder->pCamera->stopRealPlay();
-	//		pHolder->pCamera->unsubscribeAlarmMessage();			
-	//		mDevReconnectMap[pHolder->pCamera->mId] = pHolder->pCamera;
-	//		SetTimer(RECONNET_TIMER_EVENT_ID, 30*1000, NULL);
-	//		return;
-	//	}
-	//}
 }
 
 
@@ -536,19 +490,28 @@ bool __stdcall messageCallbackFunc(long lLoginID, char* pBuf, unsigned long dwBu
 	if (pAlarmInfo->iEvent < 30) {
 		TRACE("%s-->%d,channel:%d\n", alarmEventTab[pAlarmInfo->iEvent], pAlarmInfo->iStatus, pAlarmInfo->nChannel);
 		if (pAlarmInfo->iStatus == 0) { /// Movation begin
-			CCamera* pDev = CCameraManager::getInstance()->findCameraByLoginId(lLoginID);
-			if (pDev) {
-				TRACE("status:0x%x\n", alarmRecordStatus.flag);
-				if ((alarmRecordStatus.flag & (0x01 << (pDev->mId - 1))) == 0) {
-					pDev->startAlarmRecord(RecordFileManager::GetInstance()->DistributeRecordFile(pDev->mId, RECORD_TYPE_ALARM));
+			CCameraManager* pMgr = CCameraManager::getInstance();
+			CCamera* pDev = pMgr->findCameraByLoginId(lLoginID);
 
-					SetTimer(((CWallDlg*)dwUser)->m_hWnd, ALARM_TIMER_EVENT_ID, 10 * 1000, NULL);
-					alarmRecordStatus.flag |= (0x01 << (pDev->mId - 1));
-				}
-				else {
+			if (pDev  && (pDev->userConf.toggleConf & CAMERA_USER_CONF_AWATCH)) {
+				CWallDlg* pWall = (CWallDlg*)dwUser;
+				CTime t = CTime::GetCurrentTime();
+				DWORD refTime = t.GetHour() * 3600 + t.GetMinute() * 60 + t.GetSecond();
 
+				if (refTime >= pWall->mBeginWatchTime  &&  refTime < pWall->mEndWatchTime) {
+					TRACE("status:0x%x\n", alarmRecordStatus.flag);
+					if ((alarmRecordStatus.flag & (0x01 << (pDev->mId - 1))) == 0) {
+						pDev->startAlarmRecord(RecordFileManager::GetInstance()->DistributeRecordFile(pDev->mId, RECORD_TYPE_ALARM));
+
+						SetTimer(((CWallDlg*)dwUser)->m_hWnd, ALARM_TIMER_EVENT_ID, 10 * 1000, NULL);
+						alarmRecordStatus.flag |= (0x01 << (pDev->mId - 1));
+					}
+					else {
+
+					}
+					alarmRecordStatus.flagCnts[pDev->mId - 1] = ALARM_LIVE_TIME;
 				}
-				alarmRecordStatus.flagCnts[pDev->mId - 1] = ALARM_LIVE_TIME;
+
 			}
 			else {
 				TRACE("error:loginId %d mismatch any camera when rec alarm message \n", lLoginID);
@@ -569,8 +532,8 @@ void CWallDlg::OnTimer(UINT_PTR nIDEvent)
 			RecordFileManager* pMgr = RecordFileManager::GetInstance();
 			pMgr->RecallRecordFile(pCamera->mId, RECORD_TYPE_NORMAL);
 			pCamera->startRecord(pMgr->DistributeRecordFile(pCamera->mId, RECORD_TYPE_NORMAL));
-
-			Util::ShowMemoryInfo();		
+/*
+			Util::ShowMemoryInfo();	*/	
 		}
 	}
 	// 报警录像打包判断
@@ -613,58 +576,12 @@ void CWallDlg::OnTimer(UINT_PTR nIDEvent)
 		while (p != mDevReconnectMap.end()) {
 			PostThreadMessage( ((CColyEyeApp*)AfxGetApp())->pidOfLoginThread, USER_MSG_RELOGIN, 0, (LPARAM)p->second );
 			p++;
-		}
-		
-		//while (p != mDevReconnectMap.end()) {
-			//CCamera* pDev = p->second;
-
-		//	if (pDev->login()) {
-		//		TRACE("%s ReLogin\n", pDev->mIp);
-		//		mDevReconnectMap.erase(p++);
-
-		//		pDev->subscribeAlarmMessage();
-		//		TRACE("after subcribe alarm message\n");
-		//		Util::ShowMemoryInfo();
-
-		//		pDev->startRealPlay();	
-		//		TRACE("after start real play\n");
-		//		Util::ShowMemoryInfo();
-
-		//		SetTimer(pDev->mId, 30 * 1000, NULL);
-		//		TRACE("after set timer\n");
-		//		Util::ShowMemoryInfo();
-
-		//		CFile* pf = RecordFileManager::GetInstance()->DistributeRecordFile(pDev->mId, RECORD_TYPE_NORMAL);
-		//		TRACE("after distribute file\n");
-		//		Util::ShowMemoryInfo();
-
-		//		pDev->startRecord(pf);
-		//		TRACE("after start record\n");
-		//		Util::ShowMemoryInfo();
-		//	}
-		//	else {
-		//		p++;
-		//	}
-		//}
-
-		//if (0 == mDevReconnectMap.size()) {
-		//	KillTimer(RECONNET_TIMER_EVENT_ID);
-		//}
+		}		
 	}
 	// 1s 定时时间到
 	else if (SECOND_TICK_TIMER_EVENT_ID){
 		mSystemTime = CTime::GetCurrentTime();
 		UpdateData(false);
-
-		std::list<JugSchMsg*> res;
-		mJugScheduler.Step(mSystemTime, res);
-
-		if (res.size() > 0) {
-			std::list<JugSchMsg*>::iterator  iter;
-			for (iter = res.begin(); iter != res.end(); iter++) {
-				TRACE("schedule msg:%d\n",(*iter)->message);
-			}
-		}
 	}
 	CDialogEx::OnTimer(nIDEvent);
 }
@@ -678,6 +595,19 @@ afx_msg LRESULT CWallDlg::OnUserMsgBring(WPARAM wParam, LPARAM lParam)
 	if (wParam) {
 		this->ShowWindow(SW_SHOW);
 		this->SetFocus();
+	}
+	return 0;
+}
+
+
+afx_msg LRESULT CWallDlg::OnUserMsgDeviceConfig(WPARAM wParam, LPARAM lParam)
+{
+	CCamera* pCamera = (CCamera*)lParam;
+	if (wParam) {
+		EnableCameraConfiguration(pCamera);
+	}
+	else {
+		DisableCameraConfiguration(pCamera);
 	}
 	return 0;
 }
