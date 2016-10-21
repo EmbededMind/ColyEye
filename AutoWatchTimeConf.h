@@ -1,5 +1,6 @@
 #pragma once
 #include "atltime.h"
+#include "ATLComTime.h"
 
 
 // CAutoWatchTimeConf ¶Ô»°¿ò
@@ -33,4 +34,6 @@ private:
 	CTime mWatchTimeEnding;
 		CDateTimeCtrl* mEndTimePicker;
 		CDateTimeCtrl* mBeginTimePicker;
+public:
+	COleDateTime mBegining;
 };
