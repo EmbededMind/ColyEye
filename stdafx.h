@@ -72,6 +72,7 @@
 
 #define USER_MSG_ADD_FILE             (WM_USER + 140)
 #define USER_MSG_DEL_FILE             (WM_USER + 141)
+#define USER_MSG_COPY_RECORD          (WM_USER + 142)
 
 #define USER_MSG_CONNECT              (WM_USER + 150)
 
