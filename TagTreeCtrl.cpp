@@ -169,19 +169,6 @@ BOOL CTagTreeCtrl::PreTranslateMessage(MSG * pMsg)
 				CRecordFileInfo *pRecordInfo = (CRecordFileInfo *)this->GetItemData(hItem);
 				::SendMessage(((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->mVideoCtr, USER_MSG_PLAY, ((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->mMenu.mCurrCursor, (LPARAM)pRecordInfo);
 			}
-			return true;			
-		case VK_DOWN:
-			if ((hItem != NULL) && this->ItemHasChildren(hItem))
-			{
-				
-			}
-			else
-			{
-				
-			}
-			return true;
-		case VK_UP:
-
 			return true;
 		}
 	}
@@ -249,11 +236,71 @@ BOOL CTagTreeCtrl::DelFile(DWORD_PTR data)
 	return FALSE;
 }
 
-BEGIN_MESSAGE_MAP(CTagTreeCtrl, CTreeCtrl)
-	
-END_MESSAGE_MAP()
+BOOL CTagTreeCtrl::CopyRecord()
+{
+	CString PlayPath("E:\\Record");
+	if (((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->m_USBFlashDiskStatus.m_bInsert)
+	{
+		HTREEITEM hItem = this->GetSelectedItem();
+		if (!hItem)
+			return 0;
+		if (this->ItemHasChildren(hItem))
+		{
+			HTREEITEM hChild = this->GetChildItem(hItem);
+			CRecordFileInfo *pRecordInfo = (CRecordFileInfo *)this->GetItemData(hChild);
+			CString tmp;
 
-
-// CTagTreeCtrl 消息处理程序
-
-
+			if (pRecordInfo->mStatus & RECORD_TYPE_NORMAL)
+			{
+				PlayPath += _T("\\normal");
+			}
+			else
+			{
+				PlayPath += _T("\\alarm");
+			}
+			tmp.Format(_T("\\%d\\%d%02d%02d%02d%02d%02d.h264"), pRecordInfo->mOwner, pRecordInfo->mBeginTime.GetYear(), pRecordInfo->mBeginTime.GetMonth(),
+				pRecordInfo->mBeginTime.GetDay(), pRecordInfo->mBeginTime.GetHour(), pRecordInfo->mBeginTime.GetMinute(), pRecordInfo->mBeginTime.GetSecond());
+			PlayPath += tmp;
+			PlayPath += _T('\0');
+			hChild = this->GetNextItem(hChild, TVGN_NEXT);
+			while (hChild)
+			{				
+				CRecordFileInfo *pRecordInfo = (CRecordFileInfo *)this->GetItemData(hChild);
+				PlayPath += _T("E:\\Record");
+				CString tmp;
+				if (pRecordInfo->mStatus & RECORD_TYPE_NORMAL)
+				{
+					PlayPath += _T("\\normal");
+				}
+				else
+				{
+					PlayPath += _T("\\alarm");
+				}
+				tmp.Format(_T("\\%d\\%d%02d%02d%02d%02d%02d.h264"), pRecordInfo->mOwner, pRecordInfo->mBeginTime.GetYear(), pRecordInfo->mBeginTime.GetMonth(),
+					pRecordInfo->mBeginTime.GetDay(), pRecordInfo->mBeginTime.GetHour(), pRecordInfo->mBeginTime.GetMinute(), pRecordInfo->mBeginTime.GetSecond());
+				PlayPath += tmp;
+				PlayPath += _T('\0');
+				hChild = this->GetNextItem(hChild, TVGN_NEXT);
+			}
+		}
+		else
+		{
+			CRecordFileInfo *pRecordInfo = (CRecordFileInfo *)this->GetItemData(hItem);
+			CString tmp;
+			if (pRecordInfo->mStatus & RECORD_TYPE_NORMAL)
+			{
+				PlayPath += _T("\\normal");
+			}
+			else
+			{
+				PlayPath += _T("\\alarm");
+			}
+			tmp.Format(_T("\\%d\\%d%02d%02d%02d%02d%02d.h264"), pRecordInfo->mOwner, pRecordInfo->mBeginTime.GetYear(), pRecordInfo->mBeginTime.GetMonth(),
+				pRecordInfo->mBeginTime.GetDay(), pRecordInfo->mBeginTime.GetHour(), pRecordInfo->mBeginTime.GetMinute(), pRecordInfo->mBeginTime.GetSecond());
+			PlayPath += tmp;
+			PlayPath += _T('\0');			
+		}
+		((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->m_usbManager.CopyRecord(PlayPath);
+	}
+	return 0;
+}

@@ -4,6 +4,7 @@ typedef struct USBFlashDiskStatus
 	CString m_updataPath;
 	FLOAT m_spaceLeft; //u≈Ã £”‡ø’º‰Mb
 	FLOAT m_spacetotal;
+	BOOL m_bInsert;
 }USBFlashDiskStatus;
 
 class CUSBFlashDiskManager

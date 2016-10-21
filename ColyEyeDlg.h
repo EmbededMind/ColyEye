@@ -43,6 +43,7 @@ protected:
 public:
 	afx_msg void OnClose();
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	CUSBFlashDiskManager m_usbManager;
 protected:
 	afx_msg LRESULT OnUserMsgNotify(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnUserMsgLogin(WPARAM wParam, LPARAM lParam);
@@ -53,7 +54,5 @@ protected:
 	BOOL m_bSerialPortComOpened;
 	afx_msg LONG OnCommChar(WPARAM ch, LPARAM port);
 	afx_msg LONG OnCommData(WPARAM pData, LPARAM port);
-	afx_msg BOOL OnDeviceChange(UINT nEventType, DWORD_PTR dwData);
-protected:
-	CUSBFlashDiskManager m_usbManager;
+	afx_msg BOOL OnDeviceChange(UINT nEventType, DWORD_PTR dwData);	
 };
