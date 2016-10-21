@@ -47,9 +47,6 @@ BOOL ColyEyeHost::SetWatchTime(DWORD begining, DWORD span)
 		mConfuration.watch_time_begining = begining;
 		mConfuration.watch_time_span = span;
 
-		TRACE("watch time change:%S--%S\n", CTime(mConfuration.watch_time_begining).Format(_T("%H:%M:%S")),
-			                                CTime(mConfuration.watch_time_begining+mConfuration.watch_time_span).Format(_T("%H:%M:%S")));
-
 		char sqlStmt[128];
 		sprintf_s(sqlStmt, "UPDATE host_conf SET watch_begining = %d, watch_span = %d;", begining, span);
 		if (sqlite.DirectStatement(sqlStmt)) {
