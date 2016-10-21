@@ -168,7 +168,7 @@ BOOL CTagTreeCtrl::PreTranslateMessage(MSG * pMsg)
 				::SendMessage(((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->mVideoCtr, USER_MSG_PLAY, ((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->mMenu.mCurrCursor, (LPARAM)pRecordInfo);
 			}
 			return true;
-		case 'F':
+		case 'U':
 			if (GetKeyState(VK_CONTROL) && !(pMsg->lParam & 0x20000000))
 			{
 				::SendMessage(this->GetParent()->GetSafeHwnd(), USER_MSG_COPY_RECORD, NULL, (LPARAM)this);

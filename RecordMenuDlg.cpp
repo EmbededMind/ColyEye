@@ -275,7 +275,7 @@ LRESULT CRecordMenuDlg::OnUserMsgCopyRecord(WPARAM wParam, LPARAM lParam)
 			PlayPath += tmp;
 			PlayPath += _T('\0');
 		}
-		if (((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->m_USBFlashDiskStatus.m_spaceLeft > size)
+		if (((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->m_USBFlashDiskStatus.m_spaceLeft*1000*1000 > size)
 			((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->m_usbManager.CopyRecord(PlayPath);
 		else
 			AfxMessageBox(_T("U�̿ռ䲻�㣡"));
