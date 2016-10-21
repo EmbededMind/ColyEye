@@ -38,6 +38,7 @@ public :
 	CMenuDlg mMenu;
 	CVideoCtrDlg mVideoCtr;
 	USBFlashDiskStatus m_USBFlashDiskStatus;
+	CUSBFlashDiskManager m_usbManager;
 protected:
 	afx_msg LRESULT OnUserMsgScanDev(WPARAM wParam, LPARAM lParam);
 public:
@@ -54,6 +55,5 @@ protected:
 	afx_msg LONG OnCommChar(WPARAM ch, LPARAM port);
 	afx_msg LONG OnCommData(WPARAM pData, LPARAM port);
 	afx_msg BOOL OnDeviceChange(UINT nEventType, DWORD_PTR dwData);
-protected:
-	CUSBFlashDiskManager m_usbManager;
+
 };

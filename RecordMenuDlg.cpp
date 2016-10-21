@@ -6,7 +6,7 @@
 #include "RecordMenuDlg.h"
 #include "afxdialogex.h"
 #include "DBShadow.h"
-
+#include "ColyEyeDlg.h"
 
 // CRecordMenuDlg 对话框
 
@@ -34,6 +34,7 @@ BEGIN_MESSAGE_MAP(CRecordMenuDlg, CDialogEx)
 	ON_MESSAGE(USER_MSG_ADD_FILE, &CRecordMenuDlg::OnUserMsgAddFile)
 	ON_MESSAGE(USER_MSG_DEL_FILE, &CRecordMenuDlg::OnUserMsgDelFile)
 	ON_MESSAGE(USER_MSG_GIVE_FOCUS, &CRecordMenuDlg::OnUserMsgGiveFocus)
+	ON_MESSAGE(USER_MSG_COPY_RECORD, &CRecordMenuDlg::OnUserMsgCopyRecord)
 END_MESSAGE_MAP()
 
 
@@ -202,5 +203,82 @@ afx_msg LRESULT CRecordMenuDlg::OnUserMsgDelFile(WPARAM wParam, LPARAM lParam)
 afx_msg LRESULT CRecordMenuDlg::OnUserMsgGiveFocus(WPARAM wParam, LPARAM lParam)
 {
 	GetDlgItem(IDC_BUTTON1)->SetFocus();
+	return 0;
+}
+
+LRESULT CRecordMenuDlg::OnUserMsgCopyRecord(WPARAM wParam, LPARAM lParam)
+{
+	float size = 0;
+	CTagTreeCtrl *pTree = (CTagTreeCtrl*)lParam;
+	CString PlayPath("E:\\Record");
+	if (((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->m_USBFlashDiskStatus.m_bInsert)
+	{
+		HTREEITEM hItem = pTree->GetSelectedItem();
+		if (!hItem)
+			return 0;
+		if (pTree->ItemHasChildren(hItem))
+		{
+			HTREEITEM hChild = pTree->GetChildItem(hItem);
+			CRecordFileInfo *pRecordInfo = (CRecordFileInfo *)pTree->GetItemData(hChild);
+			size += pRecordInfo->mTotalSize;
+			CString tmp;
+
+			if (pRecordInfo->mStatus & RECORD_TYPE_NORMAL)
+			{
+				PlayPath += _T("\\normal");
+			}
+			else
+			{
+				PlayPath += _T("\\alarm");
+			}
+			tmp.Format(_T("\\%d\\%d%02d%02d%02d%02d%02d.h264"), pRecordInfo->mOwner, pRecordInfo->mBeginTime.GetYear(), pRecordInfo->mBeginTime.GetMonth(),
+				pRecordInfo->mBeginTime.GetDay(), pRecordInfo->mBeginTime.GetHour(), pRecordInfo->mBeginTime.GetMinute(), pRecordInfo->mBeginTime.GetSecond());
+			PlayPath += tmp;
+			PlayPath += _T('\0');
+			hChild = pTree->GetNextItem(hChild, TVGN_NEXT);
+			while (hChild)
+			{
+				pRecordInfo = (CRecordFileInfo *)pTree->GetItemData(hChild);
+				size += pRecordInfo->mTotalSize;
+				PlayPath += _T("E:\\Record");
+				CString tmp;
+				if (pRecordInfo->mStatus & RECORD_TYPE_NORMAL)
+				{
+					PlayPath += _T("\\normal");
+				}
+				else
+				{
+					PlayPath += _T("\\alarm");
+				}
+				tmp.Format(_T("\\%d\\%d%02d%02d%02d%02d%02d.h264"), pRecordInfo->mOwner, pRecordInfo->mBeginTime.GetYear(), pRecordInfo->mBeginTime.GetMonth(),
+					pRecordInfo->mBeginTime.GetDay(), pRecordInfo->mBeginTime.GetHour(), pRecordInfo->mBeginTime.GetMinute(), pRecordInfo->mBeginTime.GetSecond());
+				PlayPath += tmp;
+				PlayPath += _T('\0');
+				hChild = pTree->GetNextItem(hChild, TVGN_NEXT);
+			}
+		}
+		else
+		{
+			CRecordFileInfo *pRecordInfo = (CRecordFileInfo *)pTree->GetItemData(hItem);
+			size += pRecordInfo->mTotalSize;
+			CString tmp;
+			if (pRecordInfo->mStatus & RECORD_TYPE_NORMAL)
+			{
+				PlayPath += _T("\\normal");
+			}
+			else
+			{
+				PlayPath += _T("\\alarm");
+			}
+			tmp.Format(_T("\\%d\\%d%02d%02d%02d%02d%02d.h264"), pRecordInfo->mOwner, pRecordInfo->mBeginTime.GetYear(), pRecordInfo->mBeginTime.GetMonth(),
+				pRecordInfo->mBeginTime.GetDay(), pRecordInfo->mBeginTime.GetHour(), pRecordInfo->mBeginTime.GetMinute(), pRecordInfo->mBeginTime.GetSecond());
+			PlayPath += tmp;
+			PlayPath += _T('\0');
+		}
+		if (((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->m_USBFlashDiskStatus.m_spaceLeft > size)
+			((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->m_usbManager.CopyRecord(PlayPath);
+		else
+			AfxMessageBox(_T("U盘空间不足！"));
+	}
 	return 0;
 }
