@@ -1,4 +1,5 @@
 #pragma once
+#include "atltime.h"
 
 
 // CAutoWatchTimeConf ¶Ô»°¿ò
@@ -24,9 +25,12 @@ public:
 	virtual BOOL OnInitDialog();
 
 
-private:
-	CDateTimeCtrl* mEndTimePicker;
-	CDateTimeCtrl* mBeginTimePicker;
+
 public:
 	afx_msg void OnBnClickedButton1();
+private:
+	CTime mWatchTimeBegining;
+	CTime mWatchTimeEnding;
+		CDateTimeCtrl* mEndTimePicker;
+		CDateTimeCtrl* mBeginTimePicker;
 };

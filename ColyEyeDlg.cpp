@@ -196,7 +196,6 @@ BOOL CColyEyeDlg::PreTranslateMessage(MSG* pMsg)
 			mWall.SetFocus();
 		}
 
-		m_SerialPortCom.WriteToPort("test", 5);
 	}
 
 	return CDialogEx::PreTranslateMessage(pMsg);

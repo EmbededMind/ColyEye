@@ -413,6 +413,7 @@ void CWallDlg::EnableCameraConfiguration(CCamera* pCamera)
 			if (!pCamera->isRecording) {
 				CFile* pf = RecordFileManager::GetInstance()->DistributeRecordFile(pCamera->mId, RECORD_TYPE_NORMAL);
 				pCamera->startRecord(pf);
+				SetTimer(pCamera->mId, 30*1000, NULL);
 			}
 		}
 
@@ -615,9 +616,11 @@ afx_msg LRESULT CWallDlg::OnUserMsgDeviceConfig(WPARAM wParam, LPARAM lParam)
 	CCamera* pCamera = (CCamera*)lParam;
 	if (wParam) {
 		EnableCameraConfiguration(pCamera);
+		pCamera->CommitUserConfigurationChange();
 	}
 	else {
 		DisableCameraConfiguration(pCamera);
+		pCamera->CommitUserConfigurationChange();
 	}
 	return 0;
 }
