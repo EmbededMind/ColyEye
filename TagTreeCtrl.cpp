@@ -154,11 +154,9 @@ BOOL CTagTreeCtrl::PreTranslateMessage(MSG * pMsg)
 {
 	if (pMsg->message == WM_KEYDOWN)
 	{
-
 		HTREEITEM hItem = this->GetSelectedItem();
 		switch (pMsg->wParam)
 		{		
-			///在第一列菜单按 '右' 发送 USER_MSG_NOTIFY_FOCUS 消息给下级窗口，由下级窗口判断是否获得焦点。
 		case VK_RETURN:				
 			if ((hItem != NULL) && this->ItemHasChildren(hItem))
 			{
@@ -169,19 +167,12 @@ BOOL CTagTreeCtrl::PreTranslateMessage(MSG * pMsg)
 				CRecordFileInfo *pRecordInfo = (CRecordFileInfo *)this->GetItemData(hItem);
 				::SendMessage(((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->mVideoCtr, USER_MSG_PLAY, ((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->mMenu.mCurrCursor, (LPARAM)pRecordInfo);
 			}
-			return true;			
-		case VK_DOWN:
-			if ((hItem != NULL) && this->ItemHasChildren(hItem))
-			{
-				
-			}
-			else
-			{
-				
-			}
 			return true;
-		case VK_UP:
-
+		case 'F':
+			if (GetKeyState(VK_CONTROL) && !(pMsg->lParam & 0x20000000))
+			{
+				::SendMessage(this->GetParent()->GetSafeHwnd(), USER_MSG_COPY_RECORD, NULL, (LPARAM)this);
+			}
 			return true;
 		}
 	}
@@ -248,12 +239,4 @@ BOOL CTagTreeCtrl::DelFile(DWORD_PTR data)
 	}
 	return FALSE;
 }
-
-BEGIN_MESSAGE_MAP(CTagTreeCtrl, CTreeCtrl)
-	
-END_MESSAGE_MAP()
-
-
-// CTagTreeCtrl 消息处理程序
-
 

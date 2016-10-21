@@ -101,7 +101,8 @@ UINT CUSBFlashDiskManager::USBThread(LPVOID pParam)
 			{
 				usb->m_pStatus->m_spaceLeft = (FLOAT)((LONGLONG)(uiTotalNumberOfFreeBytes.QuadPart) / 1024.0f / 1024.0f);
 				usb->m_pStatus->m_spacetotal = (FLOAT)((LONGLONG)(uiTotalNumberOfBytes.QuadPart) / 1024.0f / 1024.0f);
-				usb->m_beInsert = TRUE;
+				usb->m_pStatus->m_bInsert = TRUE;
+
 				TRACE(_T("--%f-- %f"), usb->m_pStatus->m_spaceLeft, usb->m_pStatus->m_spacetotal);
 			}
 			
@@ -170,7 +171,7 @@ BOOL CUSBFlashDiskManager::Updata()
 
 BOOL CUSBFlashDiskManager::CopyRecord(CString path)
 {
-	m_copyFromPath = path + _T('\0');
+	m_copyFromPath = path;
 	SetEvent(m_copyEvent);
 	return 0;
 }

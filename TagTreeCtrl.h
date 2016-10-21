@@ -21,10 +21,6 @@ public:
 	BOOL GetDayLabelByItem(HTREEITEM hRoot, CTime& nowTime, CString& label);
 	void UpdateRecentLabel();
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
-
-protected:
-	DECLARE_MESSAGE_MAP()
-
 };
 
 
