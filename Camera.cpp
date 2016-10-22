@@ -116,8 +116,13 @@ void CCamera::stopRealPlay()
  */
 void CCamera::startRecord(CFile* pFile)
 {
-	ASSERT(pFile);
-	ASSERT(pFile->m_hFile != CFile::hFileNull);
+	//ASSERT(pFile);
+	//ASSERT(pFile->m_hFile != CFile::hFileNull);
+	if (pFile == NULL || pFile->m_hFile == CFile::hFileNull) {
+		LOG4CPLUS_ERROR(Logger::getInstance(_T("MyLogger")), "<info>" << mIp << "Bad file when start normal record");
+		ASSERT(FALSE);;
+	}
+
 	mNormalRecordFile = pFile;
 	//if (!H264_DVR_SetRealDataCallBack_V2(this->hRealPlay, normalRealDataCallBack_V2, (long)this)) {
 	//	TRACE("Set realdata cb failed:%d\n", H264_DVR_GetLastError());
@@ -137,7 +142,10 @@ void CCamera::startRecord(CFile* pFile)
 */
 void CCamera::stopRecord()
 {
-	ASSERT(mNormalRecordFile);
+	if (mNormalRecordFile != NULL) {
+		LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << mIp << "Not null file when stop record");
+		ASSERT(FALSE);
+	}
 	//if (isRecording) {
 		isRecording = false;
 		//H264_DVR_DelRealDataCallBack_V2(hRealPlay, normalRealDataCallBack_V2, (long)this);
@@ -157,7 +165,8 @@ void CCamera::startAlarmRecord(CFile* pFile)
 {
 	ASSERT(this->hRealPlay);
 
-	ASSERT(pFile && pFile->m_hFile != CFile::hFileNull);
+	ASSERT(pFile && pFile->m_hFile != CFile::hFileNull);	
+
 
 	mAlarmRecordFile = pFile;
 
