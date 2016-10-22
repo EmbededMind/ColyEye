@@ -34,6 +34,9 @@ private:
 	CTime mWatchTimeEnding;
 		CDateTimeCtrl* mEndTimePicker;
 		CDateTimeCtrl* mBeginTimePicker;
+//public:
+//	COleDateTime mBegining;
 public:
-	COleDateTime mBegining;
+	COleDateTime _mWatchBegining;
+	COleDateTime _mWatchEnding;
 };
