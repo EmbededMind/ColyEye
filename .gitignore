@@ -29,6 +29,8 @@
 /HW_H265Decoder.dll
 /NetSdk.dll
 /sqlite3.dll
+/log4cplusU.dll
+/log4cplusUD.dll
 /*.dll
 /res/ColyEye.ico
 /res/ColyEye.rc2
