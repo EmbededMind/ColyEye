@@ -307,7 +307,7 @@ UINT CSerialPort::CommThread(LPVOID pParam)
         
     // Misc. variables
     DWORD BytesTransfered = 0; 
-    DWORD Event = 0;
+    DWORD Event = EV_RING;
     DWORD CommEvent = 0;
     DWORD dwError = 0;
 	static COMSTAT comstat;
@@ -568,6 +568,7 @@ void CSerialPort::WriteChar(CSerialPort* port)
                         break;
                     }
                 default:
+
                     {
                         // all other error codes
                         port->ProcessErrorMessage("WriteFile()");

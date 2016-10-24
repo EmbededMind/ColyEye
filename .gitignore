@@ -5,8 +5,10 @@
 
 /Debug
 /Release
+/lib
 /lib/sdk_xm
 /lib/sqlite3
+/lib/log4cplus
 /cold_eye.db
 /*.swp
 /*.gitignore_REMOTE_3492
@@ -34,3 +36,4 @@
 /.vs
 /ipch
 /.ColyEye.rc.swo
+

@@ -272,7 +272,7 @@ afx_msg LRESULT CWallDlg::OnUserMsgLogin(WPARAM wParam, LPARAM lParam)
 			TRACE("id is:%d\n", pDev->mId);
 		}
 		
-		LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pDev->mIp << "login, id is:" << pDev->mId);
+		LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pDev->mIp << " login, id is:" << pDev->mId);
 
 		pDev->clientInfo.hWnd = this->investCamera(pDev)->mSurface.m_hWnd;
 
@@ -305,7 +305,7 @@ afx_msg LRESULT CWallDlg::OnUserMsgReLogin(WPARAM wParam, LPARAM lParam)
 		Device_Map::iterator iter;
 		CCamera* pDev = (CCamera*)lParam;
 
-		LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pDev->mIp << "Relogin");
+		LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pDev->mIp << " Relogin");
 
 		EnableCameraConfiguration(pDev);
 
@@ -333,10 +333,10 @@ void CWallDlg::interruptRecord(CCamera* pCamera)
 	ASSERT(pCamera != NULL);
 
 	if (pCamera->isRecording) {
-		LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << "Interrupt normal record");
+		LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Interrupt normal record");
 		pCamera->stopRecord();
 		RecordFileManager::GetInstance()->RecallRecordFile(pCamera->mId, RECORD_TYPE_NORMAL);
-		LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<INFO> Recall normal file after interrupt");
+		LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<INFO>" << pCamera->mIp << " Recall normal file after interrupt");
 		KillTimer(pCamera->mId);
 
 		pCamera->isRecording = FALSE;
@@ -354,15 +354,15 @@ void CWallDlg::interruptAlarmRecord(CCamera* pCamera)
 
 	
 	if (pCamera->isAlarmRecording == TRUE) {
-		LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << "Interrupt alarm record");
+		LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Interrupt alarm record");
 		int i = pCamera->mId - 1;
 		if (alarmRecordStatus.flag  &  (0x01 << i)) {
 			alarmRecordStatus.flagCnts[i] = 0;
 			alarmRecordStatus.flag &= (~(0x01 << i));
-			LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << "Stop alarm record");
+			LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Stop alarm record");
 			pCamera->stopAlarmRecord();
 			RecordFileManager::GetInstance()->RecallRecordFile(pCamera->mId, RECORD_TYPE_ALARM);
-			LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<INFO> Recall alarm file after interrupt");
+			LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<INFO>" << pCamera->mIp << " Recall alarm file after interrupt");
 			if (alarmRecordStatus.flag == 0) {
 				KillTimer(ALARM_TIMER_EVENT_ID);
 			}
@@ -412,32 +412,32 @@ void CWallDlg::ResumeCamera(CCamera* pCamera)
 
 void CWallDlg::EnableCameraConfiguration(CCamera* pCamera)
 {
-	LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << "Enable configuration");
+	LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Enable configuration");
 	// ÉãÏñ»ú¿ªÆô
 	if (pCamera->userConf.switches & CAMERA_USER_CONF_ON) {
-		LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << "Camera ON");
+		LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Camera ON");
 		if(pCamera->hRealPlay == 0)
 		    pCamera->startRealPlay();
         
 		if (pCamera->userConf.switches & CAMERA_USER_CONF_STORE) {
-			LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << "Store ON");
+			LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Store ON");
 			if (!pCamera->isRecording) {
-				LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << "Prepare to normal record");
+				LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Prepare to normal record");
 				CFile* pf = RecordFileManager::GetInstance()->DistributeRecordFile(pCamera->mId, RECORD_TYPE_NORMAL);
 				if (pf != NULL) {
-					LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << "Start normal record");
+					LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Start normal record");
 					pCamera->startRecord(pf);
 					SetTimer(pCamera->mId, 30 * 1000, NULL);
 
 				}
 				else {
-					LOG4CPLUS_ERROR(Logger::getInstance(_T("MyLogger")), "<ERROR> NULL file when start normal record ");
+					LOG4CPLUS_ERROR(Logger::getInstance(_T("MyLogger")), "<ERROR>" pCamera->mIp << " NULL file when start normal record ");
 				}
 			}
 		}
 
 		if (pCamera->userConf.switches & CAMERA_USER_CONF_AWATCH) {
-			LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << "SubscribeAlarmMessage");
+			LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " SubscribeAlarmMessage");
 			pCamera->subscribeAlarmMessage();
 		}
 	}
@@ -447,9 +447,9 @@ void CWallDlg::EnableCameraConfiguration(CCamera* pCamera)
 
 void CWallDlg::DisableCameraConfiguration(CCamera* pCamera)
 {
-	LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << "Disable configuration");
+	LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Disable configuration");
 	if ( (pCamera->userConf.switches & CAMERA_USER_CONF_ON) == 0) {
-		LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << "Camera OFF");
+		LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Camera OFF");
 		if (pCamera->hRealPlay) {
 			pCamera->stopRealPlay();
 		}
@@ -462,12 +462,12 @@ void CWallDlg::DisableCameraConfiguration(CCamera* pCamera)
 	}
 	else {
 		if ( (pCamera->userConf.switches & CAMERA_USER_CONF_STORE) == 0) {
-			LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << "STORE OFF");
+			LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " STORE OFF");
 			interruptRecord(pCamera);
 		}
 
 		if ( (pCamera->userConf.switches & CAMERA_USER_CONF_AWATCH) == 0) {
-			LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << "Auto watch OFF");
+			LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Auto watch OFF");
 			interruptAlarmRecord(pCamera);
 	
 		}
@@ -483,7 +483,7 @@ void CWallDlg::DisableCameraConfiguration(CCamera* pCamera)
 void CWallDlg::ReConnect(LONG lLoginID, char* pchDVRIP, LONG nDVRPort)
 {
 	CCamera* pDev = CCameraManager::getInstance()->findCameraByLoginId(lLoginID);
-	LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<INFO> DisConnect");
+	LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<INFO>" << pDev->mIp << " DisConnect");
 	if (pDev != nullptr) {
 		pDev->unsubscribeAlarmMessage();
 		pDev->logout();
@@ -546,10 +546,10 @@ bool __stdcall messageCallbackFunc(long lLoginID, char* pBuf, unsigned long dwBu
 						SetTimer(((CWallDlg*)dwUser)->m_hWnd, ALARM_TIMER_EVENT_ID, 10 * 1000, NULL);
 						alarmRecordStatus.flag |= (0x01 << (pDev->mId - 1));
 
-						LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<INFO> begin alarm record");
+						LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<INFO>" << pDev->mIp << " begin alarm record");
 					}
 					else {
-						LOG4CPLUS_ERROR(Logger::getInstance(_T("MyLogger")), "<ERROR> find null file when begin alarm record");
+						LOG4CPLUS_ERROR(Logger::getInstance(_T("MyLogger")), "<ERROR>" << pDev->mIp << " find null file when begin alarm record");
 					}
 				}
 				else {
@@ -569,17 +569,17 @@ void CWallDlg::OnTimer(UINT_PTR nIDEvent)
 	if (nIDEvent <= CAMERA_MAX_NUM) {
 		CCamera* pCamera = CCameraManager::getInstance()->findCameraById(nIDEvent);
 		if (pCamera) {
-			LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << "Normal record timeout");
+			LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Normal record timeout");
 			pCamera->stopRecord();
 			RecordFileManager* pMgr = RecordFileManager::GetInstance();
 			pMgr->RecallRecordFile(pCamera->mId, RECORD_TYPE_NORMAL);
 			CFile * pf = pMgr->DistributeRecordFile(pCamera->mId, RECORD_TYPE_NORMAL);
 			if (pf != NULL) {
 				pCamera->startRecord(pf);
-				LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<INFO> package begin normal record");
+				LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<INFO>" << pCamera->mIp << " package begin normal record");
 			}
 			else {
-				LOG4CPLUS_ERROR(Logger::getInstance(_T("MyLogger")), "<ERROR> find null file when package begin normal record");
+				LOG4CPLUS_ERROR(Logger::getInstance(_T("MyLogger")), "<ERROR>" << pCamera->mIp << " find null file when package begin normal record");
 			}
 /*
 			Util::ShowMemoryInfo();	*/	
@@ -602,7 +602,7 @@ void CWallDlg::OnTimer(UINT_PTR nIDEvent)
 						if (pCamera) {
 							pCamera->stopAlarmRecord();
 							pRecordFileMgr->RecallRecordFile(pCamera->mId, RECORD_TYPE_ALARM);
-							LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<INFO> Recall file after end alarm record");
+							LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<INFO>" << pCamera->mIp << " Recall file after end alarm record");
 							alarmRecordStatus.flag &= (~(0x01<<i));
 							TRACE("flag: 0x%x\n", alarmRecordStatus.flag);
 							if (alarmRecordStatus.flag == 0) {
