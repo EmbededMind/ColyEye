@@ -393,7 +393,7 @@ void CWallDlg::SuspendCamera(CCamera* pCamera)
 	interruptRecord(pCamera);
 	pCamera->stopRealPlay();
 
-	// stop talk
+	// TODO:stop talk
 }
 
 
@@ -431,7 +431,7 @@ void CWallDlg::EnableCameraConfiguration(CCamera* pCamera)
 
 				}
 				else {
-					LOG4CPLUS_ERROR(Logger::getInstance(_T("MyLogger")), "<ERROR>" pCamera->mIp << " NULL file when start normal record ");
+					LOG4CPLUS_ERROR(Logger::getInstance(_T("MyLogger")), "<ERROR>" << pCamera->mIp << " NULL file when start normal record ");
 				}
 			}
 		}

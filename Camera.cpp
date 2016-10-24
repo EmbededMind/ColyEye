@@ -252,6 +252,7 @@ BOOL CCamera::login()
 }
 
 
+
 /**@brief ÉãÏñÍ·×¢Ïú
  *
  */
