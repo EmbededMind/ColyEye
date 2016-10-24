@@ -29,6 +29,7 @@
 /HW_H265Decoder.dll
 /NetSdk.dll
 /sqlite3.dll
+/*.dll
 /res/ColyEye.ico
 /res/ColyEye.rc2
 /ipch/COLYEYE-63dc9ed4/*.ipch
@@ -36,4 +37,3 @@
 /.vs
 /ipch
 /.ColyEye.rc.swo
-
