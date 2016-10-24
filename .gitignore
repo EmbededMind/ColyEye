@@ -39,3 +39,10 @@
 /.vs
 /ipch
 /.ColyEye.rc.swo
+/msvcrt.pdb
+/winmm.pdb
+lib
+/lib/log4cplus/include/log4cplus/config/defines.hxx.in
+/lib/log4cplus/include/log4cplus/config/macosx.h
+/lib/log4cplus/include/log4cplus/config/win32.h
+/lib/log4cplus/include/log4cplus/config/windowsh-inc.h
