@@ -29,6 +29,7 @@ void CSurfaceHolderDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CSurfaceHolderDlg, CDialogEx)
 	ON_WM_SIZE()
+	ON_WM_DRAWITEM()
 END_MESSAGE_MAP()
 
 
@@ -61,4 +62,14 @@ void CSurfaceHolderDlg::OnSize(UINT nType, int cx, int cy)
 	}
 	CDialogEx::OnSize(nType, cx, cy);
 	// TODO: 在此处添加消息处理程序代码
+}
+
+
+void CSurfaceHolderDlg::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+	if (GetFocus() == this) {
+		TRACE("Holder hold focus\n");
+	}
+	CDialogEx::OnDrawItem(nIDCtl, lpDrawItemStruct);
 }

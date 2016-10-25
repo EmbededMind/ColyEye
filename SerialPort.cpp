@@ -832,8 +832,8 @@ void CSerialPort::WriteToPort(LPCTSTR string)
 {
     assert(m_hComm != 0);
     memset(m_szWriteBuffer, 0, sizeof(m_szWriteBuffer));
-	int num = WideCharToMultiByte(CP_OEMCP, NULL, string, -1, NULL, 0, NULL, FALSE);
-	WideCharToMultiByte(CP_OEMCP, NULL, string, -1, m_szWriteBuffer, num, NULL, FALSE);
+	int num = WideCharToMultiByte(CP_OEMCP, NULL, string, -1, m_szWriteBuffer, 0, NULL, FALSE);
+
 	m_nWriteSize = num;
 	//_tcscpy(m_szWriteBuffer, string);
     //m_nWriteSize=strlen(string);

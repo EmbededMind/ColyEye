@@ -70,17 +70,18 @@ void CCamera::startRealPlay()
 {
 	if (mLoginId) {
 		//TRACE("client info:%d\n", this->clientInfo.hWnd);
-		//Util::ShowMemoryInfo();
+		TRACE("before dvr_realplay\n");
+		Util::ShowMemoryInfo();
 		hRealPlay = H264_DVR_RealPlay(mLoginId, &this->clientInfo);
-		//TRACE("after dvr_realplay\n");
-		//Util::ShowMemoryInfo();
+		TRACE("after dvr_realplay\n");
+		Util::ShowMemoryInfo();
 		if (!hRealPlay) {
 			TRACE("real play fail.Error code:%d\n", H264_DVR_GetLastError());
 		}
 		else {
 			H264_DVR_SetRealDataCallBack_V2(hRealPlay, realDataCallBack_V2, (long)this);
-			//TRACE("after dvr_setrealdata\n");
-			//Util::ShowMemoryInfo();
+			TRACE("after dvr_setrealdata\n");
+			Util::ShowMemoryInfo();
 		}
 	}
 	else {
@@ -334,6 +335,8 @@ mutex_RealDataCB.Lock();/// @see RecordFileManager.cpp  RecallRecordFile()
 	if (pDev->isAlarmRecording && pDev->mAlarmRecordFile != nullptr) {
 		pDev->mAlarmRecordFile->Write(pFrame->pPacketBuffer, pFrame->dwPacketSize);
 	}
+
+
 
 mutex_RealDataCB.Unlock();/// @see RecordFileManager.cpp  RecallRecordFile()
 
