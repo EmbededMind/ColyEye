@@ -205,7 +205,6 @@ unsigned int __stdcall loginThread(PVOID pM)
 				}
 				break;
 		     }
-
 			case USER_MSG_RELOGIN:
 			{
 				int errCode = 0;

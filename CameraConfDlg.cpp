@@ -382,3 +382,4 @@ void CCameraConfDlg::OnBnClickedButton4()
 		::SendMessage(((CColyEyeApp*)AfxGetApp())->m_pWallWnd->m_hWnd, USER_MSG_DEVICE_CONFIG, true, (LPARAM)pCamera);
 	}
 }
+

@@ -36,7 +36,6 @@ BEGIN_MESSAGE_MAP(CColyEyeDlg, CDialogEx)
 	ON_WM_CLOSE()
 	ON_MESSAGE(USER_MSG_NOTIFY, &CColyEyeDlg::OnUserMsgNotify)
 	ON_MESSAGE(USER_MSG_LOGIN, &CColyEyeDlg::OnUserMsgLogin)
-	ON_MESSAGE(WM_COMM_RXCHAR, &CColyEyeDlg::OnCommChar)
 	ON_MESSAGE(WM_COMM_RXDATA, &CColyEyeDlg::OnCommData)
 	ON_WM_DEVICECHANGE()
 END_MESSAGE_MAP()
@@ -68,7 +67,7 @@ BOOL CColyEyeDlg::OnInitDialog()
 	mVideoCtr.MoveWindow(5, 5, 800, 400);
 	mVideoCtr.ShowWindow(SW_HIDE);
 
-	/*if (m_SerialPortKbd.InitPort(this, COM_KEYBD, 9600, 'N', 8, 1, EV_RXFLAG | EV_RXCHAR, 512))
+	if (m_SerialPortKbd.InitPort(this, COM_KEYBD, 9600, 'N', 8, 1, EV_RXFLAG | EV_RXCHAR, 512))
 	{
 		m_SerialPortKbd.StartMonitoring();
 		m_bSerialPortKbdOpened = TRUE;
@@ -77,17 +76,17 @@ BOOL CColyEyeDlg::OnInitDialog()
 	{
 		AfxMessageBox(_T("没有发现串口或串口被占用"));
 		m_bSerialPortKbdOpened = FALSE;
-	}*/
-	if (m_SerialPortCom.InitPort(this, COM_CAMERA, 9600, 'N', 8, 1, EV_RXFLAG | EV_RXCHAR, 512))
-	{
-		m_SerialPortCom.StartMonitoring();
-		m_bSerialPortComOpened = TRUE;
 	}
-	else
-	{
-		AfxMessageBox(_T("没有发现串口或串口被占用"));
-		m_bSerialPortComOpened = FALSE;
-	}
+	//if (m_SerialPortCom.InitPort(this, COM_CAMERA, 9600, 'N', 8, 1, EV_RXFLAG | EV_RXCHAR, 512))
+	//{
+	//	m_SerialPortCom.StartMonitoring();
+	//	m_bSerialPortComOpened = TRUE;
+	//}
+	//else
+	//{
+	//	AfxMessageBox(_T("没有发现串口或串口被占用"));
+	//	m_bSerialPortComOpened = FALSE;
+	//}
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -184,6 +183,7 @@ void CColyEyeDlg::OnClose()
 BOOL CColyEyeDlg::PreTranslateMessage(MSG* pMsg)
 {
 	// TODO: 在此添加专用代码和/或调用基类
+	//TRACE("%d\n", pMsg->wParam);
 	if (pMsg->message == WM_CONTEXTMENU) {
 		if (mWall.IsWindowVisible()) {
 			mWall.ShowWindow(SW_HIDE);
@@ -195,7 +195,6 @@ BOOL CColyEyeDlg::PreTranslateMessage(MSG* pMsg)
 			mWall.ShowWindow(SW_SHOW);
 			mWall.SetFocus();
 		}
-
 	}
 
 	return CDialogEx::PreTranslateMessage(pMsg);
@@ -229,20 +228,80 @@ afx_msg LRESULT CColyEyeDlg::OnUserMsgLogin(WPARAM wParam, LPARAM lParam)
 	::SendMessage(mMenu.m_hWnd, USER_MSG_LOGIN, wParam, lParam);
 	return 0;
 }
-LONG CColyEyeDlg::OnCommChar(WPARAM ch, LPARAM port)
-{
-	return 0;
-}
 
 LONG CColyEyeDlg::OnCommData(WPARAM pData, LPARAM port)
 {
 	if (port == COM_KEYBD)
 	{
 		onedata *p = (onedata*)pData;
-		int i;
 		p->ch[p->num] = '\0';
-		TRACE(_T("COM%d ---%S\n"), (UINT)port, p->ch);
-		/*m_SerialPortKbd.WriteToPort(p->ch, p->num);*/
+		TRACE(_T("COM%d ---%d\n"), (UINT)port, p->ch[0]);
+		for (int i = 0; i < p->num; i++)
+		{
+			switch (p->ch[i])
+			{
+			case KB_MENU:
+				keybd_event(VK_APPS, 0, 0, 0);
+				keybd_event(VK_APPS, 0, KEYEVENTF_KEYUP, 0);
+				break;
+			case KB_UP:
+				keybd_event(VK_UP, 0, 0, 0);
+				keybd_event(VK_UP, 0, KEYEVENTF_KEYUP, 0);
+				break;
+			case KB_BACK:
+				keybd_event(VK_BACK, 0, 0, 0);
+				keybd_event(VK_BACK, 0, KEYEVENTF_KEYUP, 0);
+				break;
+			case KB_AUTOWATCH:
+				break;
+			case KB_LEFT:
+				keybd_event(VK_LEFT, 0, 0, 0);
+				keybd_event(VK_LEFT, 0, KEYEVENTF_KEYUP, 0);
+				break;
+			case KB_ENTER:
+				keybd_event(VK_RETURN, 0, 0, 0);
+				keybd_event(VK_RETURN, 0, KEYEVENTF_KEYUP, 0);
+				break;
+			case KB_RIGHT:
+				keybd_event(VK_RIGHT, 0, 0, 0);
+				keybd_event(VK_RIGHT, 0, KEYEVENTF_KEYUP, 0);
+				break;
+			case KB_UDISK:
+				keybd_event(VK_CONTROL, 0, 0, 0);
+				keybd_event('U', 0, 0, 0);
+				keybd_event(VK_CONTROL, 0, KEYEVENTF_KEYUP, 0);
+				keybd_event('U', 0, KEYEVENTF_KEYUP, 0);
+				break;
+			case KB_VOLUP:
+				this->SetVolumeLevel(2);
+				break;
+			case KB_DOWN:
+				keybd_event(VK_DOWN, 0, 0, 0);
+				keybd_event(VK_DOWN, 0, KEYEVENTF_KEYUP, 0);
+				break;
+			case KB_BRIUP:
+				break;
+			case KB_FUNC:
+				this->SetFocus();
+				this->SetActiveWindow();
+				break;
+			case KB_VOLDOWN:
+				this->SetVolumeLevel(3);
+				break;
+			case KB_TALKQUIET:
+				break;
+			case KB_BRIDOWN:
+				break;
+			case KB_SWITCH:
+			{
+				char str[120] = "shutdown -f -s -t 0";
+				system(str);
+				break;
+			}
+			default:
+				break;
+			}
+		}
 		return 0;
 	}
 	if (port == COM_CAMERA)
@@ -308,4 +367,72 @@ BOOL CColyEyeDlg::OnDeviceChange(UINT nEventType, DWORD_PTR dwData)
 	}
 	return 0;
 }
+
+BOOL CColyEyeDlg::SetVolumeLevel(int level)
+{
+	HRESULT hr;
+	IMMDeviceEnumerator* pDeviceEnumerator = 0;
+	IMMDevice *pDevice = 0;
+	IAudioEndpointVolume* pAudioEndpointVolume = 0;
+	IAudioClient* pAudioClient = 0;
+
+	try {
+		hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL, CLSCTX_ALL, __uuidof(IMMDeviceEnumerator), (void**)&pDeviceEnumerator);
+		if (FAILED(hr)) throw "CoCreateInstance";
+		hr = pDeviceEnumerator->GetDefaultAudioEndpoint(eRender, eMultimedia, &pDevice);
+		if (FAILED(hr)) throw "GetDefaultAudioEndpoint";
+		hr = pDevice->Activate(__uuidof(IAudioEndpointVolume), CLSCTX_ALL, NULL, (void**)&pAudioEndpointVolume);
+		if (FAILED(hr)) throw "pDevice->Active";
+		hr = pDevice->Activate(__uuidof(IAudioClient), CLSCTX_ALL, NULL, (void**)&pAudioClient);
+		if (FAILED(hr)) throw "pDevice->Active";
+
+		if (level == 1) {
+			hr = pAudioEndpointVolume->SetMute(FALSE, NULL);
+			if (FAILED(hr)) throw "SetMute";
+		}
+		else if (level == 0) {
+			hr = pAudioEndpointVolume->SetMute(TRUE, NULL);
+			if (FAILED(hr)) throw "SetMute";
+		}
+		else {
+			if (level<=1 || level>=4) {
+				hr = E_INVALIDARG;
+				throw "Invalid Arg";
+			}
+
+			float fVolume;
+			fVolume = level / 100.0f;
+			hr = pAudioEndpointVolume->GetMasterVolumeLevelScalar(&fVolume);
+			if (FAILED(hr)) throw "GetMasterVolumeLevelScalar";
+			if (level == 2)
+			{
+				fVolume += 0.1;
+				if (fVolume > 1) fVolume = 1;
+			}
+			else if (level == 3)
+			{
+				fVolume -= 0.1;
+				if (fVolume < 0) fVolume = 0;
+			}
+			hr = pAudioEndpointVolume->SetMasterVolumeLevelScalar(fVolume, &GUID_NULL);
+			if (FAILED(hr)) throw "SetMasterVolumeLevelScalar";
+
+			pAudioClient->Release();
+			pAudioEndpointVolume->Release();
+			pDevice->Release();
+			pDeviceEnumerator->Release();
+			return true;
+		}
+	}
+	catch (...) {
+		if (pAudioClient) pAudioClient->Release();
+		if (pAudioEndpointVolume) pAudioEndpointVolume->Release();
+		if (pDevice) pDevice->Release();
+		if (pDeviceEnumerator) pDeviceEnumerator->Release();
+		throw;
+	}
+	return 0;
+}
+
+
 
