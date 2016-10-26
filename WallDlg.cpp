@@ -412,12 +412,18 @@ void CWallDlg::ResumeCamera(CCamera* pCamera)
 
 void CWallDlg::EnableCameraConfiguration(CCamera* pCamera)
 {
+	LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info> Memory:" << Util::GetMemorySize());
+
 	LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Enable configuration");
 	// ÉãÏñ»ú¿ªÆô
 	if (pCamera->userConf.switches & CAMERA_USER_CONF_ON) {
 		LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Camera ON");
-		if(pCamera->hRealPlay == 0)
-		    pCamera->startRealPlay();
+		if (pCamera->hRealPlay == 0) {
+			LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Start Realplay");
+			pCamera->startRealPlay();
+			LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info> After start realplay,Memory:" << Util::GetMemorySize());
+		}
+		    
         
 		if (pCamera->userConf.switches & CAMERA_USER_CONF_STORE) {
 			LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Store ON");

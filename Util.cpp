@@ -36,6 +36,18 @@ void Util::ShowMemoryInfo()
 }
 
 
+
+double Util::GetMemorySize()
+{
+	HANDLE handle = GetCurrentProcess();
+	PROCESS_MEMORY_COUNTERS pmc;
+	GetProcessMemoryInfo(handle, &pmc, sizeof(pmc));
+	TRACE("ÄÚ´æÊ¹ÓÃ:%0.2f MB\n", (double)pmc.PagefileUsage / 1024 / 1024);
+	return (double)pmc.PagefileUsage / 1024 / 1024;
+}
+
+
+
 void Util::CleanMemory()
 {
 	EmptyWorkingSet(GetCurrentProcess());
