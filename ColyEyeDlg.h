@@ -59,4 +59,5 @@ protected:
 	afx_msg BOOL OnDeviceChange(UINT nEventType, DWORD_PTR dwData);
 protected:
 	BOOL SetVolumeLevel(int level);
+	BOOL SetBrightLevel(int level);
 };

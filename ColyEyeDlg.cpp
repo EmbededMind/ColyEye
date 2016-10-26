@@ -8,6 +8,8 @@
 #include "afxdialogex.h"
 #include "CameraManager.h"
 #include "Util.h"
+#include "PhysicalMonitorEnumerationAPI.h"
+#include "HighLevelMonitorConfigurationAPI.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -280,6 +282,7 @@ LONG CColyEyeDlg::OnCommData(WPARAM pData, LPARAM port)
 				keybd_event(VK_DOWN, 0, KEYEVENTF_KEYUP, 0);
 				break;
 			case KB_BRIUP:
+				SetBrightLevel(2);
 				break;
 			case KB_FUNC:
 				this->SetFocus();
@@ -291,6 +294,7 @@ LONG CColyEyeDlg::OnCommData(WPARAM pData, LPARAM port)
 			case KB_TALKQUIET:
 				break;
 			case KB_BRIDOWN:
+				SetBrightLevel(2);
 				break;
 			case KB_SWITCH:
 			{
@@ -430,6 +434,62 @@ BOOL CColyEyeDlg::SetVolumeLevel(int level)
 		if (pDevice) pDevice->Release();
 		if (pDeviceEnumerator) pDeviceEnumerator->Release();
 		throw;
+	}
+	return 0;
+}
+
+void FreePhysicalMonitor(DWORD npm, LPPHYSICAL_MONITOR ppm)
+{
+	DestroyPhysicalMonitors(npm, ppm);
+	// Free the array.
+	free(ppm);
+}
+
+LPPHYSICAL_MONITOR GetPhysicalMonitor(DWORD * pnpm)
+{
+	HMONITOR hMon = NULL;
+	hMon = MonitorFromWindow(NULL, MONITOR_DEFAULTTOPRIMARY);
+	LPPHYSICAL_MONITOR ppm = NULL;
+	DWORD npm = 0;
+	BOOL bRet = GetNumberOfPhysicalMonitorsFromHMONITOR(hMon, &npm);
+	if (bRet) {
+		ppm = (LPPHYSICAL_MONITOR)malloc(npm * sizeof(PHYSICAL_MONITOR));
+		if (ppm) {
+			bRet = GetPhysicalMonitorsFromHMONITOR(hMon, npm, ppm);
+			if (!bRet) {
+				FreePhysicalMonitor(npm, ppm);
+				ppm = NULL;
+				npm = 0;
+			}
+		}
+	}
+	*pnpm = npm;
+	return ppm;
+}
+
+BOOL CColyEyeDlg::SetBrightLevel(int level)
+{
+	LPPHYSICAL_MONITOR ppm = 0;
+	DWORD npm = 0;
+	ppm = GetPhysicalMonitor(&npm);
+	if (ppm) {
+		DWORD nMin = 0, nCur = 0, nMax = 0;
+		GetMonitorBrightness(ppm->hPhysicalMonitor, &nMin, &nCur, &nMax);
+		CString str;
+		str.Format(_T("Min:%d, Cur:%d, Max:%d\n"), nMin, nCur, nMax);
+		TRACE(str);
+		if (level == 2)
+		{
+			nCur += 10;
+			if (nCur > 100) nCur = 100;
+		}
+		else if (level == 3)
+		{
+			nCur -= 10;
+			if (nCur < 0) nCur = 0;
+		}
+		SetMonitorBrightness(ppm->hPhysicalMonitor, nCur);
+		FreePhysicalMonitor(npm, ppm);
 	}
 	return 0;
 }
