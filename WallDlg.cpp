@@ -213,6 +213,7 @@ BEGIN_MESSAGE_MAP(CWallDlg, CDialogEx)
 	ON_MESSAGE(USER_MSG_BRING, &CWallDlg::OnUserMsgBring)
 	ON_MESSAGE(USER_MSG_RELOGIN, &CWallDlg::OnUserMsgReLogin)
 	ON_MESSAGE(USER_MSG_DEVICE_CONFIG, &CWallDlg::OnUserMsgDeviceConfig)
+	ON_MESSAGE(USER_MSG_PTT, &CWallDlg::OnUserMsgPtt)
 END_MESSAGE_MAP()
 
 
@@ -284,8 +285,8 @@ afx_msg LRESULT CWallDlg::OnUserMsgLogin(WPARAM wParam, LPARAM lParam)
 				TRACE("Put user configuration into db failed!\n");
 			}
 		}
-
 		EnableCameraConfiguration(pDev);
+		H264_DVR_StartLocalVoiceCom(pDev->mLoginId);
 	}
 	else {
 		AfxMessageBox(_T("Login fail"));
@@ -665,6 +666,20 @@ afx_msg LRESULT CWallDlg::OnUserMsgDeviceConfig(WPARAM wParam, LPARAM lParam)
 	else {
 		DisableCameraConfiguration(pCamera);
 		pCamera->CommitUserConfigurationChange();
+	}
+	return 0;
+}
+
+
+afx_msg LRESULT CWallDlg::OnUserMsgPtt(WPARAM wParam, LPARAM lParam)
+{
+	if (wParam == KB_PTTDOWN)
+	{
+		TRACE("打开语音附件\n");
+	}
+	else if(wParam == KB_PTTUP)
+	{
+		TRACE("关闭语音附件\n");
 	}
 	return 0;
 }

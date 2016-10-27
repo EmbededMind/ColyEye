@@ -87,6 +87,7 @@
 #define USER_MSG_CONNECT              (WM_USER + 150)
 
 #define USER_MSG_DEVICE_CONFIG        (WM_USER + 160)
+#define USER_MSG_PTT                  (WM_USER + 161)
 
 #define RECORD_PATH                   "e:\\Record\\"
 #define NORMAL_RECORD_PATH            "e:\\Record\\normal\\"
@@ -112,6 +113,8 @@
 #define KB_TALKQUIET                  14
 #define KB_BRIDOWN                    15
 #define KB_SWITCH                     16
+#define KB_PTTDOWN                    17
+#define KB_PTTUP                      18
 
 
 using namespace log4cplus;

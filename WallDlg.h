@@ -80,4 +80,5 @@ public:
 	CTime mSystemTime;
 protected:
 	afx_msg LRESULT OnUserMsgDeviceConfig(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnUserMsgPtt(WPARAM wParam, LPARAM lParam);
 };

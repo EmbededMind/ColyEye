@@ -299,9 +299,15 @@ LONG CColyEyeDlg::OnCommData(WPARAM pData, LPARAM port)
 			case KB_SWITCH:
 			{
 				char str[120] = "shutdown -f -s -t 0";
-				system(str);
+				system(str);				
 				break;
 			}
+			case KB_PTTDOWN:
+				PostMessage(USER_MSG_PTT, KB_PTTDOWN, NULL);
+				break;
+			case KB_PTTUP:
+				PostMessage(USER_MSG_PTT, KB_PTTUP, NULL);
+				break;
 			default:
 				break;
 			}
