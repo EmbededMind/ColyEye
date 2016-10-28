@@ -32,3 +32,6 @@ END_MESSAGE_MAP()
 
 
 // CSurfaceDlg 消息处理程序
+
+
+

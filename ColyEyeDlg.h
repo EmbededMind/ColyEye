@@ -55,4 +55,6 @@ protected:
 	afx_msg LONG OnCommChar(WPARAM ch, LPARAM port);
 	afx_msg LONG OnCommData(WPARAM pData, LPARAM port);
 	afx_msg BOOL OnDeviceChange(UINT nEventType, DWORD_PTR dwData);
+public:
+	afx_msg void OnSize(UINT nType, int cx, int cy);
 };

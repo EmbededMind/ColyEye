@@ -88,6 +88,9 @@
 
 #define USER_MSG_DEVICE_CONFIG        (WM_USER + 160)
 
+#define USER_MSG_NOTIFY_ARROW         (WM_USER + 170)
+
+
 #define RECORD_PATH                   "e:\\Record\\"
 #define NORMAL_RECORD_PATH            "e:\\Record\\normal\\"
 #define ALARM_RECORD_PATH             "e:\\Record\\alarm\\"
@@ -96,12 +99,32 @@
 #define COM_KEYBD    8
 #define COM_CAMERA   3
 
+
+/********************************
+*
+*  Layout macro
+*
+*********************************/
+#define SURFACE_SHAPE          9/16 
+#define SURFACE_WH_SCALE       16/9
+#define SURFACE_LABEL_OFFSET   30
+
+#define SURFACE_PADDING        1/20
+
+#define WALL_MARGIN_SCALE      1/10
+
+
+
+
 using namespace log4cplus;
 using namespace std;
 
 extern 	SQLiteWrapper sqlite;
 extern  ColyEyeHost   host;
 extern  Logger  pLogger;
+
+
+
 
 
 

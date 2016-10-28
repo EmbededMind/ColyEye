@@ -36,6 +36,8 @@ BEGIN_MESSAGE_MAP(CAlarmMenuDlg, CDialogEx)
 	ON_MESSAGE(USER_MSG_ADD_FILE, &CAlarmMenuDlg::OnUserMsgAddFile)
 	ON_MESSAGE(USER_MSG_DEL_FILE, &CAlarmMenuDlg::OnUserMsgDelFile)
 	ON_MESSAGE(USER_MSG_COPY_RECORD, &CAlarmMenuDlg::OnUserMsgCopyRecord)
+	ON_WM_SETFOCUS()
+//	ON_WM_NCPAINT()
 END_MESSAGE_MAP()
 
 
@@ -313,3 +315,18 @@ afx_msg LRESULT CAlarmMenuDlg::OnUserMsgDelFile(WPARAM wParam, LPARAM lParam)
 	 }
 	 return 0;
  }
+
+
+ void CAlarmMenuDlg::OnSetFocus(CWnd* pOldWnd)
+ {
+	 CDialogEx::OnSetFocus(pOldWnd);
+	 TRACE("\n");
+	 // TODO: 在此处添加消息处理程序代码
+ }
+
+
+// void CAlarmMenuDlg::OnNcPaint()
+// {
+//	 // TODO: 在此处添加消息处理程序代码
+//	 // 不为绘图消息调用 CDialogEx::OnNcPaint()
+// }

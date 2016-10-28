@@ -120,7 +120,7 @@ void CCamera::startRecord(CFile* pFile)
 	//ASSERT(pFile);
 	//ASSERT(pFile->m_hFile != CFile::hFileNull);
 	if (pFile == NULL || pFile->m_hFile == CFile::hFileNull) {
-		LOG4CPLUS_ERROR(Logger::getInstance(_T("MyLogger")), "<info>" << mIp << " Bad file when start normal record");
+		//LOG4CPLUS_ERROR(Logger::getInstance(_T("MyLogger")), "<info>" << mIp << " Bad file when start normal record");
 		ASSERT(FALSE);;
 	}
 
@@ -144,7 +144,7 @@ void CCamera::startRecord(CFile* pFile)
 void CCamera::stopRecord()
 {
 	if (mNormalRecordFile == NULL) {
-		LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << mIp << " Not null file when stop record");
+		//(Logger::getInstance(_T("MyLogger")), "<info>" << mIp << " Not null file when stop record");
 		ASSERT(FALSE);
 	}
 	//if (isRecording) {

@@ -92,6 +92,26 @@ CSurfaceHolderDlg* CWallDlg::investCamera(CCamera* pCamera)
 
 
 
+CSurface* CWallDlg::InvestCamera(CCamera* pCamera)
+{
+	CSurface* pSurface = new CSurface();
+	//pSurface->Create(NULL, WS_CHILD|WS_VISIBLE,CRect(0, 0, 0, 0), this, pCamera->mId);
+	pSurface->Create(NULL,_T("Surface"), WS_CHILD|WS_VISIBLE|WS_BORDER, CRect(0,0,0,0), this, pCamera->mId);
+	pSurface->ModifyStyle(BS_OWNERDRAW, 0);
+	pSurface->ShowWindow(SW_SHOW);
+
+	pSurface->SetUserData((DWORD)pCamera);
+
+	m_pSurfaces.push_back(pSurface);
+
+	UpdateLayout();
+	return pSurface;
+}
+
+
+
+
+
 void CWallDlg::spitCamera(CCamera* pCamera)
 {
 	POSITION pos = mHolderes.GetHeadPosition();
@@ -107,6 +127,68 @@ void CWallDlg::spitCamera(CCamera* pCamera)
 	}
 }
 
+
+
+void CWallDlg::DesignLayout()
+{
+	int surface_number = m_pSurfaces.size();
+
+	if (surface_number) {
+		int i = 0;
+		int qVal = 0;
+
+		while (i <= surface_number) {
+			qVal = i*i;
+			if (qVal >= surface_number) {
+				mCols = i;
+				break;
+			}
+			i++;
+		}
+		mRows = surface_number / mCols + ((surface_number%mCols)>0?1:0);
+		TRACE("Row:%d, Col:%d\n", mRows, mCols);
+	}
+}
+
+
+
+void CWallDlg::ExecuteLayout()
+{
+	CRect rClient;
+	GetClientRect(rClient);
+
+	int margin = rClient.Width() * WALL_MARGIN_SCALE;
+
+	int col_width = (rClient.Width() - margin * 2) / mCols;
+	int padding = col_width * SURFACE_PADDING;
+	int grap = padding * 2;
+
+	int surface_width = col_width - padding * 2;
+	int surface_height = surface_width * SURFACE_SHAPE;
+
+	int orgX = margin + padding;
+	int orgY = rClient.Height() / 2 - (surface_height*mRows + grap*(mRows - 1)) / 2;
+
+	int holder_number = m_pSurfaces.size();
+
+	int i = 0;
+	std::list<CSurface*>::iterator iter;
+	for (iter = m_pSurfaces.begin(); iter != m_pSurfaces.end(); iter++) {
+		int xPos = orgX + (i % mCols) * (surface_width + grap);
+		int yPos = orgY + (i / mCols) * (surface_height + grap);
+		i++;
+
+		(*iter)->MoveWindow(xPos, yPos, surface_width, surface_height, TRUE);
+	}
+}
+
+
+
+void CWallDlg::UpdateLayout()
+{
+	DesignLayout();
+	ExecuteLayout();
+}
 
 
 /**@brief 规划视频墙的布局
@@ -153,36 +235,78 @@ BOOL CWallDlg::designLayout()
 
 void CWallDlg::executeLayout()
 {
-	RECT r;
-	GetClientRect(&r);
+	CRect rClient;
+	GetClientRect(&rClient);
 
-	int wallWidth = r.right - r.left;
-	int wallHeight = r.bottom - r.top-30;
+	int Margin = rClient.Width() * WALL_MARGIN_SCALE;   // margin 取宽度的十分之一
 
-	int holderHeight  = wallHeight / mRows - 10;
-	int holderWidth  = wallWidth / mCols - 10;
-	int orgX = r.left + 5;
-	int orgY = r.top + 30;
-	int totalHolderNumber = mHolderes.GetCount();
+	int col_width = (rClient.Width() - Margin * 2) / mCols;
+	int padding = col_width * SURFACE_PADDING;
+	int grap = padding * 2;
+
+	int holder_width = col_width - padding * 2;
+	int holder_height = holder_width * SURFACE_SHAPE;
+
+	int orgX = Margin + padding;
+	int orgY = rClient.Height() / 2 - (holder_height*mRows + grap*(mRows - 1)) / 2;
+
+	int holder_number = mHolderes.GetCount();
 
 
 	POSITION pos = mHolderes.GetHeadPosition();
 	CWnd* pHolder;
 
-	for (int i = 0; i < totalHolderNumber; i++) {
+	for (int i = 0; i < holder_number; i++) {
 		if (pos != NULL) {
 			pHolder = (CWnd*)mHolderes.GetNext(pos);
 
-			int xPos = orgX + (i%mCols) * holderWidth;
-			int yPos = orgY + (i / mCols) * holderHeight;
-			TRACE("x = %d, y = %d\n", xPos, yPos);
+			int xPos = orgX + (i % mCols) * (holder_width + grap);
+			int yPos = orgY + (i / mCols) * (holder_height + grap);
+
 			/// 这里如果没有显示出窗口，多半是xPos, yPos, holderWidth, holderHeight计算有问题。
-			pHolder->MoveWindow(xPos, yPos, holderWidth, holderHeight, TRUE);
+			pHolder->MoveWindow(xPos, yPos, holder_width, holder_height, TRUE);
 		}
 		else {
 
 		}
 	}
+
+
+	//int wallWidth = rClient.Width() - Margin*2;
+	//int wallHeight = rClient.Height() - Margin*2;
+
+
+
+	//int holderHeight  = wallHeight / mRows - Margin;
+	//int holderWidth = (wallWidth - Margin*(mCols - 1)) / mCols;
+
+
+
+	//int orgX = Margin + (wallWidth - holderWidth * mCols - Margin *(mCols-1)) /2;
+	//int orgY = Margin + (wallHeight - (holderHeight + Margin) *mRows) /2;
+
+	//
+
+	//int totalHolderNumber = mHolderes.GetCount();
+
+
+	//POSITION pos = mHolderes.GetHeadPosition();
+	//CWnd* pHolder;
+
+	//for (int i = 0; i < totalHolderNumber; i++) {
+	//	if (pos != NULL) {
+	//		pHolder = (CWnd*)mHolderes.GetNext(pos);
+
+	//		int xPos = orgX + (i % mCols) * (holderWidth+Margin);
+	//		int yPos = orgY + (i / mCols) * (holderHeight+Margin);
+
+	//		/// 这里如果没有显示出窗口，多半是xPos, yPos, holderWidth, holderHeight计算有问题。
+	//		pHolder->MoveWindow(xPos, yPos, holderWidth, holderHeight, TRUE);
+	//	}
+	//	else {
+
+	//	}
+	//}
 }
 
 
@@ -194,7 +318,7 @@ void CWallDlg::executeLayout()
 void CWallDlg::updateLayout()
 {
 	designLayout();
-	TRACE("Row:%d,Col:%d\n", this->mRows, this->mCols);
+
 	executeLayout();
 }
 
@@ -203,7 +327,7 @@ void CWallDlg::updateLayout()
 void CWallDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_DateTimeCtrl(pDX, IDC_DATETIMEPICKER1, mSystemTime);
+	//DDX_DateTimeCtrl(pDX, IDC_DATETIMEPICKER1, mSystemTime);
 }
 
 
@@ -213,6 +337,10 @@ BEGIN_MESSAGE_MAP(CWallDlg, CDialogEx)
 	ON_MESSAGE(USER_MSG_BRING, &CWallDlg::OnUserMsgBring)
 	ON_MESSAGE(USER_MSG_RELOGIN, &CWallDlg::OnUserMsgReLogin)
 	ON_MESSAGE(USER_MSG_DEVICE_CONFIG, &CWallDlg::OnUserMsgDeviceConfig)
+	ON_WM_SIZE()
+	ON_MESSAGE(USER_MSG_NOTIFY_ARROW, &CWallDlg::OnUserMsgNotifyArrow)
+	ON_WM_SETFOCUS()
+	ON_WM_KILLFOCUS()
 END_MESSAGE_MAP()
 
 
@@ -231,6 +359,7 @@ BOOL CWallDlg::OnInitDialog()
 	CRect parentClientRect;
 	pWndParent->GetClientRect(&parentClientRect);
 
+
 	this->SetWindowPos(NULL, parentClientRect.left, parentClientRect.top,
 		                     parentClientRect.Width(), parentClientRect.Height(), 0);
 
@@ -243,6 +372,39 @@ BOOL CWallDlg::OnInitDialog()
 	
 
 	SetTimer(SECOND_TICK_TIMER_EVENT_ID, 1000, NULL);
+
+	//CCamera* pDev = new CCamera();
+
+	//pDev->mId = 4;
+
+	//InvestCamera(pDev);
+
+	//pDev->mId = 5;
+	//InvestCamera(pDev);
+
+	//CSurfaceHolderDlg* pHolder = new CSurfaceHolderDlg();
+	//pHolder->Create(IDD_SURFACE_HOLDER, this);
+	//pHolder->SetWindowTextW(_T("Holder 1"));
+	//pHolder->ShowWindow(SW_SHOW);
+
+	//mHolderes.AddTail(pHolder);
+
+	//pHolder = new CSurfaceHolderDlg();
+	//pHolder->Create(IDD_SURFACE_HOLDER, this);
+	//pHolder->SetWindowTextW(_T("Holder 2"));
+	//pHolder->ShowWindow(SW_SHOW);
+
+	//mHolderes.AddTail(pHolder);
+
+	//pHolder = new CSurfaceHolderDlg();
+	//pHolder->Create(IDD_SURFACE_HOLDER, this);
+	//pHolder->ShowWindow(SW_SHOW);
+
+	//mHolderes.AddTail(pHolder);
+
+	//updateLayout();
+
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 异常: OCX 属性页应返回 FALSE
 }
@@ -272,9 +434,10 @@ afx_msg LRESULT CWallDlg::OnUserMsgLogin(WPARAM wParam, LPARAM lParam)
 			TRACE("id is:%d\n", pDev->mId);
 		}
 		
-		LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pDev->mIp << " login, id is:" << pDev->mId);
+		//LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pDev->mIp << " login, id is:" << pDev->mId);
 
-		pDev->clientInfo.hWnd = this->investCamera(pDev)->mSurface.m_hWnd;
+		//pDev->clientInfo.hWnd = this->investCamera(pDev)->mSurface.m_hWnd;
+		pDev->clientInfo.hWnd = this->InvestCamera(pDev)->m_hWnd;
 
 		if (!pDev->LoadUserConfiguration()) {
 			pDev->userConf.name_inx = 0;
@@ -305,7 +468,7 @@ afx_msg LRESULT CWallDlg::OnUserMsgReLogin(WPARAM wParam, LPARAM lParam)
 		Device_Map::iterator iter;
 		CCamera* pDev = (CCamera*)lParam;
 
-		LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pDev->mIp << " Relogin");
+		//LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pDev->mIp << " Relogin");
 
 		EnableCameraConfiguration(pDev);
 
@@ -333,10 +496,10 @@ void CWallDlg::interruptRecord(CCamera* pCamera)
 	ASSERT(pCamera != NULL);
 
 	if (pCamera->isRecording) {
-		LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Interrupt normal record");
+		//LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Interrupt normal record");
 		pCamera->stopRecord();
 		RecordFileManager::GetInstance()->RecallRecordFile(pCamera->mId, RECORD_TYPE_NORMAL);
-		LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<INFO>" << pCamera->mIp << " Recall normal file after interrupt");
+		//LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<INFO>" << pCamera->mIp << " Recall normal file after interrupt");
 		KillTimer(pCamera->mId);
 
 		pCamera->isRecording = FALSE;
@@ -354,15 +517,15 @@ void CWallDlg::interruptAlarmRecord(CCamera* pCamera)
 
 	
 	if (pCamera->isAlarmRecording == TRUE) {
-		LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Interrupt alarm record");
+		//LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Interrupt alarm record");
 		int i = pCamera->mId - 1;
 		if (alarmRecordStatus.flag  &  (0x01 << i)) {
 			alarmRecordStatus.flagCnts[i] = 0;
 			alarmRecordStatus.flag &= (~(0x01 << i));
-			LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Stop alarm record");
+			//LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Stop alarm record");
 			pCamera->stopAlarmRecord();
 			RecordFileManager::GetInstance()->RecallRecordFile(pCamera->mId, RECORD_TYPE_ALARM);
-			LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<INFO>" << pCamera->mIp << " Recall alarm file after interrupt");
+			//LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<INFO>" << pCamera->mIp << " Recall alarm file after interrupt");
 			if (alarmRecordStatus.flag == 0) {
 				KillTimer(ALARM_TIMER_EVENT_ID);
 			}
@@ -412,38 +575,38 @@ void CWallDlg::ResumeCamera(CCamera* pCamera)
 
 void CWallDlg::EnableCameraConfiguration(CCamera* pCamera)
 {
-	LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info> Memory:" << Util::GetMemorySize());
+	//LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info> Memory:" << Util::GetMemorySize());
 
-	LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Enable configuration");
+	//LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Enable configuration");
 	// 摄像机开启
 	if (pCamera->userConf.switches & CAMERA_USER_CONF_ON) {
-		LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Camera ON");
+	//	LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Camera ON");
 		if (pCamera->hRealPlay == 0) {
-			LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Start Realplay");
+			//LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Start Realplay");
 			pCamera->startRealPlay();
-			LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info> After start realplay,Memory:" << Util::GetMemorySize());
+			//LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info> After start realplay,Memory:" << Util::GetMemorySize());
 		}
 		    
         
 		if (pCamera->userConf.switches & CAMERA_USER_CONF_STORE) {
-			LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Store ON");
+		//	LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Store ON");
 			if (!pCamera->isRecording) {
-				LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Prepare to normal record");
+				//LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Prepare to normal record");
 				CFile* pf = RecordFileManager::GetInstance()->DistributeRecordFile(pCamera->mId, RECORD_TYPE_NORMAL);
 				if (pf != NULL) {
-					LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Start normal record");
+					//LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Start normal record");
 					pCamera->startRecord(pf);
 					SetTimer(pCamera->mId, 30 * 1000, NULL);
 
 				}
 				else {
-					LOG4CPLUS_ERROR(Logger::getInstance(_T("MyLogger")), "<ERROR>" << pCamera->mIp << " NULL file when start normal record ");
+					//LOG4CPLUS_ERROR(Logger::getInstance(_T("MyLogger")), "<ERROR>" << pCamera->mIp << " NULL file when start normal record ");
 				}
 			}
 		}
 
 		if (pCamera->userConf.switches & CAMERA_USER_CONF_AWATCH) {
-			LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " SubscribeAlarmMessage");
+			//LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " SubscribeAlarmMessage");
 			pCamera->subscribeAlarmMessage();
 		}
 	}
@@ -453,9 +616,9 @@ void CWallDlg::EnableCameraConfiguration(CCamera* pCamera)
 
 void CWallDlg::DisableCameraConfiguration(CCamera* pCamera)
 {
-	LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Disable configuration");
+	//LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Disable configuration");
 	if ( (pCamera->userConf.switches & CAMERA_USER_CONF_ON) == 0) {
-		LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Camera OFF");
+		//LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Camera OFF");
 		if (pCamera->hRealPlay) {
 			pCamera->stopRealPlay();
 		}
@@ -468,12 +631,12 @@ void CWallDlg::DisableCameraConfiguration(CCamera* pCamera)
 	}
 	else {
 		if ( (pCamera->userConf.switches & CAMERA_USER_CONF_STORE) == 0) {
-			LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " STORE OFF");
+			//LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " STORE OFF");
 			interruptRecord(pCamera);
 		}
 
 		if ( (pCamera->userConf.switches & CAMERA_USER_CONF_AWATCH) == 0) {
-			LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Auto watch OFF");
+			//LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Auto watch OFF");
 			interruptAlarmRecord(pCamera);
 	
 		}
@@ -489,7 +652,7 @@ void CWallDlg::DisableCameraConfiguration(CCamera* pCamera)
 void CWallDlg::ReConnect(LONG lLoginID, char* pchDVRIP, LONG nDVRPort)
 {
 	CCamera* pDev = CCameraManager::getInstance()->findCameraByLoginId(lLoginID);
-	LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<INFO>" << pDev->mIp << " DisConnect");
+	//LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<INFO>" << pDev->mIp << " DisConnect");
 	if (pDev != nullptr) {
 		pDev->unsubscribeAlarmMessage();
 		pDev->logout();
@@ -552,10 +715,10 @@ bool __stdcall messageCallbackFunc(long lLoginID, char* pBuf, unsigned long dwBu
 						SetTimer(((CWallDlg*)dwUser)->m_hWnd, ALARM_TIMER_EVENT_ID, 10 * 1000, NULL);
 						alarmRecordStatus.flag |= (0x01 << (pDev->mId - 1));
 
-						LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<INFO>" << pDev->mIp << " begin alarm record");
+						//LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<INFO>" << pDev->mIp << " begin alarm record");
 					}
 					else {
-						LOG4CPLUS_ERROR(Logger::getInstance(_T("MyLogger")), "<ERROR>" << pDev->mIp << " find null file when begin alarm record");
+						//LOG4CPLUS_ERROR(Logger::getInstance(_T("MyLogger")), "<ERROR>" << pDev->mIp << " find null file when begin alarm record");
 					}
 				}
 				else {
@@ -570,22 +733,46 @@ bool __stdcall messageCallbackFunc(long lLoginID, char* pBuf, unsigned long dwBu
 
 
 
+void CWallDlg::JumpToHolder()
+{
+	int cnt = 0;
+	POSITION pos = mHolderes.GetHeadPosition();
+	CSurfaceHolderDlg* pHolder;
+	while (pos) {
+		pHolder = (CSurfaceHolderDlg*)mHolderes.GetNext(pos);
+		if (cnt != mCurrSelectedHolder){
+			if (pHolder->mIsSelected) {
+				pHolder->mIsSelected = FALSE;
+				pHolder->UpdateWindow();
+			}
+		}
+		else {
+			if (!pHolder->mIsSelected) {
+				pHolder->mIsSelected = TRUE;
+				pHolder->UpdateData();
+			}
+		}
+	}
+}
+
+
+
 void CWallDlg::OnTimer(UINT_PTR nIDEvent)
 {	
 	if (nIDEvent <= CAMERA_MAX_NUM) {
 		CCamera* pCamera = CCameraManager::getInstance()->findCameraById(nIDEvent);
 		if (pCamera) {
-			LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Normal record timeout");
+			//LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Normal record timeout");
 			pCamera->stopRecord();
 			RecordFileManager* pMgr = RecordFileManager::GetInstance();
 			pMgr->RecallRecordFile(pCamera->mId, RECORD_TYPE_NORMAL);
 			CFile * pf = pMgr->DistributeRecordFile(pCamera->mId, RECORD_TYPE_NORMAL);
 			if (pf != NULL) {
 				pCamera->startRecord(pf);
-				LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<INFO>" << pCamera->mIp << " package begin normal record");
+				//LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<INFO>" << pCamera->mIp << " package begin normal record");
 			}
 			else {
-				LOG4CPLUS_ERROR(Logger::getInstance(_T("MyLogger")), "<ERROR>" << pCamera->mIp << " find null file when package begin normal record");
+				//LOG4CPLUS_ERROR(Logger::getInstance(_T("MyLogger")), "<ERROR>" << pCamera->mIp << " find null file when package begin normal record");
 			}
 /*
 			Util::ShowMemoryInfo();	*/	
@@ -608,7 +795,7 @@ void CWallDlg::OnTimer(UINT_PTR nIDEvent)
 						if (pCamera) {
 							pCamera->stopAlarmRecord();
 							pRecordFileMgr->RecallRecordFile(pCamera->mId, RECORD_TYPE_ALARM);
-							LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<INFO>" << pCamera->mIp << " Recall file after end alarm record");
+							//LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<INFO>" << pCamera->mIp << " Recall file after end alarm record");
 							alarmRecordStatus.flag &= (~(0x01<<i));
 							TRACE("flag: 0x%x\n", alarmRecordStatus.flag);
 							if (alarmRecordStatus.flag == 0) {
@@ -635,12 +822,11 @@ void CWallDlg::OnTimer(UINT_PTR nIDEvent)
 	}
 	// 1s 定时时间到
 	else if (SECOND_TICK_TIMER_EVENT_ID){
-		mSystemTime = CTime::GetCurrentTime();
-		UpdateData(false);
+		//mSystemTime = CTime::GetCurrentTime();
+		//UpdateData(false);
 	}
 	CDialogEx::OnTimer(nIDEvent);
 }
-
 
 
 
@@ -668,3 +854,136 @@ afx_msg LRESULT CWallDlg::OnUserMsgDeviceConfig(WPARAM wParam, LPARAM lParam)
 	}
 	return 0;
 }
+
+
+BOOL CWallDlg::PreTranslateMessage(MSG* pMsg)
+{
+	// TODO: 在此添加专用代码和/或调用基类
+	if (pMsg->message == WM_KEYDOWN) {
+		switch (pMsg->wParam)
+		{
+		case VK_LEFT:
+			break;
+		case VK_RIGHT:
+			break;
+		case VK_UP:
+			break;
+		case VK_DOWN:
+			break;
+
+		default:
+			if ( GetKeyState(VK_CONTROL)  ) {
+				CSurface* pSurface = (CSurface*)GetFocus();
+				DWORD data = pSurface->GetUserData();
+				CCamera* pDev = (CCamera*)data;
+
+				switch (pMsg->wParam) 
+				{ 
+				case 'T': 
+				{		
+					TRACE("Begin to talk with :%d\n", pDev->mId);
+				}
+				break;
+
+				case 'O':
+				{
+					TRACE("Over talk with :%d\n", pDev->mId);
+				}
+		        break;
+					
+
+				default:
+					break;
+				}
+			}
+			break;
+		}
+	}
+	else if (pMsg->message == WM_CONTEXTMENU)
+	{
+		TRACE("CWallDlg case contextmenu\n");
+	}
+	return CDialogEx::PreTranslateMessage(pMsg);
+}
+
+
+
+
+
+void CWallDlg::OnSize(UINT nType, int cx, int cy)
+{
+	CDialogEx::OnSize(nType, cx, cy);
+
+	// TODO: 在此处添加消息处理程序代码
+	if(mHolderes.GetCount() > 0)
+	   executeLayout();
+}
+
+
+afx_msg LRESULT CWallDlg::OnUserMsgNotifyArrow(WPARAM wParam, LPARAM lParam)
+{
+	if (mHolderes.GetCount() > 0) {
+		POSITION pos = mHolderes.Find((void*)lParam);
+		
+		CSurfaceHolderDlg* pHolder;
+		CString text;
+
+
+		if (pos) {
+			switch (wParam)
+			{
+			case VK_LEFT:
+				if (pos != mHolderes.GetHeadPosition()) {
+					pos--;
+					pHolder = (CSurfaceHolderDlg*)mHolderes.GetAt(pos);
+					pHolder->GetWindowTextW(text);
+					TRACE("Next is %S\n", pHolder);
+					pHolder->SetFocus();
+					if (pHolder->mIsSelected) {
+						pHolder->OnNcPaint();
+					}
+					else {
+						TRACE("Error\n");
+					}
+					((CSurfaceHolderDlg*)lParam)->OnNcPaint();
+				}
+				break;
+			case VK_RIGHT:
+				if (pos != mHolderes.GetTailPosition()) {
+					mHolderes.GetNext(pos);;
+					pHolder = (CSurfaceHolderDlg*)mHolderes.GetNext(pos);
+					TRACE("Next holder:0x%p\n", pHolder);
+					pHolder->SetFocus();
+
+					if (pHolder->mIsSelected) {
+						pHolder->OnNcPaint();
+					}
+					else{
+						TRACE("Error\n");
+					}
+					((CSurfaceHolderDlg*)lParam)->OnNcPaint();
+				}
+				break;
+			}
+		}
+	}
+	return 0;
+}
+
+
+void CWallDlg::OnSetFocus(CWnd* pOldWnd)
+{
+	CDialogEx::OnSetFocus(pOldWnd);
+	// TODO: 在此处添加消息处理程序代码
+}
+
+
+void CWallDlg::OnKillFocus(CWnd* pNewWnd)
+{
+
+	CDialogEx::OnKillFocus(pNewWnd);
+
+	// TODO: 在此处添加消息处理程序代码
+}
+
+

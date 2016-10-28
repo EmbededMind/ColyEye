@@ -39,6 +39,7 @@ BEGIN_MESSAGE_MAP(CColyEyeDlg, CDialogEx)
 	ON_MESSAGE(WM_COMM_RXCHAR, &CColyEyeDlg::OnCommChar)
 	ON_MESSAGE(WM_COMM_RXDATA, &CColyEyeDlg::OnCommData)
 	ON_WM_DEVICECHANGE()
+	ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 
@@ -54,10 +55,12 @@ BOOL CColyEyeDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
 	// TODO: 在此添加额外的初始化代码
+	SetWindowPos(NULL, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), 0);
+
 
 	///创建Wall对话框
 	mWall.Create(IDD_WALL, this);
-	mWall.MoveWindow(5, 5, 800, 400);
+	//mWall.MoveWindow(5, 5, 800, 400);
 	mWall.ShowWindow(SW_SHOW);
 
 	mMenu.Create(IDD_MENU, this);
@@ -78,16 +81,16 @@ BOOL CColyEyeDlg::OnInitDialog()
 		AfxMessageBox(_T("没有发现串口或串口被占用"));
 		m_bSerialPortKbdOpened = FALSE;
 	}*/
-	if (m_SerialPortCom.InitPort(this, COM_CAMERA, 9600, 'N', 8, 1, EV_RXFLAG | EV_RXCHAR, 512))
-	{
-		m_SerialPortCom.StartMonitoring();
-		m_bSerialPortComOpened = TRUE;
-	}
-	else
-	{
-		AfxMessageBox(_T("没有发现串口或串口被占用"));
-		m_bSerialPortComOpened = FALSE;
-	}
+	//if (m_SerialPortCom.InitPort(this, COM_CAMERA, 9600, 'N', 8, 1, EV_RXFLAG | EV_RXCHAR, 512))
+	//{
+	//	m_SerialPortCom.StartMonitoring();
+	//	m_bSerialPortComOpened = TRUE;
+	//}
+	//else
+	//{
+	//	AfxMessageBox(_T("没有发现串口或串口被占用"));
+	//	m_bSerialPortComOpened = FALSE;
+	//}
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -184,7 +187,25 @@ void CColyEyeDlg::OnClose()
 BOOL CColyEyeDlg::PreTranslateMessage(MSG* pMsg)
 {
 	// TODO: 在此添加专用代码和/或调用基类
-	if (pMsg->message == WM_CONTEXTMENU) {
+
+	if (pMsg->message == WM_KEYDOWN) {
+		switch (pMsg->wParam)
+		{
+		case VK_LEFT:
+			TRACE("CWallDlg case left\n");
+			break;
+		case VK_RIGHT:
+			TRACE("CWallDlg case right\n");
+			break;
+		case VK_UP:
+			TRACE("CWallDlg case up\n");
+			break;
+		case VK_DOWN:
+			TRACE("CWallDlg case down\n");
+			break;
+		}
+	}
+	else if (pMsg->message == WM_CONTEXTMENU) {
 		if (mWall.IsWindowVisible()) {
 			mWall.ShowWindow(SW_HIDE);
 			mMenu.ShowWindow(SW_SHOW);
@@ -195,7 +216,6 @@ BOOL CColyEyeDlg::PreTranslateMessage(MSG* pMsg)
 			mWall.ShowWindow(SW_SHOW);
 			mWall.SetFocus();
 		}
-
 	}
 
 	return CDialogEx::PreTranslateMessage(pMsg);
@@ -308,4 +328,25 @@ BOOL CColyEyeDlg::OnDeviceChange(UINT nEventType, DWORD_PTR dwData)
 	}
 	return 0;
 }
+
+
+
+void CColyEyeDlg::OnSize(UINT nType, int cx, int cy)
+{
+	CDialogEx::OnSize(nType, cx, cy);
+
+	CRect rClient;
+	GetClientRect(rClient);
+
+	if (IsWindow(mWall.m_hWnd)) {
+		mWall.SetWindowPos(NULL, rClient.left, rClient.top, rClient.Width(), rClient.Height(), 0);
+	}
+
+	if (IsWindow(mMenu.m_hWnd)) {
+		mWall.SetWindowPos(NULL, rClient.left, rClient.top, rClient.Width(), rClient.Height(), 0);
+	}
+
+	// TODO: 在此处添加消息处理程序代码
+}
+
 

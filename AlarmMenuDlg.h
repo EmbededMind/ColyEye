@@ -49,4 +49,7 @@ protected:
 	afx_msg LRESULT OnUserMsgAddFile(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnUserMsgDelFile(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnUserMsgCopyRecord(WPARAM wParam, LPARAM lParam);
+public:
+	afx_msg void OnSetFocus(CWnd* pOldWnd);
+//	afx_msg void OnNcPaint();
 };
