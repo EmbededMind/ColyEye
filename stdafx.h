@@ -134,6 +134,10 @@
 #define WALL_MARGIN_SCALE      1/10
 
 
+#define MENU_ITEM_WIDTH_SHARE     1/5
+#define MENU_ITEM_HEIGHT_SHARE    1/10
+
+
 
 
 using namespace log4cplus;

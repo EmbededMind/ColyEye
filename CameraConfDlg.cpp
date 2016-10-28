@@ -234,11 +234,14 @@ void CCameraConfDlg::InitPanel()
 void CCameraConfDlg::InitNameItem()
 {
 	CString name;
-	RECT rClient;
-	RECT r = {5, 45, 60, 30};
+	CRect rClient;
+
 	GetClientRect(&rClient);
 
+	RECT r = { 0 };
 
+	int item_width = rClient.Width() / 9;
+	int item_height = item_width / 2;
 	//name.LoadStringW(IDS_STR_CAMERA_NAME_1);
 	//mNameItems[0].Create(name, WS_CHILD|WS_VISIBLE|BS_PUSHBUTTON, r, this, 1);
 
@@ -246,15 +249,36 @@ void CCameraConfDlg::InitNameItem()
 	for (int i = 0; i < 18; i++) {
 		name.LoadStringW(IDS_STR_CAMERA_NAME_1+i);
 
-		r.left = rClient.left + (i % 4) * 85 + 40;
-		r.top = rClient.top + (i / 4) * 25 + 45;
-		r.right = r.left + 80;
-		r.bottom = r.top + 20;
+		r.left = rClient.left + (i % 4) * item_width + item_width;
+		r.top = rClient.top + (i / 4) * item_height + item_height;
+		r.right = r.left + item_width;
+		r.bottom = r.top + item_height;
 
 
 		mNameItems[i].Create(name, WS_CHILD  | BS_PUSHBUTTON, r, this, i+1);
 		mNameItems[i].SetFont(GetFont() , true);
 	}
+}
+
+
+
+void CCameraConfDlg::Layout()
+{
+	CRect rClient;
+	GetClientRect(&rClient);
+
+	CWnd* pItem;
+	int label_x, label_y,label_width, label_height;
+
+	// 
+	label_x = rClient.left + rClient.Width() / 8;
+	label_y = rClient.top + rClient.Height() / 10;
+	label_width = 80;
+	label_height = 30;
+
+	pItem = GetDlgItem(IDC_STATIC);
+	pItem->MoveWindow(label_x, label_y, label_width, label_height, TRUE);
+
 }
 
 

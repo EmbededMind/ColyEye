@@ -36,6 +36,7 @@ BEGIN_MESSAGE_MAP(CSystemConfigDlg, CDialogEx)
 	ON_MESSAGE(USER_MSG_NOTIFY_FOCUS, &CSystemConfigDlg::OnUserMsgNotifyFocus)
 	ON_MESSAGE(USER_MSG_LOGIN, &CSystemConfigDlg::OnUserMsgLogin)
 	ON_MESSAGE(USER_MSG_GIVE_FOCUS, &CSystemConfigDlg::OnUserMsgGiveFocus)
+	ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 
@@ -93,6 +94,10 @@ void CSystemConfigDlg::InitSubView()
 }
 
 
+
+
+
+
 void CSystemConfigDlg::ShowSubView()
 {
 	if (mCurrCursor != mPrevCursor) {
@@ -128,43 +133,57 @@ void CSystemConfigDlg::ShowSubView()
 }
 
 
+void CSystemConfigDlg::Layout()
+{
+	CRect rClient;
+	GetClientRect(rClient);
+
+	int item_width = rClient.Width() * MENU_ITEM_WIDTH_SHARE;
+	int item_height = -rClient.Height() * MENU_ITEM_HEIGHT_SHARE;
+
+	mSubViews[0]->MoveWindow(item_width, 0, rClient.right - item_width, rClient.Height(), TRUE);
+	mSubViews[1]->MoveWindow(item_width, 0, rClient.right - item_width, rClient.Height(), TRUE);
+	mSubViews[2]->MoveWindow(item_width, 0, rClient.right - item_width, rClient.Height(), TRUE);
+	mSubViews[3]->MoveWindow(item_width, 0, rClient.right - item_width, rClient.Height(), TRUE);
+}
 
 void CSystemConfigDlg::UpdateItemLayout()
 {
+	CRect rClient;
+	GetClientRect(rClient);
+
+	int item_width = rClient.Width() * MENU_ITEM_WIDTH_SHARE;
+	int item_height = rClient.Height() * MENU_ITEM_HEIGHT_SHARE;
+
 	CCameraManager * pMgr = CCameraManager::getInstance();
 	POSITION pos = pMgr->mCameras.GetHeadPosition();
 
 	CWnd* pItem;
 	int   cnt = 1;
-	CRect r;
+	pItem = GetDlgItem(IDC_BUTTON1);
+	pItem->MoveWindow(0, 0, item_width, item_height, true);
 
-	GetClientRect(&r);
 
 	for (int i = 0; i < CAMERA_MAX_NUM; i++) {
 		pItem = GetDlgItem(ID_BTN_CAMERA_BASE + i);
 
-		/*if (i < 2) {
-			pItem->MoveWindow(r.left + 2, r.top + cnt * 45, 80, 40, true);
-			pItem->ShowWindow(SW_SHOW);
-			cnt++;
-		}
-		else*/ if (pMgr->mLoginDevice[i] != nullptr  &&  pMgr->mLoginDevice[i]->mLoginId) {
-			pItem->MoveWindow(r.left+2, r.top + cnt*45, 80, 40, true);
+		if (pMgr->mLoginDevice[i] != nullptr  &&  pMgr->mLoginDevice[i]->mLoginId) {
+			pItem->MoveWindow(0, cnt*item_height, item_width, item_height, true);
 			pItem->ShowWindow(SW_SHOW);
 			cnt++;
 		}
 		else {
 			pItem->ShowWindow(SW_HIDE);
-		}
+		}	
 	}
 
 
 	pItem = GetDlgItem(IDC_BUTTON2);
-	pItem->MoveWindow(r.left+2, r.top+cnt*45, 80, 40, true);
+	pItem->MoveWindow(0,cnt*item_height, item_width, item_height, true);
 
 	cnt++;
 	pItem = GetDlgItem(IDC_BUTTON3);
-	pItem->MoveWindow(r.left+2, r.top+cnt*45, 80, 40, true);
+	pItem->MoveWindow(0, cnt*item_height, item_width, item_height, true);
 }
 
 
@@ -244,4 +263,16 @@ BOOL CSystemConfigDlg::PreTranslateMessage(MSG* pMsg)
 		}
 	}
 	return CDialogEx::PreTranslateMessage(pMsg);
+}
+
+
+void CSystemConfigDlg::OnSize(UINT nType, int cx, int cy)
+{
+	CDialogEx::OnSize(nType, cx, cy);
+
+	// TODO: 在此处添加消息处理程序代码
+	if (IsWindow(mItems[0])) {
+		UpdateItemLayout();
+		Layout();
+	}
 }

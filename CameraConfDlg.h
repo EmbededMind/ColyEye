@@ -55,10 +55,12 @@ private:
 
 	void InitNameItem();
 	void InitPanel();
+	void Layout();
 
 	void ShowConfigurationOf(CCamera* whichCamera);
 
 	void FocusJumpTo(int dst_id);
+
 
 
 protected:

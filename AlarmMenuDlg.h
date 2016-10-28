@@ -33,6 +33,7 @@ private:
 private:
 	void initTreeCtrl();
 	void showTreeCtrl();
+	void Layout();
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
@@ -52,4 +53,5 @@ protected:
 public:
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
 //	afx_msg void OnNcPaint();
+	afx_msg void OnSize(UINT nType, int cx, int cy);
 };

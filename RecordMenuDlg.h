@@ -34,6 +34,7 @@ private:
 	void initButton();
 	void initTreeCtrl();
 	void showTreeCtrl();
+	void Layout();
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
@@ -51,4 +52,6 @@ protected:
 	afx_msg LRESULT OnUserMsgDelFile(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnUserMsgGiveFocus(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnUserMsgCopyRecord(WPARAM wParam, LPARAM lParam);
+public:
+	afx_msg void OnSize(UINT nType, int cx, int cy);
 };

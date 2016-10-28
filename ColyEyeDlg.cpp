@@ -55,10 +55,9 @@ BOOL CColyEyeDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// 设置大图标
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
+
+
 	// TODO: 在此添加额外的初始化代码
-	SetWindowPos(NULL, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), 0);
-
-
 	///创建Wall对话框
 	mWall.Create(IDD_WALL, this);
 	//mWall.MoveWindow(5, 5, 800, 400);
@@ -71,6 +70,12 @@ BOOL CColyEyeDlg::OnInitDialog()
 	mVideoCtr.Create(IDD_VIDEOCTR_DIALOG, this);
 	mVideoCtr.MoveWindow(5, 5, 800, 400);
 	mVideoCtr.ShowWindow(SW_HIDE);
+
+
+	SetWindowPos(NULL, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), 0);
+
+
+
 
 	if (m_SerialPortKbd.InitPort(this, COM_KEYBD, 9600, 'N', 8, 1, EV_RXFLAG | EV_RXCHAR, 512))
 	{
@@ -404,7 +409,7 @@ void CColyEyeDlg::OnSize(UINT nType, int cx, int cy)
 	}
 
 	if (IsWindow(mMenu.m_hWnd)) {
-		mWall.SetWindowPos(NULL, rClient.left, rClient.top, rClient.Width(), rClient.Height(), 0);
+		mMenu.SetWindowPos(NULL, rClient.left, rClient.top, rClient.Width(), rClient.Height(), 0);
 	}
 
 	// TODO: 在此处添加消息处理程序代码
