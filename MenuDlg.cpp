@@ -49,22 +49,12 @@ void CMenuDlg::initMenuItem()
 }
 
 
+
 /**@brief 初始化第二列菜单
  *
  */
 void CMenuDlg::initSubMenu()
 {
-	
-	//mSubWnds[0].Create(IDD_ALARM_MENU, this);
-	//mSubWnds[0].ShowWindow(SW_HIDE);
-	//mSubWnds[1].Create(IDD_SYS_CONF, this);
-	//mSubWnds[1].ShowWindow(SW_HIDE);
-	//mSubWnds[2].Create(IDD_AUTO_WATCH, this);
-	//mSubWnds[2].ShowWindow(SW_HIDE);
-	//mSubWnds[3].Create(IDD_RECORD, this);
-	//mSubWnds[3].ShowWindow(SW_HIDE);
-	//mSubWnds[4].Create(IDD_HOME_WATCH, this);
-	//mSubWnds[4].ShowWindow(SW_HIDE);
 	mSubWnds[0] = new CAlarmMenuDlg();
 	((CAlarmMenuDlg*)mSubWnds[0])->Create(IDD_ALARM_MENU, this);
 
@@ -81,6 +71,23 @@ void CMenuDlg::initSubMenu()
 	((CHomeWatchDlg*)mSubWnds[4])->Create(IDD_HOME_WATCH, this);
 }
 
+
+
+void CMenuDlg::Layout()
+{
+	CRect rClient;
+	GetClientRect(rClient);
+
+	int item_witdth = rClient.Width() * MENU_ITEM_WIDTH_SHARE;
+	int item_height = rClient.Height() * MENU_ITEM_HEIGHT_SHARE;
+
+	for (int i = 0; i < 5; i++) {
+		mItems[i].MoveWindow(0, (i*item_height ), item_witdth, item_height, TRUE);
+		mSubWnds[i]->MoveWindow(item_witdth, 0, rClient.right - item_witdth, rClient.Height(), TRUE);
+	}	
+}
+
+
 BEGIN_MESSAGE_MAP(CMenuDlg, CDialogEx)
 	ON_MESSAGE(USER_MSG_BRING, &CMenuDlg::OnUserMsgBring)
 	ON_MESSAGE(USER_MSG_NOTIFY, &CMenuDlg::OnUserMsgNotify)
@@ -88,6 +95,7 @@ BEGIN_MESSAGE_MAP(CMenuDlg, CDialogEx)
 	ON_MESSAGE(USER_MSG_PLAY, &CMenuDlg::OnUserMsgPlay)
 	ON_MESSAGE(USER_MSG_LOGIN, &CMenuDlg::OnUserMsgLogin)
 	ON_MESSAGE(USER_MSG_NOTIFY_BACK, &CMenuDlg::OnUserMsgNotifyBack)
+	ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 
@@ -239,4 +247,15 @@ afx_msg LRESULT CMenuDlg::OnUserMsgNotifyBack(WPARAM wParam, LPARAM lParam)
 {
 	mItems[wParam].SetFocus();
 	return 0;
+}
+
+
+void CMenuDlg::OnSize(UINT nType, int cx, int cy)
+{
+	CDialogEx::OnSize(nType, cx, cy);
+
+	// TODO: 在此处添加消息处理程序代码
+	if (IsWindow(mItems[0].m_hWnd)) {
+		Layout();
+	}
 }

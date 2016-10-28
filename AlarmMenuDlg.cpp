@@ -38,6 +38,7 @@ BEGIN_MESSAGE_MAP(CAlarmMenuDlg, CDialogEx)
 	ON_MESSAGE(USER_MSG_COPY_RECORD, &CAlarmMenuDlg::OnUserMsgCopyRecord)
 	ON_WM_SETFOCUS()
 //	ON_WM_NCPAINT()
+ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 
@@ -101,6 +102,21 @@ void CAlarmMenuDlg::showTreeCtrl()
 	}
 }
 
+
+
+void CAlarmMenuDlg::Layout()
+{
+	CRect rClient;
+	GetClientRect(rClient);
+
+	int item_width = rClient.Width() * MENU_ITEM_WIDTH_SHARE;
+	int item_height = rClient.Height() * MENU_ITEM_HEIGHT_SHARE;
+
+	for (int i = 0; i < CAMERA_MAX_NUM; i++) {
+		mItems[i].MoveWindow(0, i*(item_height), item_width, item_height, TRUE);
+		mFileTrees[i].MoveWindow(item_width, 0, rClient.right-item_width, rClient.Height(), TRUE);
+	}
+}
 
 
 BOOL CAlarmMenuDlg::PreTranslateMessage(MSG* pMsg)
@@ -330,3 +346,14 @@ afx_msg LRESULT CAlarmMenuDlg::OnUserMsgDelFile(WPARAM wParam, LPARAM lParam)
 //	 // TODO: 在此处添加消息处理程序代码
 //	 // 不为绘图消息调用 CDialogEx::OnNcPaint()
 // }
+
+
+ void CAlarmMenuDlg::OnSize(UINT nType, int cx, int cy)
+ {
+	 CDialogEx::OnSize(nType, cx, cy);
+
+	 // TODO: 在此处添加消息处理程序代码
+	 if (IsWindow(mItems[0])) {
+		 Layout();
+	 }
+ }

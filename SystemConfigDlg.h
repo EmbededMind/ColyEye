@@ -38,6 +38,8 @@ private:
 	void InitButton();
 	void InitSubView();
 
+	void Layout();
+
 	void UpdateItemLayout();
 	void ShowSubView();
 
@@ -48,4 +50,5 @@ protected:
 	afx_msg LRESULT OnUserMsgGiveFocus(WPARAM wParam, LPARAM lParam);
 public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	afx_msg void OnSize(UINT nType, int cx, int cy);
 };

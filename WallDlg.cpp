@@ -97,7 +97,7 @@ CSurface* CWallDlg::InvestCamera(CCamera* pCamera)
 {
 	CSurface* pSurface = new CSurface();
 	//pSurface->Create(NULL, WS_CHILD|WS_VISIBLE,CRect(0, 0, 0, 0), this, pCamera->mId);
-	pSurface->Create(NULL,_T("Surface"), WS_CHILD|WS_VISIBLE|WS_BORDER, CRect(0,0,0,0), this, pCamera->mId);
+	pSurface->Create(NULL,_T("Surface"), WS_CHILD|WS_VISIBLE|WS_BORDER| WS_THICKFRAME, CRect(0,0,0,0), this, pCamera->mId);
 	pSurface->ModifyStyle(BS_OWNERDRAW, 0);
 	pSurface->ShowWindow(SW_SHOW);
 

@@ -54,17 +54,17 @@ void CTagButton::OnNMCustomdraw(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMCUSTOMDRAW pNMCD = reinterpret_cast<LPNMCUSTOMDRAW>(pNMHDR);
 	// TODO: 在此添加控件通知处理程序代码
-	if (pNMCD->dwDrawStage == CDDS_PREPAINT) {
-		CDC* pDC = CDC::FromHandle(pNMCD->hdc);
-		int nSaveDC = pDC->SaveDC();
-		VERIFY(pDC);
-		if (mTagVal != 0)
-			pDC->DrawText(_T("2"), &pNMCD->rc, DT_RIGHT | DT_SINGLELINE | DT_VCENTER);
-		pDC->RestoreDC(nSaveDC);
+	//if (pNMCD->dwDrawStage == CDDS_PREPAINT) {
+	//	CDC* pDC = CDC::FromHandle(pNMCD->hdc);
+	//	int nSaveDC = pDC->SaveDC();
+	//	VERIFY(pDC);
+	//	if (mTagVal != 0)
+	//		pDC->DrawText(_T("2"), &pNMCD->rc, DT_RIGHT | DT_SINGLELINE | DT_VCENTER);
+	//	pDC->RestoreDC(nSaveDC);
 
-		*pResult = CDRF_DODEFAULT;
-		return;
-	}
+	//	*pResult = CDRF_DODEFAULT;
+	//	return;
+	//}
 
 	*pResult = 0;
 }

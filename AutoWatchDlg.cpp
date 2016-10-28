@@ -30,6 +30,7 @@ void CAutoWatchDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CAutoWatchDlg, CDialogEx)
 	ON_MESSAGE(USER_MSG_NOTIFY_FOCUS, &CAutoWatchDlg::OnUserMsgNotifyFocus)
 	ON_MESSAGE(USER_MSG_GIVE_FOCUS, &CAutoWatchDlg::OnUserMsgGiveFocus)
+	ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 
@@ -101,6 +102,23 @@ void CAutoWatchDlg::ShowSubDlg()
 }
 
 
+
+void CAutoWatchDlg::Layout()
+{
+	CRect rClient;
+	GetClientRect(rClient);
+
+	int item_width = rClient.Width() * MENU_ITEM_WIDTH_SHARE;
+	int item_height = rClient.Height() * MENU_ITEM_HEIGHT_SHARE;
+
+	for (int i = 0; i < 4; i++) {
+		mItems[i].MoveWindow(0, i*item_height, item_width, item_height, TRUE);
+		mSubDlg[i]->MoveWindow(item_width, 0, rClient.right-item_width, rClient.Height(), TRUE);
+	}
+}
+
+
+
 afx_msg LRESULT CAutoWatchDlg::OnUserMsgGiveFocus(WPARAM wParam, LPARAM lParam)
 {
 	GetDlgItem(IDC_BUTTON1)->SetFocus();
@@ -144,4 +162,15 @@ BOOL CAutoWatchDlg::PreTranslateMessage(MSG* pMsg)
 	}
 
 	return CDialogEx::PreTranslateMessage(pMsg);
+}
+
+
+void CAutoWatchDlg::OnSize(UINT nType, int cx, int cy)
+{
+	CDialogEx::OnSize(nType, cx, cy);
+
+	// TODO: 在此处添加消息处理程序代码
+	if (IsWindow(mItems[0])) {
+		Layout();
+	}
 }
