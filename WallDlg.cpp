@@ -8,7 +8,7 @@
 #include "afxdialogex.h"
 #include "RecordFileManager.h"
 #include "Util.h"
-
+#include "ColyEyeDlg.h"
 
 
 
@@ -66,6 +66,7 @@ CWallDlg::CWallDlg(CWnd* pParent /*=NULL*/)
 {
 	mBeginWatchTime = 0;
 	mEndWatchTime = 24 * 3600;
+	mTalkHandle = 0;
 }
 
 CWallDlg::~CWallDlg()
@@ -448,7 +449,7 @@ afx_msg LRESULT CWallDlg::OnUserMsgLogin(WPARAM wParam, LPARAM lParam)
 			}
 		}
 		EnableCameraConfiguration(pDev);
-		H264_DVR_StartLocalVoiceCom(pDev->mLoginId);
+		/*H264_DVR_StartLocalVoiceCom(pDev->mLoginId);*/
 	}
 	else {
 		AfxMessageBox(_T("Login fail"));
@@ -875,7 +876,7 @@ BOOL CWallDlg::PreTranslateMessage(MSG* pMsg)
 			break;
 
 		default:
-			if ( GetKeyState(VK_CONTROL)  ) {
+			if ( GetKeyState(VK_CONTROL)  && !(pMsg->lParam & 0x20000000)) {
 				CSurface* pSurface = (CSurface*)GetFocus();
 				DWORD data = pSurface->GetUserData();
 				CCamera* pDev = (CCamera*)data;
@@ -883,14 +884,27 @@ BOOL CWallDlg::PreTranslateMessage(MSG* pMsg)
 				switch (pMsg->wParam) 
 				{ 
 				case 'T': 
-				{		
-					TRACE("Begin to talk with :%d\n", pDev->mId);
+				{
+					if (mTalkHandle == 0)
+					{
+						TRACE("Begin to talk with :%d\n", pDev->mId);
+						mTalkHandle = H264_DVR_StartLocalVoiceCom(pDev->mLoginId);
+						Util::LoadOrder(mOrder, 0x24, 0x01, 0x02, 0x02, 0x01, NULL, pDev);
+						((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->m_SerialPortCom.WriteToPort(mOrder, 17);
+					}
 				}
 				break;
 
 				case 'O':
 				{
-					TRACE("Over talk with :%d\n", pDev->mId);
+					if (mTalkHandle != 0)
+					{
+						TRACE("Over talk with :%d\n", pDev->mId);
+						H264_DVR_StopVoiceCom(mTalkHandle);
+						mTalkHandle = 0;
+						Util::LoadOrder(mOrder, 0x24, 0x01, 0x02, 0x02, 0x02, NULL, pDev);
+						((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->m_SerialPortCom.WriteToPort(mOrder, 17);
+					}
 				}
 		        break;
 					

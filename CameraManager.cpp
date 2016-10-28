@@ -184,6 +184,11 @@ CCamera* CCameraManager::FindCameraByIP(char * ip)
 	return nullptr;
 }
 
+CCamera * CCameraManager::FindCameraByMAC(uint8_t * mac)
+{
+	return nullptr;
+}
+
 
 
 /**@brief 通过mac地址读取数据库中对应的id.

@@ -47,6 +47,7 @@ public:
 	CCamera*  findCameraByLoginId(long loginId);
 	CCamera*  findCameraById(int id);
 	CCamera*  FindCameraByIP(char* ip);
+	CCamera*  FindCameraByMAC(uint8_t *mac);
 
 	int getIdFromDB(const char* mac);
 	BOOL putIdIntoDB(const int id, const char* mac);

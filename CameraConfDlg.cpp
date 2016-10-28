@@ -289,8 +289,8 @@ void CCameraConfDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 			mVolume = curpos;
 			TRACE(_T("mVolume = %d\n"), mVolume);
 			Util::LoadOrder(mOrder, 0x24,0x01, 0x02, 0x01, mVolume, 0, pCamera);
-			TRACE("%s\n", pCamera->mCommonNetConfig.sMac);
-			TRACE("%0x %0x %0x %0x %0x %0x %0x %0x %0x %0x %0x %0x %0x %0x %0x\n", mOrder[1], mOrder[2], mOrder[3], mOrder[4], mOrder[5], mOrder[6], mOrder[7], mOrder[8], mOrder[9], mOrder[10], mOrder[11], mOrder[12], mOrder[13], mOrder[14], mOrder[15]);
+			//TRACE("%s\n", pCamera->mCommonNetConfig.sMac);
+			//TRACE("%0x %0x %0x %0x %0x %0x %0x %0x %0x %0x %0x %0x %0x %0x %0x\n", mOrder[1], mOrder[2], mOrder[3], mOrder[4], mOrder[5], mOrder[6], mOrder[7], mOrder[8], mOrder[9], mOrder[10], mOrder[11], mOrder[12], mOrder[13], mOrder[14], mOrder[15]);
 			((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->m_SerialPortCom.WriteToPort(mOrder, 17);
 		}
 		break;
