@@ -47,12 +47,12 @@ protected:
 public:
 	afx_msg void OnClose();
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	CSerialPort m_SerialPortKbd;
+	CSerialPort m_SerialPortCom;
 protected:
 	afx_msg LRESULT OnUserMsgNotify(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnUserMsgLogin(WPARAM wParam, LPARAM lParam);
 protected:
-	CSerialPort m_SerialPortKbd;
-	CSerialPort m_SerialPortCom;
 	BOOL m_bSerialPortKbdOpened;
 	BOOL m_bSerialPortComOpened;
 	afx_msg LONG OnCommData(WPARAM pData, LPARAM port);

@@ -87,7 +87,6 @@
 #define USER_MSG_CONNECT              (WM_USER + 150)
 
 #define USER_MSG_DEVICE_CONFIG        (WM_USER + 160)
-#define USER_MSG_PTT                  (WM_USER + 161)
 
 #define RECORD_PATH                   "e:\\Record\\"
 #define NORMAL_RECORD_PATH            "e:\\Record\\normal\\"
@@ -95,7 +94,7 @@
 #define SOUND_PATH                    "e:\\Record\\Sound\\"
 
 #define COM_KEYBD                     13
-#define COM_CAMERA                    10
+#define COM_CAMERA                    8
 //按键的串口数值
 #define KB_MENU                       1
 #define KB_UP                         2

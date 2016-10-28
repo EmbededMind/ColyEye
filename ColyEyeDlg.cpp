@@ -79,16 +79,16 @@ BOOL CColyEyeDlg::OnInitDialog()
 		AfxMessageBox(_T("没有发现串口或串口被占用"));
 		m_bSerialPortKbdOpened = FALSE;
 	}
-	//if (m_SerialPortCom.InitPort(this, COM_CAMERA, 9600, 'N', 8, 1, EV_RXFLAG | EV_RXCHAR, 512))
-	//{
-	//	m_SerialPortCom.StartMonitoring();
-	//	m_bSerialPortComOpened = TRUE;
-	//}
-	//else
-	//{
-	//	AfxMessageBox(_T("没有发现串口或串口被占用"));
-	//	m_bSerialPortComOpened = FALSE;
-	//}
+	if (m_SerialPortCom.InitPort(this, COM_CAMERA, 9600, 'N', 8, 1, EV_RXFLAG | EV_RXCHAR, 512))
+	{
+		m_SerialPortCom.StartMonitoring();
+		m_bSerialPortComOpened = TRUE;
+	}
+	else
+	{
+		AfxMessageBox(_T("没有发现串口或串口被占用"));
+		m_bSerialPortComOpened = FALSE;
+	}
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -198,7 +198,7 @@ BOOL CColyEyeDlg::PreTranslateMessage(MSG* pMsg)
 			mWall.SetFocus();
 		}
 	}
-
+	
 	return CDialogEx::PreTranslateMessage(pMsg);
 }
 
@@ -303,10 +303,16 @@ LONG CColyEyeDlg::OnCommData(WPARAM pData, LPARAM port)
 				break;
 			}
 			case KB_PTTDOWN:
-				PostMessage(USER_MSG_PTT, KB_PTTDOWN, NULL);
+				keybd_event(VK_CONTROL, 0, 0, 0);
+				keybd_event('T', 0, 0, 0);
+				keybd_event(VK_CONTROL, 0, KEYEVENTF_KEYUP, 0);
+				keybd_event('T', 0, KEYEVENTF_KEYUP, 0);
 				break;
 			case KB_PTTUP:
-				PostMessage(USER_MSG_PTT, KB_PTTUP, NULL);
+				keybd_event(VK_CONTROL, 0, 0, 0);
+				keybd_event('S', 0, 0, 0);
+				keybd_event(VK_CONTROL, 0, KEYEVENTF_KEYUP, 0);
+				keybd_event('S', 0, KEYEVENTF_KEYUP, 0);
 				break;
 			default:
 				break;

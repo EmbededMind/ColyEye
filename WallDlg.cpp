@@ -213,7 +213,6 @@ BEGIN_MESSAGE_MAP(CWallDlg, CDialogEx)
 	ON_MESSAGE(USER_MSG_BRING, &CWallDlg::OnUserMsgBring)
 	ON_MESSAGE(USER_MSG_RELOGIN, &CWallDlg::OnUserMsgReLogin)
 	ON_MESSAGE(USER_MSG_DEVICE_CONFIG, &CWallDlg::OnUserMsgDeviceConfig)
-	ON_MESSAGE(USER_MSG_PTT, &CWallDlg::OnUserMsgPtt)
 END_MESSAGE_MAP()
 
 
@@ -484,6 +483,8 @@ void CWallDlg::DisableCameraConfiguration(CCamera* pCamera)
 
 
 
+
+
 /**@brief  断线重连(ClientDemo)
  *
  */
@@ -671,15 +672,31 @@ afx_msg LRESULT CWallDlg::OnUserMsgDeviceConfig(WPARAM wParam, LPARAM lParam)
 }
 
 
-afx_msg LRESULT CWallDlg::OnUserMsgPtt(WPARAM wParam, LPARAM lParam)
+
+
+BOOL CWallDlg::PreTranslateMessage(MSG* pMsg)
 {
-	if (wParam == KB_PTTDOWN)
+	// TODO: 在此添加专用代码和/或调用基类
+	if (pMsg->message == WM_KEYDOWN)
 	{
-		TRACE("打开语音附件\n");
+		switch (pMsg->wParam)
+		{
+		case 'T':
+			if (GetKeyState(VK_CONTROL) && !(pMsg->lParam & 0x20000000))
+			{
+				TRACE("选一个Camear，通话\n");
+				/*pCamera;
+				H264_DVR_StartDevTalk();*/
+			}
+			return true;
+		case 'S':
+			if (GetKeyState(VK_CONTROL) && !(pMsg->lParam & 0x20000000))
+			{
+				TRACE("全部停止通话\n");
+				/*H264_DVR_StopDevTalk();*/
+			}
+			return true;
+		}
 	}
-	else if(wParam == KB_PTTUP)
-	{
-		TRACE("关闭语音附件\n");
-	}
-	return 0;
+	return CDialogEx::PreTranslateMessage(pMsg);
 }

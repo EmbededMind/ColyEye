@@ -69,7 +69,6 @@ public:
 
 	void EnableCameraConfiguration(CCamera* pCamera);
 	void DisableCameraConfiguration(CCamera* pCamera);
-	
 
 	void ReConnect(LONG lLoginID, char* pchDVRIP, LONG nDVRPort);
 
@@ -80,5 +79,6 @@ public:
 	CTime mSystemTime;
 protected:
 	afx_msg LRESULT OnUserMsgDeviceConfig(WPARAM wParam, LPARAM lParam);
-	afx_msg LRESULT OnUserMsgPtt(WPARAM wParam, LPARAM lParam);
+public:
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 };
