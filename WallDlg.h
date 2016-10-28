@@ -6,7 +6,7 @@
 #include "atltime.h"
 #include "JuggleSchedule.h"
 #include <list>
-#include "VideoButton.h"
+
 #include "Surface.h"
 
 
