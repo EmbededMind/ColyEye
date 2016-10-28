@@ -216,6 +216,8 @@ afx_msg LRESULT CMenuDlg::OnUserMsgNotifyFocus(WPARAM wParam, LPARAM lParam)
 	}
 	return 0;
 }
+
+
 LRESULT CMenuDlg::OnUserMsgPlay(WPARAM wParam, LPARAM lParam)
 {
 	int cursor = wParam;
@@ -224,9 +226,6 @@ LRESULT CMenuDlg::OnUserMsgPlay(WPARAM wParam, LPARAM lParam)
 	mSubWnds[cursor]->SetFocus();
 	return true;
 }
-
-
-
 
 
 afx_msg LRESULT CMenuDlg::OnUserMsgLogin(WPARAM wParam, LPARAM lParam)

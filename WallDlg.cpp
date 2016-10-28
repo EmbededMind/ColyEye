@@ -447,8 +447,8 @@ afx_msg LRESULT CWallDlg::OnUserMsgLogin(WPARAM wParam, LPARAM lParam)
 				TRACE("Put user configuration into db failed!\n");
 			}
 		}
-
 		EnableCameraConfiguration(pDev);
+		H264_DVR_StartLocalVoiceCom(pDev->mLoginId);
 	}
 	else {
 		AfxMessageBox(_T("Login fail"));
@@ -643,6 +643,8 @@ void CWallDlg::DisableCameraConfiguration(CCamera* pCamera)
 		pCamera->unsubscribeAlarmMessage();
 	}
 }
+
+
 
 
 
@@ -856,6 +858,7 @@ afx_msg LRESULT CWallDlg::OnUserMsgDeviceConfig(WPARAM wParam, LPARAM lParam)
 }
 
 
+
 BOOL CWallDlg::PreTranslateMessage(MSG* pMsg)
 {
 	// TODO: 在此添加专用代码和/或调用基类
@@ -891,7 +894,6 @@ BOOL CWallDlg::PreTranslateMessage(MSG* pMsg)
 				}
 		        break;
 					
-
 				default:
 					break;
 				}

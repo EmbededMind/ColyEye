@@ -174,6 +174,28 @@ BOOL CTagTreeCtrl::PreTranslateMessage(MSG * pMsg)
 				::SendMessage(this->GetParent()->GetSafeHwnd(), USER_MSG_COPY_RECORD, NULL, (LPARAM)this);
 			}
 			return true;
+		case VK_UP:
+			hItem = this->GetPrevSiblingItem(hItem);
+			if (hItem)
+				this->SelectItem(hItem);
+			return true;
+		case VK_DOWN:
+			hItem = this->GetNextSiblingItem(hItem);
+			if(hItem)
+				this->SelectItem(hItem);
+			return true;
+		case VK_LEFT:
+			hItem = this->GetParentItem(hItem);
+			if(hItem)
+				this->SelectItem(hItem);
+			return true;
+		case VK_RIGHT:
+			if ((hItem != NULL) && this->ItemHasChildren(hItem) && (TVIS_EXPANDED & this->GetItemState(hItem, TVIS_EXPANDED)))
+			{
+				hItem = this->GetChildItem(hItem);
+				this->SelectItem(hItem);
+			}
+			return true;
 		}
 	}
 

@@ -96,8 +96,10 @@ public:
 	CTime mSystemTime;
 
 protected:
+
 	afx_msg LRESULT OnUserMsgNotifyArrow(WPARAM wParam, LPARAM lParam);
 public:
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
 	afx_msg void OnKillFocus(CWnd* pNewWnd);
+
 };

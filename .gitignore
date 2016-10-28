@@ -2,3 +2,5 @@
 !/*.cpp
 !/*.h
 !*.rc
+/log4cplusU.dll
+/log4cplusUD.dll

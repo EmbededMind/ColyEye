@@ -96,8 +96,28 @@
 #define ALARM_RECORD_PATH             "e:\\Record\\alarm\\"
 #define SOUND_PATH                    "e:\\Record\\Sound\\"
 
-#define COM_KEYBD    8
-#define COM_CAMERA   3
+#define COM_KEYBD                     13
+#define COM_CAMERA                    8
+//按键的串口数值
+#define KB_MENU                       1
+#define KB_UP                         2
+#define KB_BACK                       3
+#define KB_AUTOWATCH                  4
+#define KB_LEFT                       5
+#define KB_ENTER                      6
+#define KB_RIGHT                      7
+#define KB_UDISK                      8
+#define KB_VOLUP                      9
+#define KB_DOWN                       10
+#define KB_BRIUP                      11
+#define KB_FUNC                       12
+#define KB_VOLDOWN                    13
+#define KB_TALKQUIET                  14
+#define KB_BRIDOWN                    15
+#define KB_SWITCH                     16
+#define KB_PTTDOWN                    17
+#define KB_PTTUP                      18
+
 
 
 /********************************

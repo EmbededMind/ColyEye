@@ -43,6 +43,7 @@ protected:
 	afx_msg LRESULT OnUserMsgGiveFocus(WPARAM wParam, LPARAM lParam);
 	CSliderCtrl mSlider;
 	int mVolume;
+	uint8_t mOrder[17];
 	SCROLLINFO mHScrollInfo;
 private:
 	CCamera*    pCamera;
