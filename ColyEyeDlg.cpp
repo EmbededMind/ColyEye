@@ -302,6 +302,11 @@ LONG CColyEyeDlg::OnCommData(WPARAM pData, LPARAM port)
 				this->SetVolumeLevel(3);
 				break;
 			case KB_TALKQUIET:
+				if (CCameraManager::getInstance()->mTalkHandle)
+				{
+					H264_DVR_StopVoiceCom(CCameraManager::getInstance()->mTalkHandle);
+					CCameraManager::getInstance()->mTalkHandle = 0;
+				}
 				break;
 			case KB_BRIDOWN:
 				SetBrightLevel(2);
@@ -328,16 +333,56 @@ LONG CColyEyeDlg::OnCommData(WPARAM pData, LPARAM port)
 				break;
 			}
 		}
-		return 0;
 	}
 	if (port == COM_CAMERA)
 	{
 		onedata *p = (onedata*)pData;
-		int i;
-		p->ch[p->num] = '\0';
-		TRACE(_T("COM%d ---%S\n"), (UINT)port, p->ch);
-		/*m_SerialPortKbd.WriteToPort(p->ch, p->num);*/
-		return 0;
+		/*p->ch[p->num] = '\0';*/
+		/*TRACE(_T("COM%d ---%S\n"), (UINT)port, p->ch);*/
+
+		if (p->num != 17) return 0;
+		if (p->ch[0] != 0x24) return 0;
+
+		//这里判断CRC
+		//.....
+
+		if (p->ch[1] == 0x02 && p->ch[2] == 0x01)
+		{
+			switch (p->ch[3])
+			{
+			case 0x01:
+				TRACE("声音设置返回\n");
+				break;
+			case 0x02:
+				TRACE("工控机请求通话返回\n");
+				break;
+			case 0x03:
+			{
+				TRACE("语音附件请求通话\n");
+				CCamera *pDev = CCameraManager::getInstance()->FindCameraByMAC(&(p->ch[6]));
+				if (CCameraManager::getInstance()->mTalkHandle)
+				{
+					H264_DVR_StopVoiceCom(CCameraManager::getInstance()->mTalkHandle);
+					CCameraManager::getInstance()->mTalkHandle = 0;
+				}
+				if (pDev)
+				{
+					CCameraManager::getInstance()->mTalkHandle = H264_DVR_StartLocalVoiceCom(pDev->mLoginId);
+				}
+				Util::LoadOrder(m_Order, 0x24, 0x01, 0x02, 0x03, NULL, 0x01, pDev);
+				m_SerialPortCom.WriteToPort(m_Order, 17);
+				break;
+			}
+			case 0x04:
+				TRACE("控制灯泡\n");
+				break;
+			case 0x05:
+				TRACE("报警信息\n");
+				break;
+			default:
+				break;
+			}
+		}
 	}
 
 	return 0;

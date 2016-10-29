@@ -66,7 +66,6 @@ CWallDlg::CWallDlg(CWnd* pParent /*=NULL*/)
 {
 	mBeginWatchTime = 0;
 	mEndWatchTime = 24 * 3600;
-	mTalkHandle = 0;
 }
 
 CWallDlg::~CWallDlg()
@@ -885,10 +884,10 @@ BOOL CWallDlg::PreTranslateMessage(MSG* pMsg)
 				{ 
 				case 'T': 
 				{
-					if (mTalkHandle == 0)
+					if (CCameraManager::getInstance()->mTalkHandle == 0)
 					{
 						TRACE("Begin to talk with :%d\n", pDev->mId);
-						mTalkHandle = H264_DVR_StartLocalVoiceCom(pDev->mLoginId);
+						CCameraManager::getInstance()->mTalkHandle = H264_DVR_StartLocalVoiceCom(pDev->mLoginId);
 						Util::LoadOrder(mOrder, 0x24, 0x01, 0x02, 0x02, 0x01, NULL, pDev);
 						((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->m_SerialPortCom.WriteToPort(mOrder, 17);
 					}
@@ -897,12 +896,13 @@ BOOL CWallDlg::PreTranslateMessage(MSG* pMsg)
 
 				case 'O':
 				{
-					if (mTalkHandle != 0)
+					if (CCameraManager::getInstance()->mTalkHandle != 0)
 					{
 						TRACE("Over talk with :%d\n", pDev->mId);
-						H264_DVR_StopVoiceCom(mTalkHandle);
-						mTalkHandle = 0;
+						H264_DVR_StopVoiceCom(CCameraManager::getInstance()->mTalkHandle);
+						CCameraManager::getInstance()->mTalkHandle = 0;
 						Util::LoadOrder(mOrder, 0x24, 0x01, 0x02, 0x02, 0x02, NULL, pDev);
+						TRACE("%s\n", pDev->mCommonNetConfig.sMac);
 						((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->m_SerialPortCom.WriteToPort(mOrder, 17);
 					}
 				}
