@@ -52,7 +52,7 @@
 #define WM_COMM_RXDATA                  WM_USER+10
 
 typedef struct onedata {
-	char ch[18];
+	uint8_t ch[18];
 	int  num;
 }onedata;
 class CSerialPort

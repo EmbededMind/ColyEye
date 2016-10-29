@@ -92,7 +92,6 @@ public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 protected:
 	uint8_t mOrder[18];
-	long mTalkHandle;
 public:
 	CTime mSystemTime;
 

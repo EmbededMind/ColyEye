@@ -4,6 +4,8 @@
 #include "stdafx.h"
 #include "CameraManager.h"
 
+#include "Util.h"
+
 
 /**@brief 析构对象释放资源
  *
@@ -17,7 +19,7 @@ void CCameraManager::destrucCameras()
 		pDev = (CCamera*)mCameras.GetNext(pos);
 		delete(pDev);
 	}
-
+	mTalkHandle = 0;
 
 	//for (int i = 0; i < CAMERA_MAX_NUM; i++) {
 	//	if()
@@ -186,6 +188,25 @@ CCamera* CCameraManager::FindCameraByIP(char * ip)
 
 CCamera * CCameraManager::FindCameraByMAC(uint8_t * mac)
 {
+	POSITION pos = this->mCameras.GetHeadPosition();
+	CCamera* pDev = NULL;
+	uint8_t tmp;
+	while (pos) {
+		pDev = (CCamera*)this->mCameras.GetNext(pos);
+		tmp = Util::CharToUint(pDev->mCommonNetConfig.sMac[0]) * 16 + Util::CharToUint(pDev->mCommonNetConfig.sMac[1]);
+		if (tmp != *mac) break;
+		tmp = Util::CharToUint(pDev->mCommonNetConfig.sMac[3]) * 16 + Util::CharToUint(pDev->mCommonNetConfig.sMac[4]);
+		if (tmp != *(mac + 1)) break;
+		tmp = Util::CharToUint(pDev->mCommonNetConfig.sMac[6]) * 16 + Util::CharToUint(pDev->mCommonNetConfig.sMac[7]);
+		if (tmp != *(mac + 2)) break;
+		tmp = Util::CharToUint(pDev->mCommonNetConfig.sMac[9]) * 16 + Util::CharToUint(pDev->mCommonNetConfig.sMac[10]);
+		if (tmp != *(mac + 3)) break;
+		tmp = Util::CharToUint(pDev->mCommonNetConfig.sMac[12]) * 16 + Util::CharToUint(pDev->mCommonNetConfig.sMac[13]);
+		if (tmp != *(mac + 4)) break;
+		tmp = Util::CharToUint(pDev->mCommonNetConfig.sMac[15]) * 16 + Util::CharToUint(pDev->mCommonNetConfig.sMac[16]);
+		if (tmp != *(mac + 5)) break;
+		return pDev;
+	}
 	return nullptr;
 }
 

@@ -49,6 +49,7 @@ public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	CSerialPort m_SerialPortKbd;
 	CSerialPort m_SerialPortCom;
+	uint8_t m_Order[18];
 protected:
 	afx_msg LRESULT OnUserMsgNotify(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnUserMsgLogin(WPARAM wParam, LPARAM lParam);
