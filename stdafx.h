@@ -26,10 +26,10 @@
 #include "lib\sdk_xm\netsdk.h"
 #include "lib\sqlite3\sqlitewrapper.h"
 
-#include "log4cplus\logger.h"
-#include "log4cplus\fileappender.h"
-#include "log4cplus\layout.h"
-#include "log4cplus\loggingmacros.h"
+//#include "log4cplus\logger.h"
+//#include "log4cplus\fileappender.h"
+//#include "log4cplus\layout.h"
+//#include "log4cplus\loggingmacros.h"
 
 
 #include "ColyEyeHost.h"
@@ -37,11 +37,12 @@
 #pragma comment(lib, "lib\\sdk_xm\\H264Play.lib")
 #pragma comment(lib, "lib\\sdk_xm\\NetSdk.lib")
 #pragma comment(lib, "lib\\sqlite3\\sqlite3.lib")
-#ifdef _DEBUG
-#pragma comment(lib, "log4cplusUD.lib")
-#else
-#pragma comment(lib, "log4cplusU.lib")
-#endif
+
+//#ifdef _DEBUG
+//#pragma comment(lib, "log4cplusUD.lib")
+//#else
+//#pragma comment(lib, "log4cplusU.lib")
+//#endif
 
 #define DB_COL_BEGIN_SEC              0
 #define DB_COL_END_SEC                1
@@ -140,19 +141,19 @@
 
 
 
-using namespace log4cplus;
+//using namespace log4cplus;
 using namespace std;
 
 extern 	SQLiteWrapper sqlite;
 extern  ColyEyeHost   host;
-extern  Logger  pLogger;
+//extern  Logger  pLogger;
 
 
 
 
 
-
-void InitLog();
+//
+//void InitLog();
 
 #define LOG_PATH                     "e:\\log.txt"
 

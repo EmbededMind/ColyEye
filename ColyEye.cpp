@@ -80,8 +80,8 @@ BOOL CColyEyeApp::InitInstance()
 	// 例如修改为公司或组织名
 	SetRegistryKey(_T("应用程序向导生成的本地应用程序"));
 
-	InitLog();
-	LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "GG");
+	//InitLog();
+	//LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "GG");
 	
 	if (!sqlite.Open("cold_eye.db")) {
 		TRACE("Database open failed\n");
