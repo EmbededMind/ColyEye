@@ -77,25 +77,25 @@ BOOL CColyEyeDlg::OnInitDialog()
 
 
 
-	if (m_SerialPortKbd.InitPort(this, COM_KEYBD, 9600, 'N', 8, 1, EV_RXFLAG | EV_RXCHAR, 512))
+	if (m_SerialPortKbd.InitPort(this, COM_KEYBD, 9600, 'N', 8, 1, EV_RXCHAR, 512))
 	{
 		m_SerialPortKbd.StartMonitoring();
 		m_bSerialPortKbdOpened = TRUE;
 	}
 	else
 	{
-		AfxMessageBox(_T("没有发现串口或串口被占用"));
+		AfxMessageBox(_T("COM_KEYBD , 没有发现串口或串口被占用"));
 		m_bSerialPortKbdOpened = FALSE;
 	}
 
-	if (m_SerialPortCom.InitPort(this, COM_CAMERA, 9600, 'N', 8, 1, EV_RXFLAG | EV_RXCHAR, 512))
+	if (m_SerialPortCom.InitPort(this, COM_CAMERA, 9600, 'N', 8, 1, EV_RXCHAR, 512))
 	{
 		m_SerialPortCom.StartMonitoring();
 		m_bSerialPortComOpened = TRUE;
 	}
 	else
 	{
-		AfxMessageBox(_T("没有发现串口或串口被占用"));
+		AfxMessageBox(_T("COM_CAMERA , 没有发现串口或串口被占用"));
 		m_bSerialPortComOpened = FALSE;
 	}
 
@@ -265,6 +265,7 @@ LONG CColyEyeDlg::OnCommData(WPARAM pData, LPARAM port)
 				keybd_event(VK_BACK, 0, KEYEVENTF_KEYUP, 0);
 				break;
 			case KB_AUTOWATCH:
+
 				break;
 			case KB_LEFT:
 				keybd_event(VK_LEFT, 0, 0, 0);
@@ -360,14 +361,18 @@ LONG CColyEyeDlg::OnCommData(WPARAM pData, LPARAM port)
 			{
 				TRACE("语音附件请求通话\n");
 				CCamera *pDev = CCameraManager::getInstance()->FindCameraByMAC(&(p->ch[6]));
+				if (pDev)
+				{
+					CCameraManager::getInstance()->mTalkHandle = H264_DVR_StartLocalVoiceCom(pDev->mLoginId);
+				}
+				else
+				{
+					break;
+				}
 				if (CCameraManager::getInstance()->mTalkHandle)
 				{
 					H264_DVR_StopVoiceCom(CCameraManager::getInstance()->mTalkHandle);
 					CCameraManager::getInstance()->mTalkHandle = 0;
-				}
-				if (pDev)
-				{
-					CCameraManager::getInstance()->mTalkHandle = H264_DVR_StartLocalVoiceCom(pDev->mLoginId);
 				}
 				Util::LoadOrder(m_Order, 0x24, 0x01, 0x02, 0x03, NULL, 0x01, pDev);
 				m_SerialPortCom.WriteToPort(m_Order, 17);
