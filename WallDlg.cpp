@@ -695,7 +695,7 @@ bool __stdcall messageCallbackFunc(long lLoginID, char* pBuf, unsigned long dwBu
 	CCamera* pDev = pMgr->findCameraByLoginId(lLoginID);
 
 	// 自动看船开启
-	if (pDev  && (pDev->userConf.switches & CAMERA_USER_CONF_AWATCH)) {
+	if (host.mConfuration.auto_watch_switch  &&  pDev  && (pDev->userConf.switches & CAMERA_USER_CONF_AWATCH)) {
 		CWallDlg* pWall = (CWallDlg*)dwUser;
 		CTime t = CTime::GetCurrentTime();
 				

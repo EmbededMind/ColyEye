@@ -31,6 +31,7 @@ BEGIN_MESSAGE_MAP(CAutoWatchDlg, CDialogEx)
 	ON_MESSAGE(USER_MSG_NOTIFY_FOCUS, &CAutoWatchDlg::OnUserMsgNotifyFocus)
 	ON_MESSAGE(USER_MSG_GIVE_FOCUS, &CAutoWatchDlg::OnUserMsgGiveFocus)
 	ON_WM_SIZE()
+	ON_MESSAGE(USER_MSG_BRING, &CAutoWatchDlg::OnUserMsgBring)
 END_MESSAGE_MAP()
 
 
@@ -44,6 +45,10 @@ afx_msg LRESULT CAutoWatchDlg::OnUserMsgNotifyFocus(WPARAM wParam, LPARAM lParam
 		if (i >= 0 && i <= 3) {
 			mCurrCursor = i;
 			ShowSubDlg();
+		}
+		if (i == 3) //看船开关记录
+		{
+			::SendMessage(mSubDlg[3]->m_hWnd, USER_MSG_BRING, 0, 0);
 		}
 	}
 	return 0;
@@ -126,6 +131,9 @@ afx_msg LRESULT CAutoWatchDlg::OnUserMsgGiveFocus(WPARAM wParam, LPARAM lParam)
 }
 
 
+
+
+
 BOOL CAutoWatchDlg::PreTranslateMessage(MSG* pMsg)
 {
 	// TODO: 在此添加专用代码和/或调用基类
@@ -173,4 +181,11 @@ void CAutoWatchDlg::OnSize(UINT nType, int cx, int cy)
 	if (IsWindow(mItems[0])) {
 		Layout();
 	}
+}
+
+
+afx_msg LRESULT CAutoWatchDlg::OnUserMsgBring(WPARAM wParam, LPARAM lParam)
+{
+	::SendMessage(mSubDlg[0]->m_hWnd, USER_MSG_BRING, 0, 0);
+	return 0;
 }

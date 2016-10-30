@@ -18,6 +18,7 @@ CAutoWatchTimeConfDlg::CAutoWatchTimeConfDlg(CWnd* pParent /*=NULL*/)
 	//, mBegining(COleDateTime::GetCurrentTime())
 	, _mWatchBegining(COleDateTime::GetCurrentTime())
 	, _mWatchEnding(COleDateTime::GetCurrentTime())
+	, mIsAutoWatchOn(FALSE)
 {
 
 
@@ -35,11 +36,13 @@ void CAutoWatchTimeConfDlg::DoDataExchange(CDataExchange* pDX)
 	//DDX_DateTimeCtrl(pDX, IDC_DATETIMEPICKER3, mWatchTimeEnding);
 	DDX_DateTimeCtrl(pDX, IDC_DATETIMEPICKER3, _mWatchBegining);
 	DDX_DateTimeCtrl(pDX, IDC_DATETIMEPICKER1, _mWatchEnding);
+	DDX_Check(pDX, IDC_CHECK2, mIsAutoWatchOn);
 }
 
 
 BEGIN_MESSAGE_MAP(CAutoWatchTimeConfDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON1, &CAutoWatchTimeConfDlg::OnBnClickedButton1)
+	ON_BN_CLICKED(IDC_CHECK2, &CAutoWatchTimeConfDlg::OnBnClickedCheck2)
 END_MESSAGE_MAP()
 
 
@@ -63,6 +66,8 @@ BOOL CAutoWatchTimeConfDlg::OnInitDialog()
 		(host.mConfuration.watch_time_begining %3600) / 60, 0);
 	_mWatchEnding = _mWatchBegining + COleDateTimeSpan(0, host.mConfuration.watch_time_span/3600,
 		(host.mConfuration.watch_time_span%3600)/60, 0);
+
+	mIsAutoWatchOn = host.mConfuration.auto_watch_switch;
 	UpdateData(FALSE);
 
 
@@ -83,4 +88,54 @@ void CAutoWatchTimeConfDlg::OnBnClickedButton1()
 	DWORD span = (end_time >= begin_time ? end_time - begin_time : end_time + 24 * 3600 - begin_time);
 
 	host.SetWatchTime(begin_time, span);
+}
+
+
+void CAutoWatchTimeConfDlg::OnBnClickedCheck2()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	UpdateData(TRUE);
+	CTime t = CTime::GetCurrentTime();
+	char sqlStmt[128];
+
+
+	if (mIsAutoWatchOn) {
+		host.mConfuration.auto_watch_switch = TRUE;
+		mBeginTimePicker->EnableWindow(TRUE);
+		mEndTimePicker->EnableWindow(TRUE);
+		sprintf_s(sqlStmt, "INSERT INTO switch_log VALUES(%I64d, %d);", t.GetTime(), 1);
+	}
+	else {
+		host.mConfuration.auto_watch_switch = FALSE;
+		mBeginTimePicker->EnableWindow(FALSE);
+		mEndTimePicker->EnableWindow(FALSE);
+		sprintf_s(sqlStmt, "INSERT INTO switch_log VALUES(%I64d, %d);", t.GetTime(), 0);
+	}
+
+	if (!sqlite.DirectStatement(sqlStmt)) {
+		TRACE("sql stmt error:%s\n", sqlStmt);
+	}
+}
+
+
+
+void CAutoWatchTimeConfDlg::OnBack()
+{
+
+}
+
+
+BOOL CAutoWatchTimeConfDlg::PreTranslateMessage(MSG* pMsg)
+{
+	// TODO: 在此添加专用代码和/或调用基类
+	if (pMsg->message == WM_KEYDOWN) {
+		switch (pMsg->wParam)
+		{
+		case VK_BACK:
+			TRACE("AutoWatchTimeConf case back\n");
+			return true;
+		}
+	}
+
+	return CDialogEx::PreTranslateMessage(pMsg);
 }

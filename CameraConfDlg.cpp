@@ -15,7 +15,7 @@
 
 IMPLEMENT_DYNAMIC(CCameraConfDlg, CDialogEx)
 
-CCameraConfDlg::CCameraConfDlg(CWnd* pParent /*=NULL*/)
+CCameraConfDlg::CCameraConfDlg  (CWnd* pParent /*=NULL*/)
 	: CDialogEx(IDD_CAMERA_CONF, pParent)
 	, mCurrName(_T(""))
 {
