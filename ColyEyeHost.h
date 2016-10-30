@@ -6,6 +6,7 @@ typedef struct {
 	std::string boat_name;
 	DWORD   watch_time_begining;
 	DWORD   watch_time_span;
+	BOOL    auto_watch_switch;
 }HostConfiguration;
 
 class ColyEyeHost

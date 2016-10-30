@@ -29,4 +29,6 @@ public:
 	virtual BOOL OnInitDialog();
 	CEdit mLogText;
 	afx_msg void OnSize(UINT nType, int cx, int cy);
+protected:
+	afx_msg LRESULT OnUserMsgBring(WPARAM wParam, LPARAM lParam);
 };

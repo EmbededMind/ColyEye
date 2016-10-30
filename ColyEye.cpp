@@ -80,6 +80,10 @@ BOOL CColyEyeApp::InitInstance()
 	// 例如修改为公司或组织名
 	SetRegistryKey(_T("应用程序向导生成的本地应用程序"));
 
+
+	CTime t(0);
+	TRACE("%S\n", t.Format("%y-%m-%d %H:%M:%S"));
+
 	//InitLog();
 	//LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "GG");
 	

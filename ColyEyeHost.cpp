@@ -23,6 +23,7 @@ BOOL ColyEyeHost::Load()
 		mConfuration.boat_name = stmt->ValueString(0);
 		mConfuration.watch_time_begining = stmt->ValueInt(1);
 		mConfuration.watch_time_span = stmt->ValueInt(2);
+		mConfuration.auto_watch_switch = stmt->ValueInt(3);
 
 		CTime bTime(mConfuration.watch_time_begining);
 		CTime eTime(mConfuration.watch_time_begining+mConfuration.watch_time_span);

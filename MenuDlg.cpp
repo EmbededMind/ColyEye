@@ -130,6 +130,7 @@ void CMenuDlg::ShowSubMenu()
 
 	if (!mSubWnds[mCurrCursor]->IsWindowVisible()) {
 		mSubWnds[mPrevCursor]->ShowWindow(SW_SHOW);
+		::SendMessage(mSubWnds[mPrevCursor]->m_hWnd, USER_MSG_BRING, 0, 0);
 	}
 }
 
@@ -137,8 +138,8 @@ void CMenuDlg::ShowSubMenu()
 
 afx_msg LRESULT CMenuDlg::OnUserMsgBring(WPARAM wParam, LPARAM lParam)
 {
-	::SendMessage(mSubWnds[wParam]->m_hWnd, USER_MSG_BRING, true, 0);
 	this->SetFocus();
+	ShowSubMenu();
 	return 0;
 }
 

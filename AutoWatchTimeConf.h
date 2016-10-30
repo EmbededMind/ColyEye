@@ -32,11 +32,16 @@ public:
 private:
 	CTime mWatchTimeBegining;
 	CTime mWatchTimeEnding;
-		CDateTimeCtrl* mEndTimePicker;
-		CDateTimeCtrl* mBeginTimePicker;
+	CDateTimeCtrl* mEndTimePicker;
+	CDateTimeCtrl* mBeginTimePicker;
+
+	void OnBack();
 //public:
 //	COleDateTime mBegining;
 public:
 	COleDateTime _mWatchBegining;
 	COleDateTime _mWatchEnding;
+	BOOL mIsAutoWatchOn;
+	afx_msg void OnBnClickedCheck2();
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 };

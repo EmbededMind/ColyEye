@@ -41,7 +41,7 @@ private:
 
 	Device_Map mDevReconnectMap;
 
-	JuggleScheduler mJugScheduler;
+	//JuggleScheduler mJugScheduler;
 
 	void interruptRecord(CCamera* pCamera);
 	void interruptAlarmRecord(CCamera* pCamera);
