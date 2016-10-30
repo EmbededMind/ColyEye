@@ -363,16 +363,18 @@ LONG CColyEyeDlg::OnCommData(WPARAM pData, LPARAM port)
 				CCamera *pDev = CCameraManager::getInstance()->FindCameraByMAC(&(p->ch[6]));
 				if (pDev)
 				{
+					if (CCameraManager::getInstance()->mTalkHandle)
+					{
+						H264_DVR_StopVoiceCom(CCameraManager::getInstance()->mTalkHandle);
+						CCameraManager::getInstance()->mTalkHandle = 0;
+					}
 					CCameraManager::getInstance()->mTalkHandle = H264_DVR_StartLocalVoiceCom(pDev->mLoginId);
 				}
 				else
 				{
+					Util::LoadOrder(m_Order, 0x24, 0x01, 0x02, 0x03, NULL, 0x02, pDev);
+					m_SerialPortCom.WriteToPort(m_Order, 17);
 					break;
-				}
-				if (CCameraManager::getInstance()->mTalkHandle)
-				{
-					H264_DVR_StopVoiceCom(CCameraManager::getInstance()->mTalkHandle);
-					CCameraManager::getInstance()->mTalkHandle = 0;
 				}
 				Util::LoadOrder(m_Order, 0x24, 0x01, 0x02, 0x03, NULL, 0x01, pDev);
 				m_SerialPortCom.WriteToPort(m_Order, 17);
