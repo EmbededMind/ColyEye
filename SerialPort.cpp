@@ -113,6 +113,9 @@ BOOL CSerialPort::InitPort(CWnd* pPortOwner,    // the owner (CWnd) of the port 
 		} while (m_bThreadAlive);
 		TRACE("Thread ended\n");
 	}
+
+
+
 	// create events
 	if (m_ov.hEvent != NULL)
 		ResetEvent(m_ov.hEvent);
@@ -403,6 +406,7 @@ UINT CSerialPort::CommThread(LPVOID pParam)
 			// Shutdown event.  This is event zero so it will be
 			// the higest priority and be serviced first.
 
+
 			port->m_bThreadAlive = FALSE;
 
 			// Kill this thread.  break is not needed, but makes me feel better.
@@ -428,6 +432,7 @@ UINT CSerialPort::CommThread(LPVOID pParam)
 					{
 						ReceiveData(port, comstat);
 						port->m_queuecom[port->m_queueth].num = length;
+
 						::SendMessage((port->m_pOwner)->m_hWnd, WM_COMM_RXDATA, (WPARAM)(&(port->m_queuecom[port->m_queueth])), (LPARAM)port->m_nPortNr);
 						length = 0;
 						break;

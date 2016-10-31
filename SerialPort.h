@@ -92,6 +92,10 @@ public:
     BOOL RecvData(LPTSTR lpszData, const int nSize);      //串口接收函数 by mrlong 2008-2-15
 
 protected:
+#ifdef _DEBUG
+	HANDLE hOutputHandle;
+#endif
+
     // protected memberfunctions
     void        ProcessErrorMessage(char* ErrorText);
     static UINT    CommThread(LPVOID pParam);

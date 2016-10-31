@@ -11,8 +11,26 @@
 #include "PhysicalMonitorEnumerationAPI.h"
 #include "HighLevelMonitorConfigurationAPI.h"
 
+#include <io.h>
+#include <fcntl.h>
+#include <stdio.h>
+
+void InitConsoleWindow()
+{
+	int nCrt = 0;
+	FILE* fp;
+	AllocConsole();
+	nCrt = _open_osfhandle((long)GetStdHandle(STD_OUTPUT_HANDLE), _O_TEXT);
+	fp = _fdopen(nCrt, "w");
+	*stdout = *fp;
+	setvbuf(stdout, NULL, _IONBF, 0);
+}
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
+
+
+
 #endif
 
 
@@ -75,7 +93,7 @@ BOOL CColyEyeDlg::OnInitDialog()
 	SetWindowPos(NULL, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), 0);
 
 
-
+	InitConsoleWindow();
 
 	if (m_SerialPortKbd.InitPort(this, COM_KEYBD, 9600, 'N', 8, 1, EV_RXCHAR, 512))
 	{
@@ -337,7 +355,14 @@ LONG CColyEyeDlg::OnCommData(WPARAM pData, LPARAM port)
 	}
 	if (port == COM_CAMERA)
 	{
+		static int cnt = 0;
 		onedata *p = (onedata*)pData;
+
+		printf("%04d-", cnt);
+		for (int i = 0; i < p->num; i++) {
+			printf("%02X ", p->ch[i]);
+		}
+		printf("\n");
 		/*p->ch[p->num] = '\0';*/
 		/*TRACE(_T("COM%d ---%S\n"), (UINT)port, p->ch);*/
 

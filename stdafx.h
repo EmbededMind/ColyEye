@@ -38,6 +38,11 @@
 #pragma comment(lib, "lib\\sdk_xm\\NetSdk.lib")
 #pragma comment(lib, "lib\\sqlite3\\sqlite3.lib")
 
+#include<conio.h>
+#ifdef _DEBUG
+#pragma comment(linker, "/subsystem:console /entry:wWinMainCRTStartup")
+#endif
+
 //#ifdef _DEBUG
 //#pragma comment(lib, "log4cplusUD.lib")
 //#else
@@ -92,10 +97,10 @@
 #define USER_MSG_NOTIFY_ARROW         (WM_USER + 170)
 
 
-#define RECORD_PATH                   "e:\\Record\\"
-#define NORMAL_RECORD_PATH            "e:\\Record\\normal\\"
-#define ALARM_RECORD_PATH             "e:\\Record\\alarm\\"
-#define SOUND_PATH                    "e:\\Record\\Sound\\"
+#define RECORD_PATH                   "d:\\Record\\"
+#define NORMAL_RECORD_PATH            "d:\\Record\\normal\\"
+#define ALARM_RECORD_PATH             "d:\\Record\\alarm\\"
+#define SOUND_PATH                    "d:\\Record\\Sound\\"
 
 #define COM_KEYBD                     1
 #define COM_CAMERA                    2
