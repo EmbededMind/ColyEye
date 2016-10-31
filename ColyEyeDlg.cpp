@@ -326,9 +326,9 @@ LONG CColyEyeDlg::OnCommData(WPARAM pData, LPARAM port)
 				break;
 			case KB_PTTUP:
 				keybd_event(VK_CONTROL, 0, 0, 0);
-				keybd_event('S', 0, 0, 0);
+				keybd_event('O', 0, 0, 0);
 				keybd_event(VK_CONTROL, 0, KEYEVENTF_KEYUP, 0);
-				keybd_event('S', 0, KEYEVENTF_KEYUP, 0);
+				keybd_event('O', 0, KEYEVENTF_KEYUP, 0);
 				break;
 			default:
 				break;
