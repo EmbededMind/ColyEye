@@ -49,11 +49,11 @@ void CTagTreeCtrl::Refresh(CPtrList& dataSource, CTime&  refTime)
 	while (pos) {
 		pInfo = (CRecordFileInfo*)dataSource.GetPrev(pos);
 	    //新加入节点与之前的节点属于不同的天，需要新增一天
-		if (pInfo->mBeginTime.GetDay() != curLabelTime.GetDay()) {
-			if (pInfo->mBeginTime.GetDay() == refTime.GetDay()) {
+		if(pInfo->mBeginTime.GetTime() / (3600*24) != curLabelTime.GetTime() / (3600*24)){
+			if ( pInfo->mBeginTime.GetTime() /(3600*24) ==  refTime.GetTime() /(3600*24)) {
 				label = _T("今天");
 			}
-			else if (pInfo->mBeginTime.GetDay() == (refTime - CTimeSpan(1, 0, 0, 0)).GetDay()) {
+			else if (pInfo->mBeginTime.GetTime() / (3600 * 24) == (refTime - CTimeSpan(1, 0, 0, 0)).GetTime() / (3600 * 24)) {
 				label = _T("昨天");
 			}
 			else {
@@ -212,11 +212,11 @@ BOOL CTagTreeCtrl::GetDayLabelByItem(HTREEITEM hRoot, CTime& nowTime, CString& l
 		hItem = GetChildItem(hRoot);
 		CRecordFileInfo* pInfo = (CRecordFileInfo*)GetItemData(hItem);
 		// 今天
-		if (pInfo->mBeginTime.GetDay() == nowTime.GetDay()) {
+		if (pInfo->mBeginTime.GetTime() /(3600*24) == nowTime.GetTime() /(3600*24)) {
 			label = _T("今天");
 		}
 		// 昨天
-		else if (pInfo->mBeginTime.GetDay() == (nowTime - CTimeSpan(1, 0, 0, 0)).GetDay()) {
+		else if (pInfo->mBeginTime.GetTime() / (3600 * 24) == (nowTime - CTimeSpan(1, 0, 0, 0)).GetTime() / (3600 * 24)) {
 			label = _T("昨天");
 		}
 		else {
