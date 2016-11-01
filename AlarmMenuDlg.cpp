@@ -145,7 +145,7 @@ BOOL CAlarmMenuDlg::PreTranslateMessage(MSG* pMsg)
 			keybd_event(VK_TAB, 0, 0, 0);
 			keybd_event(VK_TAB, 0, KEYEVENTF_KEYUP, 0);
 			return true;
-
+		case VK_LEFT:
 		case VK_BACK:
 			inx = pFocusedWnd->GetDlgCtrlID();
 			if (inx >= IDC_TREE1  &&  inx <IDC_TREE1+CAMERA_MAX_NUM) {

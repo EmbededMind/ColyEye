@@ -39,6 +39,7 @@ BEGIN_MESSAGE_MAP(CVideoCtrDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_FAST_BUTTON, &CVideoCtrDlg::OnBnClickedFastButton)
 	ON_BN_CLICKED(IDC_NEXT_BUTTON, &CVideoCtrDlg::OnBnClickedNextButton)
 	ON_BN_CLICKED(IDC_PREVF_BUTTON, &CVideoCtrDlg::OnBnClickedPrevfButton)
+	ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 
@@ -66,6 +67,7 @@ BOOL CVideoCtrDlg::OnInitDialog()
 		TRACE("sub class fail\n");
 	}
 	m_sliderctrl.SetRange(0, 100, TRUE);
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 异常: OCX 属性页应返回 FALSE
 }
@@ -88,17 +90,17 @@ LRESULT CVideoCtrDlg::OnUserMsgPlay(WPARAM wParam, LPARAM lParam)
 BOOL CVideoCtrDlg::StartPlay()
 {
 	SetTimer(m_port , 100, NULL);
-	CString PlayPath("E:\\Record");
+	CString PlayPath;
 	CString tmp;
 	if (m_pRecordFileInfo->mStatus & RECORD_TYPE_NORMAL)
 	{
-		PlayPath += _T("\\normal");
+		PlayPath = _T(NORMAL_RECORD_PATH);
 	}
 	else
 	{
-		PlayPath += _T("\\alarm");
+		PlayPath = _T(ALARM_RECORD_PATH);
 	}
-	tmp.Format(_T("\\%d\\%d%02d%02d%02d%02d%02d.h264"), m_pRecordFileInfo->mOwner, m_pRecordFileInfo->mBeginTime.GetYear(), m_pRecordFileInfo->mBeginTime.GetMonth(),
+	tmp.Format(_T("%d\\%d%02d%02d%02d%02d%02d.h264"), m_pRecordFileInfo->mOwner, m_pRecordFileInfo->mBeginTime.GetYear(), m_pRecordFileInfo->mBeginTime.GetMonth(),
 		m_pRecordFileInfo->mBeginTime.GetDay(), m_pRecordFileInfo->mBeginTime.GetHour(), m_pRecordFileInfo->mBeginTime.GetMinute(), m_pRecordFileInfo->mBeginTime.GetSecond());
 	PlayPath += tmp;
 	TRACE("%S\n", PlayPath);
@@ -143,6 +145,7 @@ BOOL CVideoCtrDlg::PreTranslateMessage(MSG * pMsg)
 		{
 		case VK_BACK:
 			m_pos = 0;
+			m_sliderctrl.SetPos(m_pos);
 			StopPlay();
 			this->ShowWindow(SW_HIDE);
 			::SendMessage(((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->mMenu.m_hWnd, USER_MSG_PLAY, mMenuCursor, (LPARAM)m_pRecordFileInfo);
@@ -187,7 +190,12 @@ void CVideoCtrDlg::OnTimer(UINT_PTR nIDEvent)
 	{
 		m_currenttime = H264_PLAY_GetPlayedTime(m_port);
 		if (m_currenttime)
-		    m_sliderctrl.SetPos((int)(m_currenttime * 100 / m_totaltime));
+		{
+			if (m_totaltime)
+				m_sliderctrl.SetPos((int)(m_currenttime * 100 / m_totaltime));
+			else
+				m_sliderctrl.SetPos(0);
+		}
 	}
 	CDialogEx::OnTimer(nIDEvent);
 }
@@ -260,4 +268,12 @@ void CVideoCtrDlg::OnBnClickedPrevfButton()
 void __stdcall EOFCallBack(LONG nPort, LONG nUser)
 {
 	((CVideoCtrDlg *)nUser)->StopPlay();
+}
+
+
+void CVideoCtrDlg::OnSize(UINT nType, int cx, int cy)
+{
+	CDialogEx::OnSize(nType, cx, cy);
+
+	// TODO: 在此处添加消息处理程序代码
 }

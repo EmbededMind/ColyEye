@@ -82,7 +82,7 @@ BOOL CColyEyeDlg::OnInitDialog()
 	mWall.ShowWindow(SW_SHOW);
 
 	mMenu.Create(IDD_MENU, this);
-	mMenu.MoveWindow(5, 5, 800, 400);
+	//mMenu.MoveWindow(5, 5, 800, 400);
 	mMenu.ShowWindow(SW_HIDE);
 
 	mVideoCtr.Create(IDD_VIDEOCTR_DIALOG, this);
@@ -487,6 +487,10 @@ void CColyEyeDlg::OnSize(UINT nType, int cx, int cy)
 
 	if (IsWindow(mMenu.m_hWnd)) {
 		mMenu.SetWindowPos(NULL, rClient.left, rClient.top, rClient.Width(), rClient.Height(), 0);
+	}
+
+	if (IsWindow(mVideoCtr.m_hWnd)) {
+		mVideoCtr.SetWindowPos(NULL, rClient.left, rClient.top, rClient.Width(), rClient.Height(), 0);
 	}
 
 	// TODO: 在此处添加消息处理程序代码
