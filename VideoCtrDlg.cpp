@@ -48,6 +48,14 @@ END_MESSAGE_MAP()
 
 BOOL CVideoCtrDlg::OnInitDialog()
 {
+	mVideoDlg.Create(IDD_VIDEO_DIALOG, this);
+	mVideoDlg.ShowWindow(SW_SHOW);
+	if (m_sliderctrl.SubclassDlgItem(IDC_PLAY_SLIDER, this)) {
+
+	}
+	else {
+		TRACE("sub class fail\n");
+	}
 	CDialogEx::OnInitDialog();
 
 	// TODO:  在此添加额外的初始化
@@ -58,14 +66,6 @@ BOOL CVideoCtrDlg::OnInitDialog()
 
 	m_totaltime = 1;
 	m_playctrl = 0;
-	mVideoDlg.Create(IDD_VIDEO_DIALOG, this);
-	mVideoDlg.ShowWindow(SW_SHOW);
-	if (m_sliderctrl.SubclassDlgItem(IDC_PLAY_SLIDER, this)) {
-
-	}
-	else {
-		TRACE("sub class fail\n");
-	}
 	m_sliderctrl.SetRange(0, 100, TRUE);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -106,7 +106,7 @@ BOOL CVideoCtrDlg::StartPlay()
 	TRACE("%S\n", PlayPath);
 	((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->mMenu.ShowWindow(SW_HIDE);
 	this->ShowWindow(SW_SHOW);
-	this->mVideoDlg.MoveWindow(135, 5, 535, 300);
+	//this->mVideoDlg.MoveWindow(135, 5, 535, 300);
 	this->mVideoDlg.ShowWindow(SW_SHOW);
 	this->SetFocus();
 	H264_PLAY_GetPort(&m_port);
@@ -129,9 +129,12 @@ BOOL CVideoCtrDlg::StopPlay()
 	H264_PLAY_Stop(m_port);
 	H264_PLAY_CloseFile(m_port);
 	H264_PLAY_FreePort(m_port);
+	m_port = 0;
 	m_pRecordFileInfo->mBeingUsed = false;
 	m_pRecordFileInfo->mStatus &= ~(0x02);
 	m_isPlay = false;
+	m_sliderctrl.SetPos(100);
+	m_pos = 0;
 	return 0;
 }
 
@@ -209,14 +212,15 @@ void CVideoCtrDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	{
 		m_isOnHScroll = 0;
 		m_pos = nPos;
-	    H264_PLAY_SetPlayPos(m_port, (float)m_pos/100.0);
-		H264_PLAY_GetLastError(m_port);		
+		if(m_port)
+			H264_PLAY_SetPlayPos(m_port, (float)m_pos/100.0);	
 	}
 	if (nSBCode == SB_THUMBTRACK)
 	{
 		m_isOnHScroll = 1;
 		m_pos = nPos;
-		H264_PLAY_SetPlayPos(m_port, (float)m_pos / 100.0);
+		if (m_port)
+			H264_PLAY_SetPlayPos(m_port, (float)m_pos / 100.0);
 	}
 	CDialogEx::OnHScroll(nSBCode, nPos, pScrollBar);
 }
@@ -268,7 +272,7 @@ void CVideoCtrDlg::OnBnClickedPrevfButton()
 void __stdcall EOFCallBack(LONG nPort, LONG nUser)
 {
 	((CVideoCtrDlg *)nUser)->StopPlay();
-}
+}                      
 
 
 void CVideoCtrDlg::OnSize(UINT nType, int cx, int cy)
@@ -276,4 +280,32 @@ void CVideoCtrDlg::OnSize(UINT nType, int cx, int cy)
 	CDialogEx::OnSize(nType, cx, cy);
 
 	// TODO: 在此处添加消息处理程序代码
+	CRect rClient;
+	GetClientRect(rClient);
+	int width = rClient.Width();
+	int height = rClient.Height();
+	if (IsWindow(mVideoDlg.m_hWnd)) 
+	{
+		mVideoDlg.SetWindowPos(NULL, rClient.left + width/6, rClient.top + height/9, rClient.Width() - width/3, rClient.Height() - height/3, 0);
+	}
+	if(m_sliderctrl)
+		m_sliderctrl.MoveWindow(rClient.left + width/6 , rClient.bottom - height*2/9, width*2/3 , 25, 1);
+	CWnd *pbt = GetDlgItem(IDC_PLAY_BUTTON);
+	if(pbt)
+		pbt->MoveWindow(width / 2 - width / 18 - PLAY_CTR_BT_WIDTH / 2, rClient.bottom - height * 2 / 9 + 25, 100, 25, 1);
+	pbt = GetDlgItem(IDC_PAUSE_BUTTON);
+	if (pbt)
+		pbt->MoveWindow(width / 2 + width / 18 - PLAY_CTR_BT_WIDTH / 2, rClient.bottom - height * 2 / 9 + 25, 100, 25, 1);
+	pbt = GetDlgItem(IDC_PREVF_BUTTON);
+	if (pbt)
+		pbt->MoveWindow(width / 2 - width *1/ 6 - PLAY_CTR_BT_WIDTH / 2, rClient.bottom - height * 2 / 9 + 25, 100, 25, 1);
+	pbt = GetDlgItem(IDC_NEXT_BUTTON);
+	if (pbt)
+		pbt->MoveWindow(width / 2 + width *1/ 6 - PLAY_CTR_BT_WIDTH / 2, rClient.bottom - height * 2 / 9 + 25, 100, 25, 1);
+	pbt = GetDlgItem(IDC_SLOW_BUTTON);
+	if (pbt)
+		pbt->MoveWindow(width / 2 - width *5/ 18 - PLAY_CTR_BT_WIDTH / 2, rClient.bottom - height * 2 / 9 + 25, 100, 25, 1);
+	pbt = GetDlgItem(IDC_FAST_BUTTON);
+	if (pbt)
+		pbt->MoveWindow(width / 2 + width *5/ 18 - PLAY_CTR_BT_WIDTH / 2, rClient.bottom - height * 2 / 9 + 25, 100, 25, 1);
 }
