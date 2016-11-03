@@ -65,8 +65,7 @@ void Util::LoadOrder(uint8_t * pOrder, uint8_t Header, uint8_t ScrType, uint8_t 
 	pOrder[13] = 0x0;
 	pOrder[14] = 0x0;
 	pOrder[15] = 0x0;
-	pOrder[16] = 0x0;
-	pOrder[17] = 0xfd;
+	pOrder[16] = 0xfd;
 }
 
 uint8_t Util::CharToUint(char ch)

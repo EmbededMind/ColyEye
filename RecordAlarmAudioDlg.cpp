@@ -46,10 +46,17 @@ void CRecordAlarmAudioDlg::OnBnClickedButton1()
 		mRecordSwt.SetWindowTextW(_T("60"));
 
 		// TODO: 在此添加开始录音的代码
-		// StartRecord();
-		mRecorder.SetReocrdPath(_T("E:\\Record\\Sound\\tmp.wav"));
-		mRecorder.Record();
 
+		//mRecorder.SetReocrdPath(_T("D:\\Record\\Sound\\tmp.wav"));
+		//mRecorder.Record();
+		for(int i = 0; i < 6; i++)
+		{
+			if (CCameraManager::getInstance()->mLoginDevice[i])
+			{
+				CRecordAlarmSound::getInstance()->Record(CCameraManager::getInstance()->mLoginDevice[i]);
+			}
+		}
+		
 		SetTimer(1, 1000, NULL);
 	}
 	else {
@@ -57,8 +64,9 @@ void CRecordAlarmAudioDlg::OnBnClickedButton1()
 		KillTimer(1);
 
 		// TODO: 在此添加停止录音的代码
-		// StopRecord();
-		mRecorder.Save();
+
+		/*mRecorder.Save();*/
+		CRecordAlarmSound::getInstance()->StopTalk();
 		if (mConfirmDlg.DoModal() == IDOK) {
 			OnCancel();
 		}
@@ -84,8 +92,7 @@ void CRecordAlarmAudioDlg::OnTimer(UINT_PTR nIDEvent)
 
 		// TODO: 在此添加停止录音的代码
 		// StopRecord();
-		mRecorder.Save();
-
+		CRecordAlarmSound::getInstance()->StopTalk();
 
 		if (mConfirmDlg.DoModal() == IDOK) {
 			OnCancel();

@@ -69,8 +69,6 @@ BOOL CColyEyeDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// 设置大图标
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
-
-
 	// TODO: 在此添加额外的初始化代码
 	///创建Wall对话框
 	mWall.Create(IDD_WALL, this);
@@ -260,12 +258,13 @@ LONG CColyEyeDlg::OnCommData(WPARAM pData, LPARAM port)
 	if (port == COM_KEYBD)
 	{
 		onedata *p = (onedata*)pData;
-		p->ch[p->num] = '\0';
-		TRACE(_T("COM%d ---%d\n"), (UINT)port, p->ch[0]);
+		printf("port = %d\n", port);
+		printf("num = %d\n",p->num);
 		for (int i = 0; i < p->num; i++)
 		{
 			switch (p->ch[i])
 			{
+				printf("kb = %d\n", p->ch[i]);
 			case KB_MENU:
 				keybd_event(VK_APPS, 0, 0, 0);
 				keybd_event(VK_APPS, 0, KEYEVENTF_KEYUP, 0);
@@ -362,11 +361,16 @@ LONG CColyEyeDlg::OnCommData(WPARAM pData, LPARAM port)
 		/*p->ch[p->num] = '\0';*/
 		/*TRACE(_T("COM%d ---%S\n"), (UINT)port, p->ch);*/
 
-		/*if (p->num != 17) return 0;
-		if (p->ch[0] != 0x24) return 0;*/
-
-		ASSERT(p->num == 17);
-		ASSERT(p->ch[0] == 0x24);
+		if (p->num != 17)
+		{
+			printf("<17");
+			return 0;
+		}
+		if (p->ch[0] != 0x24)
+		{
+			printf("!=0x24");
+			return 0;
+		}
 
 		//这里判断CRC
 		//.....
@@ -394,11 +398,16 @@ LONG CColyEyeDlg::OnCommData(WPARAM pData, LPARAM port)
 					}
 					CCameraManager::getInstance()->mTalkHandle = H264_DVR_StartLocalVoiceCom(pDev->mLoginId);
 					Util::LoadOrder(m_Order, 0x24, 0x01, 0x02, 0x03, NULL, 0x01, pDev);
+					printf("ack tslk  ");
+					for (int i = 0; i < 17; i++) {
+						printf("%02X ", m_Order[i]);
+					}
+					printf("\n");
 					m_SerialPortCom.WriteToPort(m_Order, 17);
 				}
 				else
 				{
-					printf("pDev NULL\n");
+					printf("pDev = NULL\n");
 					Util::LoadOrder(m_Order, 0x24, 0x01, 0x02, 0x03, NULL, 0x02, pDev);
 					m_SerialPortCom.WriteToPort(m_Order, 17);
 					break;

@@ -40,8 +40,8 @@ END_MESSAGE_MAP()
 void CAutoWatchSoundConfirmDlg::OnBnClickedOk()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	DeleteFile(_T("E:\\Record\\Sound\\custom.wav"));
-	CFile::Rename(_T("E:\\Record\\Sound\\tmp.wav"), _T("E:\\Record\\Sound\\custom.wav"));
+	DeleteFile(_T("voice_g711a_alarm"));
+	CFile::Rename(_T("voice_g711a"), _T("voice_g711a_alarm"));
 	CDialogEx::OnOK();
 }
 
@@ -49,7 +49,7 @@ void CAutoWatchSoundConfirmDlg::OnBnClickedOk()
 void CAutoWatchSoundConfirmDlg::OnBnClickedCancel()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	DeleteFile(_T("E:\\Record\\Sound\\tmp.wav"));
+	DeleteFile(_T("voice_g711a"));
 	CDialogEx::OnOK();
 }
 
@@ -57,6 +57,6 @@ void CAutoWatchSoundConfirmDlg::OnBnClickedCancel()
 void CAutoWatchSoundConfirmDlg::OnBnClickedButton1()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	DeleteFile(_T("E:\\Record\\Sound\\tmp.wav"));
+	DeleteFile(_T("voice_g711a"));
 	CDialogEx::OnCancel();
 }

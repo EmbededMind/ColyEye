@@ -9,7 +9,7 @@
 #include "RecordFileManager.h"
 #include "Util.h"
 #include "ColyEyeDlg.h"
-
+#include "RecordAlarmSound.h"
 
 
 
@@ -693,9 +693,9 @@ bool __stdcall messageCallbackFunc(long lLoginID, char* pBuf, unsigned long dwBu
 
 	CCameraManager* pMgr = CCameraManager::getInstance();
 	CCamera* pDev = pMgr->findCameraByLoginId(lLoginID);
-
+	printf("alarm message\n");
 	// 自动看船开启
-	if (host.mConfuration.auto_watch_switch  &&  pDev  && (pDev->userConf.switches & CAMERA_USER_CONF_AWATCH)) {
+	if (/*host.mConfuration.auto_watch_switch  &&  */pDev  && (pDev->userConf.switches & CAMERA_USER_CONF_AWATCH)) {
 		CWallDlg* pWall = (CWallDlg*)dwUser;
 		CTime t = CTime::GetCurrentTime();
 				
@@ -710,7 +710,13 @@ bool __stdcall messageCallbackFunc(long lLoginID, char* pBuf, unsigned long dwBu
 			if (pAlarmInfo->iEvent < 30 && pAlarmInfo->iStatus == 0) {
 				TRACE("status:0x%x\n", alarmRecordStatus.flag);
 				if ((alarmRecordStatus.flag & (0x01 << (pDev->mId - 1))) == 0) {
-					CFile* pf = RecordFileManager::GetInstance()->DistributeRecordFile(pDev->mId, RECORD_TYPE_ALARM);
+					CFile* pf = RecordFileManager::GetInstance()->DistributeRecordFile(pDev->mId, RECORD_TYPE_ALARM);//开始报警录像
+					printf("begin alarm record\n");
+					uint8_t Order[17];
+					Util::LoadOrder(Order, 0x24, 0x01, 0x02, 0x05, 0x01, 0, pDev);
+					((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->m_SerialPortCom.WriteToPort(Order, 17);
+					CRecordAlarmSound::getInstance()->Play(pDev);
+					
 					if (pf != NULL) {
 						pDev->startAlarmRecord(pf);
 
@@ -802,6 +808,9 @@ void CWallDlg::OnTimer(UINT_PTR nIDEvent)
 							TRACE("flag: 0x%x\n", alarmRecordStatus.flag);
 							if (alarmRecordStatus.flag == 0) {
 								KillTimer(nIDEvent);
+								Util::LoadOrder(mOrder, 0x24, 0x01, 0x02, 0x05, 0x02, 0, pCamera);
+								((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->m_SerialPortCom.WriteToPort(mOrder, 17);
+								CRecordAlarmSound::getInstance()->StopTalk();
 							}
 						}
 						else {
@@ -884,12 +893,20 @@ BOOL CWallDlg::PreTranslateMessage(MSG* pMsg)
 				{ 
 				case 'T': 
 				{
+					if (CCameraManager::getInstance()->mTalkHandle != 0)
+					{
+						H264_DVR_StopVoiceCom(CCameraManager::getInstance()->mTalkHandle);
+						Util::LoadOrder(mOrder, 0x24, 0x01, 0x02, 0x02, 0x02, NULL, pDev);
+						((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->m_SerialPortCom.WriteToPort(mOrder, 17);
+						CCameraManager::getInstance()->mTalkHandle = 0;
+					}
 					if (CCameraManager::getInstance()->mTalkHandle == 0)
 					{
 						TRACE("Begin to talk with :%d\n", pDev->mId);
 						CCameraManager::getInstance()->mTalkHandle = H264_DVR_StartLocalVoiceCom(pDev->mLoginId);
-						Util::LoadOrder(mOrder, 0x24, 0x01, 0x02, 0x02, 0x01, NULL, pDev);
-						((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->m_SerialPortCom.WriteToPort(mOrder, 17);
+						uint8_t Order[17];
+						Util::LoadOrder(Order, 0x24, 0x01, 0x02, 0x02, 0x01, NULL, pDev);
+						((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->m_SerialPortCom.WriteToPort(Order, 17);
 					}
 				}
 				break;
