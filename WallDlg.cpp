@@ -584,6 +584,7 @@ void CWallDlg::EnableCameraConfiguration(CCamera* pCamera)
 		if (pCamera->hRealPlay == 0) {
 			//LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info>" << pCamera->mIp << " Start Realplay");
 			pCamera->startRealPlay();
+
 			//LOG4CPLUS_INFO(Logger::getInstance(_T("MyLogger")), "<info> After start realplay,Memory:" << Util::GetMemorySize());
 		}
 		    
@@ -665,6 +666,20 @@ void CWallDlg::ReConnect(LONG lLoginID, char* pchDVRIP, LONG nDVRPort)
 		mDevReconnectMap[pDev->mId] = pDev;
 		SetTimer(RECONNET_TIMER_EVENT_ID, 30*1000, NULL);
 	}
+}
+
+
+
+void CWallDlg::OnCameraLogin(CCamera* pCamera)
+{
+
+}
+
+
+
+void CWallDlg::OnCameraLogout(CCamera* pCamera)
+{
+
 }
 
 
@@ -892,7 +907,7 @@ BOOL CWallDlg::PreTranslateMessage(MSG* pMsg)
 						((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->m_SerialPortCom.WriteToPort(mOrder, 17);
 					}
 				}
-				break;
+				return TRUE;
 
 				case 'O':
 				{
@@ -906,7 +921,7 @@ BOOL CWallDlg::PreTranslateMessage(MSG* pMsg)
 						((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->m_SerialPortCom.WriteToPort(mOrder, 17);
 					}
 				}
-		        break;
+		        return TRUE;
 					
 				default:
 					break;

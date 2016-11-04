@@ -48,6 +48,9 @@ private:
 
 	void JumpToHolder();
 
+	void OnCameraLogin(CCamera* pCamera);
+	void OnCameraLogout(CCamera* pCamera);
+
 public:
 	DWORD mBeginWatchTime;
 	DWORD mEndWatchTime;

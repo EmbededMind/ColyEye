@@ -312,6 +312,20 @@ BOOL CCamera::CommitUserConfigurationChange()
 }
 
 
+
+void CCamera::OnLogin()
+{
+
+}
+
+
+void CCamera::OnLogout()
+{
+
+}
+
+
+
 /**@brief 实时视频回调
 * 
 *  @param [in] hRealPlay  实时视频句柄
