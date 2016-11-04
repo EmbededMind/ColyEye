@@ -194,16 +194,28 @@ CCamera * CCameraManager::FindCameraByMAC(uint8_t * mac)
 	while (pos) {
 		pDev = (CCamera*)this->mCameras.GetNext(pos);
 		tmp = Util::CharToUint(pDev->mCommonNetConfig.sMac[0]) * 16 + Util::CharToUint(pDev->mCommonNetConfig.sMac[1]);
+		printf("tmp = %02X\n", tmp);
+		printf("*mac = %02X\n", *mac);
 		if (tmp != *mac) break;
 		tmp = Util::CharToUint(pDev->mCommonNetConfig.sMac[3]) * 16 + Util::CharToUint(pDev->mCommonNetConfig.sMac[4]);
+		printf("tmp = %02X\n", tmp);
+		printf("*(mac+1) = %02X\n", *(mac+1));
 		if (tmp != *(mac + 1)) break;
 		tmp = Util::CharToUint(pDev->mCommonNetConfig.sMac[6]) * 16 + Util::CharToUint(pDev->mCommonNetConfig.sMac[7]);
+		printf("tmp = %02X\n", tmp);
+		printf("*(mac+2) = %02X\n", *(mac + 2));
 		if (tmp != *(mac + 2)) break;
 		tmp = Util::CharToUint(pDev->mCommonNetConfig.sMac[9]) * 16 + Util::CharToUint(pDev->mCommonNetConfig.sMac[10]);
+		printf("tmp = %02X\n", tmp);
+		printf("*(mac+3) = %02X\n", *(mac + 3));
 		if (tmp != *(mac + 3)) break;
 		tmp = Util::CharToUint(pDev->mCommonNetConfig.sMac[12]) * 16 + Util::CharToUint(pDev->mCommonNetConfig.sMac[13]);
+		printf("tmp = %02X\n", tmp);
+		printf("*(mac+4) = %02X\n", *(mac + 4));
 		if (tmp != *(mac + 4)) break;
 		tmp = Util::CharToUint(pDev->mCommonNetConfig.sMac[15]) * 16 + Util::CharToUint(pDev->mCommonNetConfig.sMac[16]);
+		printf("tmp = %02X\n", tmp);
+		printf("*(mac+5) = %02X\n", *(mac + 5));
 		if (tmp != *(mac + 5)) break;
 		return pDev;
 	}

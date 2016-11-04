@@ -415,24 +415,25 @@ UINT CSerialPort::CommThread(LPVOID pParam)
 		}
 		case 1:    // read event
 		{
-			ResetEvent(port->m_ov.hEvent);
 			GetCommMask(port->m_hComm, &CommEvent);
-			ClearCommError(port->m_hComm, &dwError, &comstat);
-			if ((CommEvent & EV_RXCHAR) && comstat.cbInQue) //���յ��ַ������������뻺������
+			if (CommEvent & EV_RXCHAR) //���յ��ַ������������뻺������
 			{
 				while (1)
 				{
 					ClearCommError(port->m_hComm, &dwError, &comstat);
+					printf(" while(1) length = %d\n", length);
 					if (length != comstat.cbInQue)
 					{
 						length = comstat.cbInQue;
-						Sleep(2);
+						Sleep(10);
+						printf(" != length = %d\n", length);
 					}
 					else
 					{
+						if (length == 0) break;
+						printf(" == length = %d\n", length);
 						ReceiveData(port, comstat);
 						port->m_queuecom[port->m_queueth].num = length;
-
 						::SendMessage((port->m_pOwner)->m_hWnd, WM_COMM_RXDATA, (WPARAM)(&(port->m_queuecom[port->m_queueth])), (LPARAM)port->m_nPortNr);
 						length = 0;
 						break;
@@ -551,7 +552,7 @@ void CSerialPort::WriteChar(CSerialPort* port)
 
 		// Clear buffer
 		PurgeComm(port->m_hComm, PURGE_RXCLEAR | PURGE_TXCLEAR | PURGE_RXABORT | PURGE_TXABORT);
-
+		printf("write %d\n", SendLen);
 		bResult = WriteFile(port->m_hComm,                            // Handle to COMM Port
 			port->m_szWriteBuffer,                    // Pointer to message buffer in calling finction
 			SendLen,    // add by mrlong
@@ -619,8 +620,6 @@ void CSerialPort::ReceiveData(CSerialPort* port, COMSTAT comstat)
 	BOOL  bResult = TRUE;
 	DWORD dwError = 0;
 	DWORD BytesRead = 0;
-	unsigned char RXBuff;
-	DWORD time;
 
 	for (;;)
 	{

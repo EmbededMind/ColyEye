@@ -140,7 +140,7 @@
 #define MENU_ITEM_WIDTH_SHARE     1/5
 #define MENU_ITEM_HEIGHT_SHARE    1/10
 
-
+#define PLAY_CTR_BT_WIDTH         100
 
 
 //using namespace log4cplus;

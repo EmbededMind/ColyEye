@@ -54,6 +54,5 @@ public:
 	afx_msg void OnBnClickedFastButton();
 	afx_msg void OnBnClickedNextButton();
 	afx_msg void OnBnClickedPrevfButton();
-
-	afx_msg void OnBnClickedPausButton();
+	afx_msg void OnSize(UINT nType, int cx, int cy);
 };

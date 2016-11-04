@@ -4,3 +4,5 @@
 !*.rc
 /log4cplusU.dll
 /log4cplusUD.dll
+/MCI.h
+/MCI.cpp

@@ -17,13 +17,9 @@
 
 void InitConsoleWindow()
 {
-	int nCrt = 0;
-	FILE* fp;
-	AllocConsole();
-	nCrt = _open_osfhandle((long)GetStdHandle(STD_OUTPUT_HANDLE), _O_TEXT);
-	fp = _fdopen(nCrt, "w");
-	*stdout = *fp;
-	setvbuf(stdout, NULL, _IONBF, 0);
+	::AllocConsole();//打开控件台资源  
+	FILE *fp;
+	freopen_s(&fp, "CONOUT$", "w+t", stdout);//申请写，这个是针对VS2013版本的代码，在VS较为早期的版本比如VS2008中，可将freopen_s改为freopen，并将参数改为对应形式即可 
 }
 
 #ifdef _DEBUG
@@ -70,8 +66,6 @@ BOOL CColyEyeDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// 设置大图标
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
-
-
 	// TODO: 在此添加额外的初始化代码
 	///创建Wall对话框
 	mWall.Create(IDD_WALL, this);
@@ -79,7 +73,7 @@ BOOL CColyEyeDlg::OnInitDialog()
 	mWall.ShowWindow(SW_SHOW);
 
 	mMenu.Create(IDD_MENU, this);
-	mMenu.MoveWindow(5, 5, 800, 400);
+	//mMenu.MoveWindow(5, 5, 800, 400);
 	mMenu.ShowWindow(SW_HIDE);
 
 	mVideoCtr.Create(IDD_VIDEOCTR_DIALOG, this);
@@ -91,7 +85,6 @@ BOOL CColyEyeDlg::OnInitDialog()
 
 
 	InitConsoleWindow();
-
 
 	if (m_SerialPortKbd.InitPort(this, COM_KEYBD, 9600, 'N', 8, 1, EV_RXCHAR, 512))
 	{
@@ -262,12 +255,13 @@ LONG CColyEyeDlg::OnCommData(WPARAM pData, LPARAM port)
 	if (port == COM_KEYBD)
 	{
 		onedata *p = (onedata*)pData;
-		p->ch[p->num] = '\0';
-		TRACE(_T("COM%d ---%d\n"), (UINT)port, p->ch[0]);
+		printf("port = %d\n", port);
+		printf("num = %d\n",p->num);
 		for (int i = 0; i < p->num; i++)
 		{
 			switch (p->ch[i])
 			{
+				printf("kb = %d\n", p->ch[i]);
 			case KB_MENU:
 				keybd_event(VK_APPS, 0, 0, 0);
 				keybd_event(VK_APPS, 0, KEYEVENTF_KEYUP, 0);
@@ -356,7 +350,7 @@ LONG CColyEyeDlg::OnCommData(WPARAM pData, LPARAM port)
 		static int cnt = 0;
 		onedata *p = (onedata*)pData;
 
-		printf("%04d-", cnt);
+		//printf("%04d-", cnt);
 		for (int i = 0; i < p->num; i++) {
 			printf("%02X ", p->ch[i]);
 		}
@@ -364,8 +358,16 @@ LONG CColyEyeDlg::OnCommData(WPARAM pData, LPARAM port)
 		/*p->ch[p->num] = '\0';*/
 		/*TRACE(_T("COM%d ---%S\n"), (UINT)port, p->ch);*/
 
-		if (p->num != 17) return 0;
-		if (p->ch[0] != 0x24) return 0;
+		if (p->num != 17)
+		{
+			printf("<17");
+			return 0;
+		}
+		if (p->ch[0] != 0x24)
+		{
+			printf("!=0x24");
+			return 0;
+		}
 
 		//这里判断CRC
 		//.....
@@ -386,19 +388,27 @@ LONG CColyEyeDlg::OnCommData(WPARAM pData, LPARAM port)
 				CCamera *pDev = CCameraManager::getInstance()->FindCameraByMAC(&(p->ch[6]));
 				if (pDev)
 				{
+					if (CCameraManager::getInstance()->mTalkHandle)
+					{
+						H264_DVR_StopVoiceCom(CCameraManager::getInstance()->mTalkHandle);
+						CCameraManager::getInstance()->mTalkHandle = 0;
+					}
 					CCameraManager::getInstance()->mTalkHandle = H264_DVR_StartLocalVoiceCom(pDev->mLoginId);
+					Util::LoadOrder(m_Order, 0x24, 0x01, 0x02, 0x03, NULL, 0x01, pDev);
+					printf("ack tslk  ");
+					for (int i = 0; i < 17; i++) {
+						printf("%02X ", m_Order[i]);
+					}
+					printf("\n");
+					m_SerialPortCom.WriteToPort(m_Order, 17);
 				}
 				else
 				{
+					printf("pDev = NULL\n");
+					Util::LoadOrder(m_Order, 0x24, 0x01, 0x02, 0x03, NULL, 0x02, pDev);
+					m_SerialPortCom.WriteToPort(m_Order, 17);
 					break;
-				}
-				if (CCameraManager::getInstance()->mTalkHandle)
-				{
-					H264_DVR_StopVoiceCom(CCameraManager::getInstance()->mTalkHandle);
-					CCameraManager::getInstance()->mTalkHandle = 0;
-				}
-				Util::LoadOrder(m_Order, 0x24, 0x01, 0x02, 0x03, NULL, 0x01, pDev);
-				m_SerialPortCom.WriteToPort(m_Order, 17);
+				}				
 				break;
 			}
 			case 0x04:
@@ -476,6 +486,9 @@ void CColyEyeDlg::OnSize(UINT nType, int cx, int cy)
 
 	CRect rClient;
 	GetClientRect(rClient);
+	if (IsWindow(mVideoCtr.m_hWnd)) {
+		mVideoCtr.SetWindowPos(NULL, rClient.left, rClient.top, rClient.Width(), rClient.Height(), 0);
+	}
 
 	if (IsWindow(mWall.m_hWnd)) {
 		mWall.SetWindowPos(NULL, rClient.left, rClient.top, rClient.Width(), rClient.Height(), 0);

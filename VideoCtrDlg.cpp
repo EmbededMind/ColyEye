@@ -39,6 +39,7 @@ BEGIN_MESSAGE_MAP(CVideoCtrDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_FAST_BUTTON, &CVideoCtrDlg::OnBnClickedFastButton)
 	ON_BN_CLICKED(IDC_NEXT_BUTTON, &CVideoCtrDlg::OnBnClickedNextButton)
 	ON_BN_CLICKED(IDC_PREVF_BUTTON, &CVideoCtrDlg::OnBnClickedPrevfButton)
+	ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 
@@ -47,6 +48,14 @@ END_MESSAGE_MAP()
 
 BOOL CVideoCtrDlg::OnInitDialog()
 {
+	mVideoDlg.Create(IDD_VIDEO_DIALOG, this);
+	mVideoDlg.ShowWindow(SW_SHOW);
+	if (m_sliderctrl.SubclassDlgItem(IDC_PLAY_SLIDER, this)) {
+
+	}
+	else {
+		TRACE("sub class fail\n");
+	}
 	CDialogEx::OnInitDialog();
 
 	// TODO:  在此添加额外的初始化
@@ -57,15 +66,8 @@ BOOL CVideoCtrDlg::OnInitDialog()
 
 	m_totaltime = 1;
 	m_playctrl = 0;
-	mVideoDlg.Create(IDD_VIDEO_DIALOG, this);
-	mVideoDlg.ShowWindow(SW_SHOW);
-	if (m_sliderctrl.SubclassDlgItem(IDC_PLAY_SLIDER, this)) {
-
-	}
-	else {
-		TRACE("sub class fail\n");
-	}
 	m_sliderctrl.SetRange(0, 100, TRUE);
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 异常: OCX 属性页应返回 FALSE
 }
@@ -88,23 +90,23 @@ LRESULT CVideoCtrDlg::OnUserMsgPlay(WPARAM wParam, LPARAM lParam)
 BOOL CVideoCtrDlg::StartPlay()
 {
 	SetTimer(m_port , 100, NULL);
-	CString PlayPath("E:\\Record");
+	CString PlayPath;
 	CString tmp;
 	if (m_pRecordFileInfo->mStatus & RECORD_TYPE_NORMAL)
 	{
-		PlayPath += _T("\\normal");
+		PlayPath = _T(NORMAL_RECORD_PATH);
 	}
 	else
 	{
-		PlayPath += _T("\\alarm");
+		PlayPath = _T(ALARM_RECORD_PATH);
 	}
-	tmp.Format(_T("\\%d\\%d%02d%02d%02d%02d%02d.h264"), m_pRecordFileInfo->mOwner, m_pRecordFileInfo->mBeginTime.GetYear(), m_pRecordFileInfo->mBeginTime.GetMonth(),
+	tmp.Format(_T("%d\\%d%02d%02d%02d%02d%02d.h264"), m_pRecordFileInfo->mOwner, m_pRecordFileInfo->mBeginTime.GetYear(), m_pRecordFileInfo->mBeginTime.GetMonth(),
 		m_pRecordFileInfo->mBeginTime.GetDay(), m_pRecordFileInfo->mBeginTime.GetHour(), m_pRecordFileInfo->mBeginTime.GetMinute(), m_pRecordFileInfo->mBeginTime.GetSecond());
 	PlayPath += tmp;
 	TRACE("%S\n", PlayPath);
 	((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->mMenu.ShowWindow(SW_HIDE);
 	this->ShowWindow(SW_SHOW);
-	this->mVideoDlg.MoveWindow(135, 5, 535, 300);
+	//this->mVideoDlg.MoveWindow(135, 5, 535, 300);
 	this->mVideoDlg.ShowWindow(SW_SHOW);
 	this->SetFocus();
 	H264_PLAY_GetPort(&m_port);
@@ -127,9 +129,12 @@ BOOL CVideoCtrDlg::StopPlay()
 	H264_PLAY_Stop(m_port);
 	H264_PLAY_CloseFile(m_port);
 	H264_PLAY_FreePort(m_port);
+	m_port = 0;
 	m_pRecordFileInfo->mBeingUsed = false;
 	m_pRecordFileInfo->mStatus &= ~(0x02);
 	m_isPlay = false;
+	m_sliderctrl.SetPos(100);
+	m_pos = 0;
 	return 0;
 }
 
@@ -143,6 +148,7 @@ BOOL CVideoCtrDlg::PreTranslateMessage(MSG * pMsg)
 		{
 		case VK_BACK:
 			m_pos = 0;
+			m_sliderctrl.SetPos(m_pos);
 			StopPlay();
 			this->ShowWindow(SW_HIDE);
 			::SendMessage(((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->mMenu.m_hWnd, USER_MSG_PLAY, mMenuCursor, (LPARAM)m_pRecordFileInfo);
@@ -187,7 +193,12 @@ void CVideoCtrDlg::OnTimer(UINT_PTR nIDEvent)
 	{
 		m_currenttime = H264_PLAY_GetPlayedTime(m_port);
 		if (m_currenttime)
-		    m_sliderctrl.SetPos((int)(m_currenttime * 100 / m_totaltime));
+		{
+			if (m_totaltime)
+				m_sliderctrl.SetPos((int)(m_currenttime * 100 / m_totaltime));
+			else
+				m_sliderctrl.SetPos(0);
+		}
 	}
 	CDialogEx::OnTimer(nIDEvent);
 }
@@ -201,14 +212,15 @@ void CVideoCtrDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	{
 		m_isOnHScroll = 0;
 		m_pos = nPos;
-	    H264_PLAY_SetPlayPos(m_port, (float)m_pos/100.0);
-		H264_PLAY_GetLastError(m_port);		
+		if(m_port)
+			H264_PLAY_SetPlayPos(m_port, (float)m_pos/100.0);	
 	}
 	if (nSBCode == SB_THUMBTRACK)
 	{
 		m_isOnHScroll = 1;
 		m_pos = nPos;
-		H264_PLAY_SetPlayPos(m_port, (float)m_pos / 100.0);
+		if (m_port)
+			H264_PLAY_SetPlayPos(m_port, (float)m_pos / 100.0);
 	}
 	CDialogEx::OnHScroll(nSBCode, nPos, pScrollBar);
 }
@@ -260,4 +272,40 @@ void CVideoCtrDlg::OnBnClickedPrevfButton()
 void __stdcall EOFCallBack(LONG nPort, LONG nUser)
 {
 	((CVideoCtrDlg *)nUser)->StopPlay();
+}                      
+
+
+void CVideoCtrDlg::OnSize(UINT nType, int cx, int cy)
+{
+	CDialogEx::OnSize(nType, cx, cy);
+
+	// TODO: 在此处添加消息处理程序代码
+	CRect rClient;
+	GetClientRect(rClient);
+	int width = rClient.Width();
+	int height = rClient.Height();
+	if (IsWindow(mVideoDlg.m_hWnd)) 
+	{
+		mVideoDlg.SetWindowPos(NULL, rClient.left + width/6, rClient.top + height/9, rClient.Width() - width/3, rClient.Height() - height/3, 0);
+	}
+	if(m_sliderctrl)
+		m_sliderctrl.MoveWindow(rClient.left + width/6 , rClient.bottom - height*2/9, width*2/3 , 25, 1);
+	CWnd *pbt = GetDlgItem(IDC_PLAY_BUTTON);
+	if(pbt)
+		pbt->MoveWindow(width / 2 - width / 18 - PLAY_CTR_BT_WIDTH / 2, rClient.bottom - height * 2 / 9 + 25, 100, 25, 1);
+	pbt = GetDlgItem(IDC_PAUSE_BUTTON);
+	if (pbt)
+		pbt->MoveWindow(width / 2 + width / 18 - PLAY_CTR_BT_WIDTH / 2, rClient.bottom - height * 2 / 9 + 25, 100, 25, 1);
+	pbt = GetDlgItem(IDC_PREVF_BUTTON);
+	if (pbt)
+		pbt->MoveWindow(width / 2 - width *1/ 6 - PLAY_CTR_BT_WIDTH / 2, rClient.bottom - height * 2 / 9 + 25, 100, 25, 1);
+	pbt = GetDlgItem(IDC_NEXT_BUTTON);
+	if (pbt)
+		pbt->MoveWindow(width / 2 + width *1/ 6 - PLAY_CTR_BT_WIDTH / 2, rClient.bottom - height * 2 / 9 + 25, 100, 25, 1);
+	pbt = GetDlgItem(IDC_SLOW_BUTTON);
+	if (pbt)
+		pbt->MoveWindow(width / 2 - width *5/ 18 - PLAY_CTR_BT_WIDTH / 2, rClient.bottom - height * 2 / 9 + 25, 100, 25, 1);
+	pbt = GetDlgItem(IDC_FAST_BUTTON);
+	if (pbt)
+		pbt->MoveWindow(width / 2 + width *5/ 18 - PLAY_CTR_BT_WIDTH / 2, rClient.bottom - height * 2 / 9 + 25, 100, 25, 1);
 }

@@ -1,8 +1,7 @@
 #pragma once
 #include "afxwin.h"
-#include "MCI.h"
 #include "AutoWatchSoundConfirmDlg.h"
-
+#include "RecordAlarmSound.h"
 
 // CRecordAlarmAudioDlg ¶Ô»°¿ò
 
@@ -37,7 +36,5 @@ private:
 	bool  isRecording;
 
 	CButton mRecordSwt;
-	CMCI    mRecorder;
-
 	CAutoWatchSoundConfirmDlg mConfirmDlg;
 };

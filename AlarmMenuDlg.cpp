@@ -145,7 +145,7 @@ BOOL CAlarmMenuDlg::PreTranslateMessage(MSG* pMsg)
 			keybd_event(VK_TAB, 0, 0, 0);
 			keybd_event(VK_TAB, 0, KEYEVENTF_KEYUP, 0);
 			return true;
-
+		case VK_LEFT:
 		case VK_BACK:
 			inx = pFocusedWnd->GetDlgCtrlID();
 			if (inx >= IDC_TREE1  &&  inx <IDC_TREE1+CAMERA_MAX_NUM) {
@@ -259,7 +259,7 @@ afx_msg LRESULT CAlarmMenuDlg::OnUserMsgDelFile(WPARAM wParam, LPARAM lParam)
  {
 	 float size = 0;
 	 CTagTreeCtrl *pTree = (CTagTreeCtrl*)lParam;
-	 CString PlayPath("E:\\Record");
+	 CString PlayPath(RECORD_PATH);
 	 if (((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->m_USBFlashDiskStatus.m_bInsert)
 	 {
 		 HTREEITEM hItem = pTree->GetSelectedItem();
@@ -274,13 +274,13 @@ afx_msg LRESULT CAlarmMenuDlg::OnUserMsgDelFile(WPARAM wParam, LPARAM lParam)
 
 			 if (pRecordInfo->mStatus & RECORD_TYPE_NORMAL)
 			 {
-				 PlayPath += _T("\\normal");
+				 PlayPath += _T("normal\\");
 			 }
 			 else
 			 {
-				 PlayPath += _T("\\alarm");
+				 PlayPath += _T("alarm\\");
 			 }
-			 tmp.Format(_T("\\%d\\%d%02d%02d%02d%02d%02d.h264"), pRecordInfo->mOwner, pRecordInfo->mBeginTime.GetYear(), pRecordInfo->mBeginTime.GetMonth(),
+			 tmp.Format(_T("%d\\%d%02d%02d%02d%02d%02d.h264"), pRecordInfo->mOwner, pRecordInfo->mBeginTime.GetYear(), pRecordInfo->mBeginTime.GetMonth(),
 				 pRecordInfo->mBeginTime.GetDay(), pRecordInfo->mBeginTime.GetHour(), pRecordInfo->mBeginTime.GetMinute(), pRecordInfo->mBeginTime.GetSecond());
 			 PlayPath += tmp;
 			 PlayPath += _T('\0');
@@ -289,17 +289,17 @@ afx_msg LRESULT CAlarmMenuDlg::OnUserMsgDelFile(WPARAM wParam, LPARAM lParam)
 			 {
 				 pRecordInfo = (CRecordFileInfo *)pTree->GetItemData(hChild);
 				 size += pRecordInfo->mTotalSize;
-				 PlayPath += _T("E:\\Record");
+				 PlayPath += _T(RECORD_PATH);
 				 CString tmp;
 				 if (pRecordInfo->mStatus & RECORD_TYPE_NORMAL)
 				 {
-					 PlayPath += _T("\\normal");
+					 PlayPath += _T("normal\\");
 				 }
 				 else
 				 {
-					 PlayPath += _T("\\alarm");
+					 PlayPath += _T("alarm\\");
 				 }
-				 tmp.Format(_T("\\%d\\%d%02d%02d%02d%02d%02d.h264"), pRecordInfo->mOwner, pRecordInfo->mBeginTime.GetYear(), pRecordInfo->mBeginTime.GetMonth(),
+				 tmp.Format(_T("%d\\%d%02d%02d%02d%02d%02d.h264"), pRecordInfo->mOwner, pRecordInfo->mBeginTime.GetYear(), pRecordInfo->mBeginTime.GetMonth(),
 					 pRecordInfo->mBeginTime.GetDay(), pRecordInfo->mBeginTime.GetHour(), pRecordInfo->mBeginTime.GetMinute(), pRecordInfo->mBeginTime.GetSecond());
 				 PlayPath += tmp;
 				 PlayPath += _T('\0');
@@ -313,13 +313,13 @@ afx_msg LRESULT CAlarmMenuDlg::OnUserMsgDelFile(WPARAM wParam, LPARAM lParam)
 			 CString tmp;
 			 if (pRecordInfo->mStatus & RECORD_TYPE_NORMAL)
 			 {
-				 PlayPath += _T("\\normal");
+				 PlayPath += _T("normal\\");
 			 }
 			 else
 			 {
-				 PlayPath += _T("\\alarm");
+				 PlayPath += _T("alarm\\");
 			 }
-			 tmp.Format(_T("\\%d\\%d%02d%02d%02d%02d%02d.h264"), pRecordInfo->mOwner, pRecordInfo->mBeginTime.GetYear(), pRecordInfo->mBeginTime.GetMonth(),
+			 tmp.Format(_T("%d\\%d%02d%02d%02d%02d%02d.h264"), pRecordInfo->mOwner, pRecordInfo->mBeginTime.GetYear(), pRecordInfo->mBeginTime.GetMonth(),
 				 pRecordInfo->mBeginTime.GetDay(), pRecordInfo->mBeginTime.GetHour(), pRecordInfo->mBeginTime.GetMinute(), pRecordInfo->mBeginTime.GetSecond());
 			 PlayPath += tmp;
 			 PlayPath += _T('\0');
