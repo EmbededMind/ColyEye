@@ -24,9 +24,6 @@ void InitConsoleWindow()
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-
-
-
 #endif
 
 
@@ -88,7 +85,7 @@ BOOL CColyEyeDlg::OnInitDialog()
 
 
 	InitConsoleWindow();
-	printf("GG\n");
+
 	if (m_SerialPortKbd.InitPort(this, COM_KEYBD, 9600, 'N', 8, 1, EV_RXCHAR, 512))
 	{
 		m_SerialPortKbd.StartMonitoring();

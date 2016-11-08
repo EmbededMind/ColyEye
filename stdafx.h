@@ -38,10 +38,7 @@
 #pragma comment(lib, "lib\\sdk_xm\\NetSdk.lib")
 #pragma comment(lib, "lib\\sqlite3\\sqlite3.lib")
 
-#include<conio.h>
-#ifdef _DEBUG
-#pragma comment(linker, "/subsystem:console /entry:wWinMainCRTStartup")
-#endif
+
 
 //#ifdef _DEBUG
 //#pragma comment(lib, "log4cplusUD.lib")

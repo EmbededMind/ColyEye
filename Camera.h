@@ -67,6 +67,9 @@ public:
 
 	BOOL login();
 	void logout();
+ 	
+	void OnLogin();
+	void OnLogout();
 
 	BOOL LoadUserConfiguration();
 	BOOL CommitUserConfigurationChange();
