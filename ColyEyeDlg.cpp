@@ -387,9 +387,9 @@ LONG CColyEyeDlg::OnCommData(WPARAM pData, LPARAM port)
 				{
 					if (CCameraManager::getInstance()->mTalkpDev)
 					{
-						CCameraManager::getInstance()->mTalkpDev->StopTalk();
+						CCameraManager::getInstance()->mTalkpDev->Talk->Stop();
 					}
-					pDev->Talk();
+					pDev->Talk->Start();
 				}
 				else
 				{

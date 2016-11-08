@@ -32,6 +32,7 @@ CCamera::CCamera()
 	userConf.vol = 5;
 	userConf.switches = CAMERA_USER_CONF_ON | CAMERA_USER_CONF_UP | CAMERA_USER_CONF_STORE | CAMERA_USER_CONF_AWATCH;
 	
+	Talk = new CTalkManager(this);
 	//CRecordFileInfo* pRecordFileInfo;
 }
 
@@ -60,6 +61,7 @@ CCamera::~CCamera()
 		H264_DVR_Logout(this->mLoginId);
 	}
 	TRACE("Camear Remove:%d\n", this->mId);
+	delete Talk;
 }
 
 
@@ -311,49 +313,6 @@ BOOL CCamera::CommitUserConfigurationChange()
 		return FALSE;
 	}
 }
-
-BOOL CCamera::Talk()
-{
-	if (this->mTalkHandle)
-		this->OverTalk();
-	this->mTalkHandle = H264_DVR_StartLocalVoiceCom(this->mLoginId);
-	CCameraManager::getInstance()->mTalkpDev = this;
-	uint8_t Order[17];
-	Util::LoadOrder(Order, 0x24, 0x01, 0x02, 0x02, 0x01, NULL, this);
-	((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->m_SerialPortCom.WriteToPort(Order, 17);
-	return 0;
-}
-
-BOOL CCamera::OverTalk()
-{
-	if (this->mTalkHandle)
-	{
-		uint8_t Order[17];
-		Util::LoadOrder(Order, 0x24, 0x01, 0x02, 0x02, 0x02, NULL, this);
-		((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->m_SerialPortCom.WriteToPort(Order, 17);
-	}
-	else
-	{
-		printf("handke == 0\n");
-	}
-	return 0;
-}
-
-BOOL CCamera::StopTalk()
-{
-	if (this->mTalkHandle)
-	{
-		H264_DVR_StopVoiceCom(this->mTalkHandle);
-		CCameraManager::getInstance()->mTalkpDev = NULL;
-		this->mTalkHandle = 0;
-		uint8_t Order[17];
-		Util::LoadOrder(Order, 0x24, 0x01, 0x02, 0x02, 0x03, NULL, this);
-		((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->m_SerialPortCom.WriteToPort(Order, 17);
-	}
-	return 0;
-}
-
-
 
 void CCamera::OnLogin()
 {

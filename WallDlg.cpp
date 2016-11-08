@@ -907,44 +907,15 @@ BOOL CWallDlg::PreTranslateMessage(MSG* pMsg)
 				switch (pMsg->wParam) 
 				{ 
 				case 'T': 
-				{
-					if (CCameraManager::getInstance()->mTalkpDev)
-					{
-						CCameraManager::getInstance()->mTalkpDev->StopTalk();
-					}
-					if (CCameraManager::getInstance()->mTalkpDev == NULL)
-					{
-						TRACE("Begin to talk with :%d\n", pDev->mId);
-						pDev->Talk();
-					}
-					else
-					{
-						printf("handke == 0\n");
-					}
-				}
-
+					pDev->Talk->Start();
 				return TRUE;
 
 				case 'O':
-				{
-					printf("C o\n");
-					if (CCameraManager::getInstance()->mTalkpDev)
-					{
-						CCameraManager::getInstance()->mTalkpDev->OverTalk();
-					}
-					else
-					{
-						printf("handke == 0\n");
-					}
-				}
+					pDev->Talk->Over();
 				return true;
 
 				case 'S':
-					printf("C s\n");
-					if (CCameraManager::getInstance()->mTalkpDev)
-					{
-						CCameraManager::getInstance()->mTalkpDev->StopTalk();
-					}
+					CCameraManager::getInstance()->mTalkpDev->Talk->Stop();
 				return true;
 					
 				default:

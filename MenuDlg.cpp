@@ -191,14 +191,7 @@ BOOL CMenuDlg::PreTranslateMessage(MSG* pMsg)
 				switch (pMsg->wParam)
 				{
 				case 'S':
-					if (CCameraManager::getInstance()->mTalkpDev)
-					{
-						CCameraManager::getInstance()->mTalkpDev->StopTalk();
-					}
-					else
-					{
-						printf("handke == 0\n");
-					}
+					CCameraManager::getInstance()->mTalkpDev->Talk->Stop();
 					return true;
 				}
 				break;

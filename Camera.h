@@ -1,7 +1,7 @@
 #pragma once
 
 #include "RecordFileInfo.h"
-
+#include "TalkManager.h"
 
 #define CAMERA_USER_CONF_ON       0x0001
 #define CAMERA_USER_CONF_UP       0x0002
@@ -14,7 +14,6 @@ typedef struct {
 	UINT8 vol;
 	UINT16 switches;
 }UserConf;
-
 
 class CCamera
 {
@@ -74,8 +73,6 @@ public:
 	BOOL LoadUserConfiguration();
 	BOOL CommitUserConfigurationChange();
 
-	BOOL Talk();
-	BOOL OverTalk();
-	BOOL StopTalk();
+	CTalkManager *Talk;
 };
 
