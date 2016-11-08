@@ -45,7 +45,7 @@ public:
 
 	BOOL isRecording;
 	BOOL isAlarmRecording;
-	BOOL isTalking;
+	long mTalkHandle;
 	UserConf userConf;
 
 
@@ -70,5 +70,9 @@ public:
 
 	BOOL LoadUserConfiguration();
 	BOOL CommitUserConfigurationChange();
+
+	BOOL Talk();
+	BOOL OverTalk();
+	BOOL StopTalk();
 };
 

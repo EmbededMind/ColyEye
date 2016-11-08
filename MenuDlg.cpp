@@ -6,7 +6,7 @@
 #include "MenuDlg.h"
 #include "afxdialogex.h"
 #include "DBOperator.h"
-
+#include "ColyEyeDlg.h"
 // CMenuDlg ¶Ô»°¿ò
 
 IMPLEMENT_DYNAMIC(CMenuDlg, CDialogEx)
@@ -186,6 +186,24 @@ BOOL CMenuDlg::PreTranslateMessage(MSG* pMsg)
 		case VK_BACK:
 			TRACE("case back or left\n");
 			return true;
+		default:
+			if (GetKeyState(VK_CONTROL) && !(pMsg->lParam & 0x20000000)) {
+				switch (pMsg->wParam)
+				{
+				case 'S':
+					if (CCameraManager::getInstance()->mTalkpDev)
+					{
+						CCameraManager::getInstance()->mTalkpDev->StopTalk();
+					}
+					else
+					{
+						printf("handke == 0\n");
+					}
+					return true;
+				}
+				break;
+			}
+			break;
 		}
 	}
 	else if(pMsg->message == WM_CONTEXTMENU){

@@ -421,17 +421,14 @@ UINT CSerialPort::CommThread(LPVOID pParam)
 				while (1)
 				{
 					ClearCommError(port->m_hComm, &dwError, &comstat);
-					printf(" while(1) length = %d\n", length);
 					if (length != comstat.cbInQue)
 					{
 						length = comstat.cbInQue;
 						Sleep(10);
-						printf(" != length = %d\n", length);
 					}
 					else
 					{
 						if (length == 0) break;
-						printf(" == length = %d\n", length);
 						ReceiveData(port, comstat);
 						port->m_queuecom[port->m_queueth].num = length;
 						::SendMessage((port->m_pOwner)->m_hWnd, WM_COMM_RXDATA, (WPARAM)(&(port->m_queuecom[port->m_queueth])), (LPARAM)port->m_nPortNr);

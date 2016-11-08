@@ -19,8 +19,6 @@ void CCameraManager::destrucCameras()
 		pDev = (CCamera*)mCameras.GetNext(pos);
 		delete(pDev);
 	}
-	mTalkHandle = 0;
-
 	//for (int i = 0; i < CAMERA_MAX_NUM; i++) {
 	//	if()
 	//}

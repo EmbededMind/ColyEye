@@ -207,7 +207,6 @@ void CColyEyeDlg::OnClose()
 BOOL CColyEyeDlg::PreTranslateMessage(MSG* pMsg)
 {
 	// TODO: 在此添加专用代码和/或调用基类
-
 	if (pMsg->message == WM_CONTEXTMENU) {
 		if (mWall.IsWindowVisible()) {
 			mWall.ShowWindow(SW_HIDE);
@@ -220,7 +219,6 @@ BOOL CColyEyeDlg::PreTranslateMessage(MSG* pMsg)
 			mWall.SetFocus();
 		}
 	}
-	
 	return CDialogEx::PreTranslateMessage(pMsg);
 }
 
@@ -316,11 +314,10 @@ LONG CColyEyeDlg::OnCommData(WPARAM pData, LPARAM port)
 				this->SetVolumeLevel(3);
 				break;
 			case KB_TALKQUIET:
-				if (CCameraManager::getInstance()->mTalkHandle)
-				{
-					H264_DVR_StopVoiceCom(CCameraManager::getInstance()->mTalkHandle);
-					CCameraManager::getInstance()->mTalkHandle = 0;
-				}
+				keybd_event(VK_CONTROL, 0, 0, 0);
+				keybd_event('S', 0, 0, 0);
+				keybd_event(VK_CONTROL, 0, KEYEVENTF_KEYUP, 0);
+				keybd_event('S', 0, KEYEVENTF_KEYUP, 0);
 				break;
 			case KB_BRIDOWN:
 				SetBrightLevel(2);
@@ -391,19 +388,11 @@ LONG CColyEyeDlg::OnCommData(WPARAM pData, LPARAM port)
 				CCamera *pDev = CCameraManager::getInstance()->FindCameraByMAC(&(p->ch[6]));
 				if (pDev)
 				{
-					if (CCameraManager::getInstance()->mTalkHandle)
+					if (CCameraManager::getInstance()->mTalkpDev)
 					{
-						H264_DVR_StopVoiceCom(CCameraManager::getInstance()->mTalkHandle);
-						CCameraManager::getInstance()->mTalkHandle = 0;
+						CCameraManager::getInstance()->mTalkpDev->StopTalk();
 					}
-					CCameraManager::getInstance()->mTalkHandle = H264_DVR_StartLocalVoiceCom(pDev->mLoginId);
-					Util::LoadOrder(m_Order, 0x24, 0x01, 0x02, 0x03, NULL, 0x01, pDev);
-					printf("ack tslk  ");
-					for (int i = 0; i < 17; i++) {
-						printf("%02X ", m_Order[i]);
-					}
-					printf("\n");
-					m_SerialPortCom.WriteToPort(m_Order, 17);
+					pDev->Talk();
 				}
 				else
 				{

@@ -160,7 +160,7 @@ extern  ColyEyeHost   host;
 //
 //void InitLog();
 
-#define LOG_PATH                     "e:\\log.txt"
+#define LOG_PATH                     "D:\\log.txt"
 
 
 

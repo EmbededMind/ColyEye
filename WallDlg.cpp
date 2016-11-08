@@ -893,38 +893,43 @@ BOOL CWallDlg::PreTranslateMessage(MSG* pMsg)
 				{ 
 				case 'T': 
 				{
-					if (CCameraManager::getInstance()->mTalkHandle != 0)
+					if (CCameraManager::getInstance()->mTalkpDev)
 					{
-						H264_DVR_StopVoiceCom(CCameraManager::getInstance()->mTalkHandle);
-						Util::LoadOrder(mOrder, 0x24, 0x01, 0x02, 0x02, 0x02, NULL, pDev);
-						((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->m_SerialPortCom.WriteToPort(mOrder, 17);
-						CCameraManager::getInstance()->mTalkHandle = 0;
+						CCameraManager::getInstance()->mTalkpDev->StopTalk();
 					}
-					if (CCameraManager::getInstance()->mTalkHandle == 0)
+					if (CCameraManager::getInstance()->mTalkpDev == NULL)
 					{
 						TRACE("Begin to talk with :%d\n", pDev->mId);
-						CCameraManager::getInstance()->mTalkHandle = H264_DVR_StartLocalVoiceCom(pDev->mLoginId);
-						uint8_t Order[17];
-						Util::LoadOrder(Order, 0x24, 0x01, 0x02, 0x02, 0x01, NULL, pDev);
-						((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->m_SerialPortCom.WriteToPort(Order, 17);
+						pDev->Talk();
+					}
+					else
+					{
+						printf("handke == 0\n");
 					}
 				}
-				break;
+				return true;
 
 				case 'O':
 				{
-					if (CCameraManager::getInstance()->mTalkHandle != 0)
+					printf("C o\n");
+					if (CCameraManager::getInstance()->mTalkpDev)
 					{
-						TRACE("Over talk with :%d\n", pDev->mId);
-						H264_DVR_StopVoiceCom(CCameraManager::getInstance()->mTalkHandle);
-						CCameraManager::getInstance()->mTalkHandle = 0;
-						Util::LoadOrder(mOrder, 0x24, 0x01, 0x02, 0x02, 0x02, NULL, pDev);
-						TRACE("%s\n", pDev->mCommonNetConfig.sMac);
-						((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->m_SerialPortCom.WriteToPort(mOrder, 17);
+						CCameraManager::getInstance()->mTalkpDev->OverTalk();
+					}
+					else
+					{
+						printf("handke == 0\n");
 					}
 				}
-		        break;
-					
+				return true;
+
+				case 'S':
+					printf("C s\n");
+					if (CCameraManager::getInstance()->mTalkpDev)
+					{
+						CCameraManager::getInstance()->mTalkpDev->StopTalk();
+					}
+				return true;
 				default:
 					break;
 				}
@@ -960,7 +965,6 @@ afx_msg LRESULT CWallDlg::OnUserMsgNotifyArrow(WPARAM wParam, LPARAM lParam)
 		
 		CSurfaceHolderDlg* pHolder;
 		CString text;
-
 
 		if (pos) {
 			switch (wParam)

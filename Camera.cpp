@@ -4,6 +4,7 @@
 #include "RecordFileInfo.h"
 #include "RecordFileInfoManager.h"
 #include "Util.h"
+#include "ColyEyeDlg.h"
 
 int __stdcall realDataCallBack_V2(long hRealPlay, const PACKET_INFO_EX* pFrame, unsigned int dwUser);
 int __stdcall normalRealDataCallBack_V2(long hRealPlay, const PACKET_INFO_EX * pFrame, unsigned int dwUser);
@@ -309,6 +310,47 @@ BOOL CCamera::CommitUserConfigurationChange()
 		TRACE("sql stmt error:%s\n", sqlStmt);
 		return FALSE;
 	}
+}
+
+BOOL CCamera::Talk()
+{
+	if (this->mTalkHandle)
+		this->OverTalk();
+	this->mTalkHandle = H264_DVR_StartLocalVoiceCom(this->mLoginId);
+	CCameraManager::getInstance()->mTalkpDev = this;
+	uint8_t Order[17];
+	Util::LoadOrder(Order, 0x24, 0x01, 0x02, 0x02, 0x01, NULL, this);
+	((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->m_SerialPortCom.WriteToPort(Order, 17);
+	return 0;
+}
+
+BOOL CCamera::OverTalk()
+{
+	if (this->mTalkHandle)
+	{
+		uint8_t Order[17];
+		Util::LoadOrder(Order, 0x24, 0x01, 0x02, 0x02, 0x02, NULL, this);
+		((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->m_SerialPortCom.WriteToPort(Order, 17);
+	}
+	else
+	{
+		printf("handke == 0\n");
+	}
+	return 0;
+}
+
+BOOL CCamera::StopTalk()
+{
+	if (this->mTalkHandle)
+	{
+		H264_DVR_StopVoiceCom(this->mTalkHandle);
+		CCameraManager::getInstance()->mTalkpDev = NULL;
+		this->mTalkHandle = 0;
+		uint8_t Order[17];
+		Util::LoadOrder(Order, 0x24, 0x01, 0x02, 0x02, 0x03, NULL, this);
+		((CColyEyeDlg*)AfxGetApp()->m_pMainWnd)->m_SerialPortCom.WriteToPort(Order, 17);
+	}
+	return 0;
 }
 
 

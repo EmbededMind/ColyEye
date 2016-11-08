@@ -20,7 +20,8 @@ public:
 		static CCameraManager instance;
 		return &instance;
 	}
-	long mTalkHandle;
+	CCamera *mTalkpDev;
+
 	void destrucCameras();
 
 	// 历史登录设备的 id 和 mac

@@ -8,6 +8,7 @@
 #include "HomeWatchDlg.h"
 
 #include "TestDlg.h"
+#include "Util.h"
 
 #define MENU_ITEM_NUM  5
 
@@ -32,6 +33,7 @@ public:
 	CWnd* mSubWnds[MENU_ITEM_NUM];
 	int  mCurrCursor;
 	int  mPrevCursor;
+	uint8_t mOrder[17];
 	//CAlarmMenuDlg mAlarmMenu;
 	//CSystemConfigDlg mSystemConfMenu;
 	//CHomeWatchDlg    mHomeWatchMenu;
